@@ -274,7 +274,7 @@ ultra_luxury_premium_css = """
         align-items: center; 
         gap: 10px;
         margin-bottom: 3.5rem; 
-        height: 110px; 
+        height: 60px; /* Reduced from 110px */
         width: 100%;
         perspective: 1000px;
         transition: filter 0.1s ease-out;
@@ -499,7 +499,7 @@ ultra_luxury_premium_css = """
             font-size: 0.85rem; 
         }
         .voice-bars-container { 
-            height: 85px; 
+            height: 45px; /* Reduced from 85px */
             gap: 7px;
         }
         .voice-bar { 
