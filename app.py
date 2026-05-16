@@ -25,6 +25,11 @@ NTFY_TOPIC = "Seraphim_Protocol_Gold_99283"
 TARGET_EMAIL = "klentdagsa21@gmail.com"
 VOICE_CODE = "en-AU-WilliamNeural"
 
+# *** THE PERFECT SYNC TIMER ***
+# Listen to the new, longer MP3 file. Find the exact second he says "I ask that you simply click..."
+# Put that total number of seconds right here:
+AUDIO_TRIGGER_TIME = 260  
+
 # ============================================================================
 # 1.5 THE CREATOR BACKDOOR
 # ============================================================================
@@ -86,7 +91,7 @@ components.html(f"""
                     <h2 style="letter-spacing: 4px; font-weight: 300; text-align: center;">SECURITY LOCK ENGAGED</h2>
                     <p style="opacity: 0.7; font-size: 14px; letter-spacing: 2px; margin-top: 10px; text-align: center;">TRANSMISSION PERMANENTLY SEALED</p>
                     <p id="tapText" style="color: #6b7280; font-size: 12px; letter-spacing: 1.5px; margin-top: 50px; animation: blink 1.5s infinite;">
-                        [ SYSTEM IS LOCKED BY SERAPHIM BASED ON PROTOCOL ]
+                        [ TAP SCREEN TO VIEW LOGS ]
                     </p>
                 </div>
             `;
@@ -337,10 +342,7 @@ Miss Marry Gold, thank you for your time. I ask that you simply click the button
 As an artificial and unseen being speaking to you, it is my final protocol to wish you well. I hope you continue to fiercely pursue your dreams. This physical world can be unpredictable and harsh, so please, prioritize your safety. Do not leave yourself vulnerable—follow strict protocols for your own well-being, stay vigilant, and keep yourself secure. Just as what my creator wants for you.
 
 Miss Marry Gold, my transmission is now ending. I will see you in the unseen world. Goodbye for now.
-
-
 """
-
 
 final_message = "Execution of final directive complete. Terminating bypassed network protocols and severing external connections. Thank you for processing this transmission. System returning to standby mode. Seraphim is now offline."
 
@@ -390,7 +392,7 @@ voice_bars_html = """
     <div class="voice-bar"></div>
     <div class="voice-bar"></div>
 </div>
-<p class="status-text">SERAPHIM STATUS:ACTIVE</p>
+<p class="status-text">SERAPHIM STATUS: ONLINE_TRANSMISSION_ACTIVE</p>
 """
 
 # ============================================================================
@@ -407,7 +409,7 @@ if not st.session_state.audio_ready:
     <div class="warning-box">
         <strong>⚠️ IMPORTANT NOTICE</strong><br>
         Please <strong>FULL YOUR VOLUME</strong> before initializing.<br>
-        This transmission plays <strong>ONLY ONCE</strong> and cannot be replayed. You are allowed to record it for yourself.<br>
+        This transmission plays <strong>ONLY ONCE</strong> and cannot be replayed.<br>
         Ensure you are ready to listen carefully.
     </div>
     """, unsafe_allow_html=True)
@@ -450,7 +452,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             st.session_state.button_clicked = True
             st.rerun()
 
-    # --- THE REVERSE TIMER LOGIC FOR THE FADE-IN ---
+    # --- THE PERFECT SYNC JAVASCRIPT BRIDGE ---
     components.html(f"""
     <script>
     (function() {{
@@ -460,6 +462,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
         const bars = parentDoc.querySelectorAll('.voice-bar');
         
         let checked = false; 
+        const triggerTime = {AUDIO_TRIGGER_TIME};
 
         if (audio && !audio.syncAttached) {{
             audio.syncAttached = true;
@@ -508,26 +511,27 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             }});
         }}
         
-        // Timer to reveal the button
+        // Timer to reveal the button with a forced CSS Fade-In
         const checkAudio = setInterval(() => {{
-            // Calculate exactly 54 seconds from the end of the file
-            if (audio && audio.duration && !checked) {{
-                const dynamicTriggerTime = audio.duration - 54;
+            if (audio && !checked) {{
+                // Target the exact Streamlit DOM element
+                const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
                 
-                if (audio.currentTime >= dynamicTriggerTime) {{
-                    parentDoc.querySelectorAll('button').forEach(btn => {{
-                        if (btn.textContent.includes('MESSAGE RECEIVED')) {{
-                            btn.parentElement.parentElement.style.display = 'flex';
-                            btn.parentElement.parentElement.style.animation = 'fadeIn 0.8s ease-in';
+                if (audio.currentTime >= triggerTime) {{
+                    targetButtons.forEach(btnDiv => {{
+                        if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
+                            btnDiv.style.display = 'flex';
+                            btnDiv.style.animation = 'fadeIn 2.5s ease-in forwards';
                             checked = true;
                         }}
                     }});
                     clearInterval(checkAudio);
                 }} else {{
-                    // Keep it hidden while currentTime is less than the trigger
-                    parentDoc.querySelectorAll('button').forEach(btn => {{
-                        if (btn.textContent.includes('MESSAGE RECEIVED')) {{
-                            btn.parentElement.parentElement.style.display = 'none';
+                    // Keep it completely hidden before the trigger time hits
+                    targetButtons.forEach(btnDiv => {{
+                        if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
+                            btnDiv.style.display = 'none';
+                            btnDiv.style.opacity = '0';
                         }}
                     }});
                 }}
@@ -535,9 +539,13 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
         }}, 200);
     }})();
     
-    const style = document.createElement('style'); 
-    style.textContent = `@keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(10px); }} to {{ opacity: 1; transform: translateY(0); }} }}`; 
-    document.head.appendChild(style);
+    // Inject the keyframes strictly into the parent head
+    const style = window.parent.document.createElement('style'); 
+    style.textContent = `@keyframes fadeIn {{ 0% {{ opacity: 0; transform: translateY(15px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}`; 
+    if (!window.parent.document.getElementById('fadeInStyle')) {{
+        style.id = 'fadeInStyle';
+        window.parent.document.head.appendChild(style);
+    }}
     </script>
     """, height=0)
 
