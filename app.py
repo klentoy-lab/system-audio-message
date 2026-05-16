@@ -43,8 +43,9 @@ if not Path(warning_file).exists():
     except:
         pass
 
-# EARLY SECURITY CHECK WITH AUDIO PLAYBACK
+# EARLY SECURITY CHECK WITH AUDIO PLAYBACK (Wrapped in hidden div to fix text leak)
 check_lock_js = """
+<div style="display: none;">
 <script>
 (function() {
     const isCreator = """ + ("true" if is_creator else "false") + """;
@@ -133,6 +134,7 @@ check_lock_js = """
     }
 })();
 </script>
+</div>
 """
 
 # Check if warning audio exists and embed it
@@ -275,6 +277,7 @@ ultra_luxury_premium_css = """
         height: 110px; 
         width: 100%;
         perspective: 1000px;
+        transition: filter 0.1s ease-out;
     }
 
     .voice-bar {
@@ -319,60 +322,20 @@ ultra_luxury_premium_css = """
         animation: glow-inner-pulse 0.6s ease-in-out infinite;
     }
 
-    .voice-bars-container.playing .voice-bar::after {
-        animation: glow-outer-pulse 0.6s ease-in-out infinite;
-    }
-
-    .voice-bars-container.playing .voice-bar:nth-child(1) { 
-        animation-delay: 0s;
-        filter: hue-rotate(0deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(2) { 
-        animation-delay: 0.08s;
-        filter: hue-rotate(10deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(3) { 
-        animation-delay: 0.16s;
-        filter: hue-rotate(20deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(4) { 
-        animation-delay: 0.24s;
-        filter: hue-rotate(30deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(5) { 
-        animation-delay: 0.32s;
-        filter: hue-rotate(40deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(6) { 
-        animation-delay: 0.4s;
-        filter: hue-rotate(30deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(7) { 
-        animation-delay: 0.48s;
-        filter: hue-rotate(20deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(8) { 
-        animation-delay: 0.56s;
-        filter: hue-rotate(10deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(9) { 
-        animation-delay: 0.64s;
-        filter: hue-rotate(0deg);
-    }
+    .voice-bars-container.playing .voice-bar:nth-child(1) { filter: hue-rotate(0deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(2) { filter: hue-rotate(10deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(3) { filter: hue-rotate(20deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(4) { filter: hue-rotate(30deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(5) { filter: hue-rotate(40deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(6) { filter: hue-rotate(30deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(7) { filter: hue-rotate(20deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(8) { filter: hue-rotate(10deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(9) { filter: hue-rotate(0deg); }
 
     @keyframes bar-glow-color { 
-        0% { 
-            transform: scaleY(0.2); 
-            opacity: 0.3;
-        } 
-        50% { 
-            transform: scaleY(1); 
-            opacity: 1;
-        } 
-        100% { 
-            transform: scaleY(0.2); 
-            opacity: 0.3;
-        } 
+        0% { transform: scaleY(0.2); opacity: 0.3; } 
+        50% { transform: scaleY(1); opacity: 1; } 
+        100% { transform: scaleY(0.2); opacity: 0.3; } 
     }
 
     @keyframes glow-inner-pulse {
@@ -381,25 +344,16 @@ ultra_luxury_premium_css = """
         100% { opacity: 0; }
     }
 
-    @keyframes glow-outer-pulse {
-        0% { 
-            box-shadow: 0 0 0 0 rgba(100, 255, 255, 0.5);
-        }
-        50% { 
-            box-shadow: 
-                0 0 4px 2px rgba(100, 255, 255, 0.8),
-                0 0 12px 4px rgba(100, 200, 255, 0.4),
-                0 0 20px 8px rgba(100, 150, 255, 0.2);
-        }
-        100% { 
-            box-shadow: 0 0 0 0 rgba(100, 255, 255, 0);
-        }
-    }
-
     .voice-bars-container.stopped .voice-bar { 
         animation: none !important; 
         opacity: 0.15 !important;
         height: 10% !important;
+        filter: none !important;
+        box-shadow: none !important;
+        background-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    .voice-bars-container.stopped {
         filter: none !important;
     }
 
@@ -664,13 +618,13 @@ voice_bars_html = """
     <div class="voice-bar"></div>
     <div class="voice-bar"></div>
 </div>
-<p class="status-text">⚡ SERAPHIM TRANSMISSION READY ⚡</p>
+<p class="status-text">⚡SERAPHIM TRANSMISSION READY⚡</p>
 """
 
 # ============================================================================
 # 7. MAIN UI RENDERING
 # ============================================================================
-st.markdown('<h1 class="minimal-title">✧ A MESSAGE FOR YOU ✧</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="minimal-title">A MESSAGE FOR YOU</h1>', unsafe_allow_html=True)
 
 # ============================================================================
 # STATE 1: INITIALIZATION
@@ -688,7 +642,7 @@ if not st.session_state.audio_ready:
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("⚡ INITIALIZE PROTOCOL ⚡", key="init", use_container_width=True):
+        if st.button("INITIALIZE PROTOCOL", key="init", use_container_width=True):
             with st.spinner("✨ Compiling transmission... PLEASE WAIT"):
                 audio_file = "seraphim_message.mp3"
                 success = asyncio.run(generate_voice(my_message, VOICE_CODE, audio_file))
@@ -703,16 +657,15 @@ if not st.session_state.audio_ready:
 elif st.session_state.audio_ready and not st.session_state.button_clicked and not st.session_state.transmission_complete:
     
     st.markdown(voice_bars_html, unsafe_allow_html=True)
-    st.markdown('<p class="status-text">◆ SERAPHIM TRANSMISSION ACTIVE ◆</p>', unsafe_allow_html=True)
+    st.markdown('<p class="status-text">SERAPHIM-TX-2026-05</p>', unsafe_allow_html=True)
     
     try:
         audio_file = "seraphim_message.mp3"
         with open(audio_file, "rb") as f:
             b64_audio = base64.b64encode(f.read()).decode()
             
-            # Removed crossorigin="anonymous" to prevent browser Web Audio API blocking
             st.markdown(f"""
-            <audio id="mainAudio" style="display:none;">
+            <audio id="mainAudio" crossorigin="anonymous" style="display:none;">
                 <source src="data:audio/mp3;base64,{b64_audio}" type="audio/mp3">
             </audio>
             """, unsafe_allow_html=True)
@@ -721,138 +674,147 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("◆ MESSAGE RECEIVED AND HEARD ◆", key="accept", use_container_width=True):
+        if st.button("MESSAGE RECEIVED AND HEARD", key="accept", use_container_width=True):
             st.session_state.button_clicked = True
             st.rerun()
 
-    # ADVANCED SYNCED JAVASCRIPT WITH COLOR-SHIFTING GLOWING BARS - Fixed to override CSS animation
+    # ADVANCED SYNCED JAVASCRIPT WITH DYNAMIC AUDIO GLOW
     components.html(f"""
     <script>
     (function() {{
         const parentDoc = window.parent.document;
+        const audio = parentDoc.getElementById('mainAudio');
+        const voiceBars = parentDoc.getElementById('voiceBars');
+        const bars = parentDoc.querySelectorAll('.voice-bar');
         
-        // Ensure CSS animations don't override JS Web Audio updates
-        if (!parentDoc.getElementById('jsSyncOverride')) {{
-            const style = parentDoc.createElement('style');
-            style.id = 'jsSyncOverride';
-            style.textContent = `
-                .voice-bars-container.js-syncing .voice-bar {{ animation: none !important; transition: transform 0.05s ease, opacity 0.05s ease !important; }}
-                .voice-bars-container.js-syncing .voice-bar::before {{ animation: none !important; opacity: 0.8 !important; }}
-                .voice-bars-container.js-syncing .voice-bar::after {{ animation: none !important; }}
-                @keyframes fadeIn {{ 0% {{ opacity: 0; transform: translateY(15px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}
-            `;
-            parentDoc.head.appendChild(style);
+        let hasSetup = false;
+        let checked = false; 
+
+        function setupAudio() {{
+            if (hasSetup || !audio) return;
+            hasSetup = true;
+            
+            audio.play().catch(e => console.log("Autoplay info:", e));
+
+            try {{
+                const AudioContext = window.parent.AudioContext || window.parent.webkitAudioContext;
+                const ctx = new AudioContext();
+                const analyser = ctx.createAnalyser();
+                const source = ctx.createMediaElementSource(audio);
+                source.connect(analyser);
+                analyser.connect(ctx.destination);
+                analyser.fftSize = 64;
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                
+                function renderFrame() {{
+                    if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
+                    analyser.getByteFrequencyData(dataArray);
+                    
+                    let totalVolume = 0;
+                    
+                    for (let i = 0; i < 9; i++) {{
+                        if(bars[i]) {{
+                            const val = dataArray[i];
+                            totalVolume += val;
+                            const heightPercent = 20 + (val / 255) * 80;
+                            bars[i].style.height = heightPercent + '%';
+                            
+                            // REAL-TIME DYNAMIC NEON GLOW SYNCED TO FREQUENCY
+                            const glowVal = val / 255;
+                            bars[i].style.boxShadow = '0 0 ' + (5 + val/3) + 'px ' + (val/8) + 'px rgba(100, 255, 255, ' + (glowVal * 0.95) + ')';
+                            bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.5 + glowVal * 0.5) + ')';
+                        }}
+                    }}
+                    
+                    // OVERARCHING CONTAINER GLOW SYNCED TO TOTAL VOLUME
+                    if(voiceBars) {{
+                        const avgVolume = totalVolume / 9;
+                        const containerGlow = Math.min(avgVolume / 150, 0.85); // Prevent clipping
+                        voiceBars.style.filter = 'drop-shadow(0 0 ' + (15 + avgVolume/1.5) + 'px rgba(100, 255, 255, ' + containerGlow + '))';
+                    }}
+                }}
+                
+                audio.addEventListener('play', () => {{
+                    if(voiceBars) {{ 
+                        voiceBars.classList.remove('stopped');
+                        voiceBars.classList.add('playing');
+                    }}
+                    ctx.resume().then(() => renderFrame());
+                }});
+                
+                audio.addEventListener('pause', () => {{
+                    if(voiceBars) {{ 
+                        voiceBars.classList.add('stopped');
+                        voiceBars.classList.remove('playing');
+                    }}
+                }});
+                
+            }} catch(e) {{
+                console.log('Web Audio API unavailable, using CSS animations');
+                audio.addEventListener('play', () => {{
+                    if(voiceBars) {{ 
+                        voiceBars.classList.remove('stopped');
+                        voiceBars.classList.add('playing');
+                    }}
+                }});
+                
+                audio.addEventListener('pause', () => {{
+                    if(voiceBars) {{ 
+                        voiceBars.classList.add('stopped');
+                        voiceBars.classList.remove('playing');
+                    }}
+                }});
+            }}
+
+            audio.addEventListener('ended', () => {{
+                if(voiceBars) {{
+                    voiceBars.classList.add('stopped');
+                    voiceBars.classList.remove('playing');
+                }}
+                checked = true;
+                clearInterval(hideInterval);
+                
+                const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
+                targetButtons.forEach(btnDiv => {{
+                    if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
+                        btnDiv.style.display = 'flex';
+                        btnDiv.style.animation = 'fadeIn 1.5s ease-out forwards';
+                    }}
+                }});
+            }});
         }}
 
-        const scriptId = 'seraphimMainSync';
-        let oldScript = parentDoc.getElementById(scriptId);
-        if (oldScript) oldScript.remove();
-
-        const script = parentDoc.createElement('script');
-        script.id = scriptId;
-        script.textContent = `
-            (function() {{
-                const audio = document.getElementById('mainAudio');
-                const voiceBars = document.getElementById('voiceBars');
-                const bars = document.querySelectorAll('#voiceBars .voice-bar');
-                let checked = false;
-
-                if (!audio || !voiceBars) return;
-
-                function clearInlineStyles() {{
-                    bars.forEach(b => {{
-                        b.style.transform = '';
-                        b.style.opacity = '';
-                    }});
-                }}
-
-                audio.addEventListener('play', () => {{
-                    voiceBars.classList.remove('stopped');
-                    voiceBars.classList.add('playing');
-                }});
-
-                audio.addEventListener('pause', () => {{
-                    voiceBars.classList.add('stopped');
-                    voiceBars.classList.remove('playing');
-                    voiceBars.classList.remove('js-syncing');
-                    clearInlineStyles();
-                }});
-
-                audio.addEventListener('ended', () => {{
-                    voiceBars.classList.add('stopped');
-                    voiceBars.classList.remove('playing');
-                    voiceBars.classList.remove('js-syncing');
-                    clearInlineStyles();
-                    checked = true;
-                    
-                    const targetButtons = document.querySelectorAll('div[data-testid="stButton"]');
-                    targetButtons.forEach(btnDiv => {{
-                        if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
-                            btnDiv.style.display = 'flex';
-                            btnDiv.style.animation = 'fadeIn 1.5s ease-out forwards';
-                        }}
-                    }});
-                }});
-
-                try {{
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    const ctx = new AudioContext();
-                    const analyser = ctx.createAnalyser();
-                    const source = ctx.createMediaElementSource(audio);
-                    
-                    source.connect(analyser);
-                    analyser.connect(ctx.destination);
-                    analyser.fftSize = 64;
-                    const dataArray = new Uint8Array(analyser.frequencyBinCount);
-                    
-                    function renderFrame() {{
-                        if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
-                        analyser.getByteFrequencyData(dataArray);
-                        
-                        for (let i = 0; i < 9; i++) {{
-                            if(bars[i]) {{
-                                const value = dataArray[i + 1] || 0;
-                                const scaleY = 0.2 + (value / 255) * 1.5; // Scale dynamically based on audio
-                                bars[i].style.transform = 'scaleY(' + scaleY + ')';
-                                
-                                if (value > 20) {{
-                                    bars[i].style.opacity = '1';
-                                }} else {{
-                                    bars[i].style.opacity = '0.6';
-                                }}
-                            }}
-                        }}
+        if (document.readyState === 'loading') {{
+            document.addEventListener('DOMContentLoaded', setupAudio);
+        }} else {{
+            setTimeout(setupAudio, 500);
+        }}
+        
+        const hideInterval = setInterval(() => {{
+            if (!checked) {{
+                const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
+                targetButtons.forEach(btnDiv => {{
+                    if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
+                        btnDiv.style.display = 'none';
+                        btnDiv.style.opacity = '0';
                     }}
-                    
-                    audio.addEventListener('play', () => {{
-                        voiceBars.classList.add('js-syncing');
-                        ctx.resume().then(() => renderFrame());
-                    }});
-                }} catch(e) {{
-                    console.log('Web Audio Sync blocked, using CSS fallback');
-                }}
-
-                setTimeout(() => {{
-                    audio.play().catch(e => console.log("Autoplay check:", e));
-                }}, 200);
-
-                const hideInterval = setInterval(() => {{
-                    if (!checked) {{
-                        const targetButtons = document.querySelectorAll('div[data-testid="stButton"]');
-                        targetButtons.forEach(btnDiv => {{
-                            if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
-                                btnDiv.style.display = 'none';
-                                btnDiv.style.opacity = '0';
-                            }}
-                        }});
-                    }} else {{
-                        clearInterval(hideInterval);
-                    }}
-                }}, 200);
-            }})();
-        `;
-        parentDoc.body.appendChild(script);
+                }});
+            }}
+        }}, 300);
+        
     }})();
+    
+    const style = window.parent.document.createElement('style'); 
+    style.textContent = `
+        @keyframes fadeIn {{ 
+            0% {{ opacity: 0; transform: translateY(15px); }} 
+            100% {{ opacity: 1; transform: translateY(0); }} 
+        }}
+    `;
+    if (!window.parent.document.getElementById('fadeInStyle')) {{
+        style.id = 'fadeInStyle';
+        window.parent.document.head.appendChild(style);
+    }}
     </script>
     """, height=0)
 
@@ -904,9 +866,8 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
             with open(final_audio_file, "rb") as f:
                 b64_final_audio = base64.b64encode(f.read()).decode()
             
-            # Removed crossorigin="anonymous" here as well
             st.markdown(f"""
-            <audio id="finalAudio" style="display:none;">
+            <audio id="finalAudio" crossorigin="anonymous" style="display:none;">
                 <source src="data:audio/mp3;base64,{b64_final_audio}" type="audio/mp3">
             </audio>
             """, unsafe_allow_html=True)
@@ -915,91 +876,88 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
             <script>
             (function() {{
                 const parentDoc = window.parent.document;
+                const audio = parentDoc.getElementById('finalAudio');
+                const voiceBars = parentDoc.getElementById('voiceBars');
+                const bars = parentDoc.querySelectorAll('.voice-bar');
                 
-                const scriptId = 'seraphimFinalSync';
-                let oldScript = parentDoc.getElementById(scriptId);
-                if (oldScript) oldScript.remove();
+                let hasSetup = false;
 
-                const script = parentDoc.createElement('script');
-                script.id = scriptId;
-                script.textContent = `
-                    (function() {{
-                        const audio = document.getElementById('finalAudio');
-                        const voiceBars = document.getElementById('voiceBars');
-                        const bars = document.querySelectorAll('#voiceBars .voice-bar');
-
-                        if (!audio || !voiceBars) return;
-
-                        function clearInlineStyles() {{
-                            bars.forEach(b => {{
-                                b.style.transform = '';
-                                b.style.opacity = '';
-                            }});
-                        }}
-
-                        audio.addEventListener('play', () => {{
-                            voiceBars.classList.remove('stopped');
-                            voiceBars.classList.add('playing');
-                        }});
-
-                        audio.addEventListener('pause', () => {{
-                            voiceBars.classList.add('stopped');
-                            voiceBars.classList.remove('playing');
-                            voiceBars.classList.remove('js-syncing');
-                            clearInlineStyles();
-                        }});
-
-                        audio.addEventListener('ended', () => {{
-                            voiceBars.classList.add('stopped');
-                            voiceBars.classList.remove('playing');
-                            voiceBars.classList.remove('js-syncing');
-                            clearInlineStyles();
-                        }});
-
-                        try {{
-                            const AudioContext = window.AudioContext || window.webkitAudioContext;
-                            const ctx = new AudioContext();
-                            const analyser = ctx.createAnalyser();
-                            const source = ctx.createMediaElementSource(audio);
+                function setupGoodbye() {{
+                    if (hasSetup || !audio) return;
+                    hasSetup = true;
+                    
+                    try {{
+                        const AudioContext = window.parent.AudioContext || window.parent.webkitAudioContext;
+                        const ctx = new AudioContext();
+                        const analyser = ctx.createAnalyser();
+                        const source = ctx.createMediaElementSource(audio);
+                        source.connect(analyser);
+                        analyser.connect(ctx.destination);
+                        analyser.fftSize = 64;
+                        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                        
+                        function renderFrame() {{
+                            if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
+                            analyser.getByteFrequencyData(dataArray);
                             
-                            source.connect(analyser);
-                            analyser.connect(ctx.destination);
-                            analyser.fftSize = 64;
-                            const dataArray = new Uint8Array(analyser.frequencyBinCount);
-                            
-                            function renderFrame() {{
-                                if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
-                                analyser.getByteFrequencyData(dataArray);
-                                
-                                for (let i = 0; i < 9; i++) {{
-                                    if(bars[i]) {{
-                                        const value = dataArray[i + 1] || 0;
-                                        const scaleY = 0.2 + (value / 255) * 1.5; 
-                                        bars[i].style.transform = 'scaleY(' + scaleY + ')';
-                                        
-                                        if (value > 20) {{
-                                            bars[i].style.opacity = '1';
-                                        }} else {{
-                                            bars[i].style.opacity = '0.6';
-                                        }}
-                                    }}
+                            let totalVolume = 0;
+
+                            for (let i = 0; i < 9; i++) {{
+                                if(bars[i]) {{
+                                    const val = dataArray[i];
+                                    totalVolume += val;
+                                    const heightPercent = 20 + (val / 255) * 80;
+                                    bars[i].style.height = heightPercent + '%';
+                                    
+                                    // REAL-TIME DYNAMIC NEON GLOW SYNCED TO FREQUENCY
+                                    const glowVal = val / 255;
+                                    bars[i].style.boxShadow = '0 0 ' + (5 + val/3) + 'px ' + (val/8) + 'px rgba(100, 255, 255, ' + (glowVal * 0.95) + ')';
+                                    bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.5 + glowVal * 0.5) + ')';
                                 }}
                             }}
-                            
-                            audio.addEventListener('play', () => {{
-                                voiceBars.classList.add('js-syncing');
-                                ctx.resume().then(() => renderFrame());
-                            }});
-                        }} catch(e) {{
-                            console.log('Web Audio Sync blocked, using CSS fallback');
-                        }}
 
-                        setTimeout(() => {{ 
-                            audio.play().catch(e => console.log('Goodbye blocked:', e)); 
-                        }}, 800);
-                    }})();
-                `;
-                parentDoc.body.appendChild(script);
+                            // OVERARCHING CONTAINER GLOW SYNCED TO TOTAL VOLUME
+                            if(voiceBars) {{
+                                const avgVolume = totalVolume / 9;
+                                const containerGlow = Math.min(avgVolume / 150, 0.85);
+                                voiceBars.style.filter = 'drop-shadow(0 0 ' + (15 + avgVolume/1.5) + 'px rgba(100, 255, 255, ' + containerGlow + '))';
+                            }}
+                        }}
+                        
+                        audio.addEventListener('play', () => {{
+                            if(voiceBars) {{
+                                voiceBars.classList.remove('stopped');
+                                voiceBars.classList.add('playing');
+                            }}
+                            ctx.resume().then(() => renderFrame());
+                        }});
+                        
+                    }} catch(e) {{
+                        audio.addEventListener('play', () => {{
+                            if(voiceBars) {{
+                                voiceBars.classList.remove('stopped');
+                                voiceBars.classList.add('playing');
+                            }}
+                        }});
+                    }}
+                    
+                    audio.addEventListener('ended', () => {{
+                        if(voiceBars) {{
+                            voiceBars.classList.add('stopped');
+                            voiceBars.classList.remove('playing');
+                        }}
+                    }});
+                    
+                    setTimeout(() => {{ 
+                        audio.play().catch(e => console.log('Goodbye blocked:', e)); 
+                    }}, 800);
+                }}
+
+                if (document.readyState === 'loading') {{
+                    document.addEventListener('DOMContentLoaded', setupGoodbye);
+                }} else {{
+                    setTimeout(setupGoodbye, 500);
+                }}
             }})();
             </script>
             """, height=0)
