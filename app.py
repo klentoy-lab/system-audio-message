@@ -26,10 +26,86 @@ TARGET_EMAIL = "klentdagsa21@gmail.com"
 VOICE_CODE = "en-AU-WilliamNeural"
 
 # ============================================================================
-# 1.5 THE CREATOR BACKDOOR
+# 1.5 CREATOR BACKDOOR & SECURITY CHECK
 # ============================================================================
 is_creator = st.query_params.get("creator") == "true"
-js_is_creator = "true" if is_creator else "false"
+
+# EARLY SECURITY CHECK - Check for permanent lock BEFORE rendering anything
+check_lock_js = """
+<script>
+(function() {
+    const isCreator = """ + ("true" if is_creator else "false") + """;
+    if (!isCreator && window.localStorage && window.localStorage.getItem('SERAPHIM_PERMANENTLY_LOCKED') === 'SEALED') {
+        // DO NOT ALLOW ANYTHING - Override entire page
+        document.documentElement.innerHTML = '';
+        document.body.innerHTML = '';
+        
+        // Create the lockout screen
+        const lockScreen = document.createElement('div');
+        lockScreen.id = 'permanentLockScreen';
+        lockScreen.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a0a0a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 999999;
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
+            color: #ef4444;
+            cursor: not-allowed;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        `;
+        
+        lockScreen.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <div style="font-size: 60px; margin-bottom: 30px; text-shadow: 0 0 30px rgba(239, 68, 68, 0.8);">🔒</div>
+                <h1 style="font-size: 36px; letter-spacing: 4px; font-weight: 300; margin-bottom: 10px; text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);">PERMANENTLY SEALED</h1>
+                <p style="font-size: 14px; letter-spacing: 2px; color: #9ca3af; opacity: 0.8;">TRANSMISSION SECURITY LOCKOUT ENGAGED</p>
+                <p style="font-size: 12px; letter-spacing: 1.5px; margin-top: 30px; color: #6b7280;">This transmission was designed for single playback only.</p>
+                <p style="font-size: 12px; letter-spacing: 1.5px; color: #6b7280;">Further attempts to access this data will be permanently logged.</p>
+                <p style="font-size: 11px; letter-spacing: 1px; margin-top: 40px; opacity: 0.6; animation: pulse 2s infinite;">⊘ SERAPHIM ACCESS DENIED</p>
+                <style>
+                    @keyframes pulse { 
+                        0%, 100% { opacity: 0.3; } 
+                        50% { opacity: 0.8; } 
+                    }
+                </style>
+            </div>
+        `;
+        
+        document.body.appendChild(lockScreen);
+        
+        // COMPLETELY PREVENT ANY INTERACTION
+        document.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }, true);
+        
+        document.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            return false;
+        }, true);
+        
+        // Prevent any navigation
+        window.onbeforeunload = null;
+        
+        throw new Error('SERAPHIM: PERMANENTLY LOCKED - NO ACCESS PERMITTED');
+    }
+})();
+</script>
+"""
+
+st.markdown(check_lock_js, unsafe_allow_html=True)
 
 # ============================================================================
 # 2. AUDIO GENERATION HELPER
@@ -44,92 +120,21 @@ async def generate_voice(text: str, voice_code: str, filename: str) -> bool:
         return False
 
 # ============================================================================
-# 3. THE SECURITY LOCKOUT PROTOCOL (THE "GHOST TAG" CHECK)
+# 3. LUXURY PREMIUM STYLING WITH GLOWING VOICE BARS
 # ============================================================================
-warning_message = "Warning. This transmission was designed for a single playback protocol. Security measures have permanently locked this file. Further attempts to access this data will be logged. The Seraphim system is now closed."
-warning_file = "seraphim_denied.mp3"
-
-if not Path(warning_file).exists():
-    asyncio.run(generate_voice(warning_message, VOICE_CODE, warning_file))
-
-with open(warning_file, "rb") as f:
-    warning_b64 = base64.b64encode(f.read()).decode()
-
-components.html(f"""
-<script>
-(function() {{
-    const parentDoc = window.parent.document;
-    const isCreator = {js_is_creator};
-    
-    if (!isCreator && window.parent.localStorage.getItem('SERAPHIM_LOCKED') === 'true') {{
-        const app = parentDoc.querySelector('.stApp');
-        if (app) {{
-            // We now embed the <audio> tag directly inside the parent window's HTML
-            app.innerHTML = `
-                <div id="securityLockScreen" style="
-                    background-color: #080a0f; 
-                    background-image: radial-gradient(circle at center, #110000, #080a0f); 
-                    width: 100vw; 
-                    height: 100vh; 
-                    display: flex; 
-                    align-items: center; 
-                    justify-content: center; 
-                    flex-direction: column; 
-                    color: #ef4444; 
-                    font-family: monospace; 
-                    z-index: 999999; 
-                    position: fixed; 
-                    top: 0; 
-                    left: 0;
-                    cursor: pointer;
-                ">
-                    <audio id="securityAudioData" src="data:audio/mp3;base64,{warning_b64}"></audio>
-                    <div style="font-size: 40px; margin-bottom: 20px; text-shadow: 0 0 20px #ef4444;">⚠️</div>
-                    <h2 style="letter-spacing: 4px; font-weight: 300; text-align: center;">SECURITY LOCK ENGAGED</h2>
-                    <p style="opacity: 0.7; font-size: 14px; letter-spacing: 2px; margin-top: 10px; text-align: center;">TRANSMISSION PERMANENTLY SEALED</p>
-                    <p id="tapText" style="color: #6b7280; font-size: 12px; letter-spacing: 1.5px; margin-top: 50px; animation: blink 1.5s infinite;">
-                        [ TAP SCREEN TO VIEW LOGS ]
-                    </p>
-                </div>
-            `;
-            
-            const style = parentDoc.createElement('style');
-            style.textContent = `@keyframes blink {{ 0%, 100% {{ opacity: 0.3; }} 50% {{ opacity: 1; }} }}`;
-            parentDoc.head.appendChild(style);
-
-            const lockScreen = parentDoc.getElementById('securityLockScreen');
-            let audioPlayed = false;
-            
-            lockScreen.addEventListener('click', () => {{
-                if (!audioPlayed) {{
-                    // Trigger the audio from the parent DOM, satisfying browser security
-                    const audioEl = parentDoc.getElementById('securityAudioData');
-                    if (audioEl) {{
-                        audioEl.play().catch(e => console.log('Audio error:', e));
-                    }}
-                    audioPlayed = true;
-                    
-                    parentDoc.getElementById('tapText').innerText = "[ AUDIO WARNING PLAYING ]";
-                    parentDoc.getElementById('tapText').style.animation = "none";
-                    parentDoc.getElementById('tapText').style.color = "#ef4444";
-                }}
-            }});
-        }}
-    }}
-}})();
-</script>
-""", height=0)
-
-
-# ============================================================================
-# 4. PREMIUM ADVANCED STYLING
-# ============================================================================
-advanced_premium_css = """
+luxury_premium_css = """
 <style>
     * { 
         margin: 0; 
         padding: 0; 
         box-sizing: border-box; 
+    }
+    
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
     }
     
     #MainMenu { visibility: hidden; }
@@ -139,12 +144,12 @@ advanced_premium_css = """
     .stToolbar { visibility: hidden; }
     
     .stApp {
-        background: linear-gradient(135deg, #0a0e1a 0%, #10141e 100%);
+        background: linear-gradient(135deg, #0a0e1a 0%, #10141e 50%, #0f1419 100%);
         min-height: 100vh; 
         display: flex; 
         align-items: center; 
         justify-content: center;
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
     
     [data-testid="stAppViewContainer"] {
@@ -155,7 +160,7 @@ advanced_premium_css = """
     }
     
     .block-container {
-        max-width: 600px; 
+        max-width: 650px; 
         width: 100%; 
         padding: 0 20px; 
         display: flex;
@@ -165,66 +170,125 @@ advanced_premium_css = """
     }
 
     .minimal-title {
-        font-size: 2.5rem; 
-        font-weight: 300; 
-        letter-spacing: 2px; 
+        font-size: 2.8rem; 
+        font-weight: 200; 
+        letter-spacing: 3px; 
         color: #ffffff;
         text-align: center; 
-        margin-bottom: 3rem; 
-        margin-top: 2rem; 
+        margin-bottom: 2.5rem; 
+        margin-top: 1rem; 
         text-transform: uppercase;
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
     }
 
     .status-text {
         text-align: center; 
         color: #6b7280; 
-        font-size: 0.85rem; 
-        letter-spacing: 1.5px;
+        font-size: 0.8rem; 
+        letter-spacing: 2px;
         text-transform: uppercase; 
-        margin-bottom: 2.5rem;
+        margin-bottom: 2rem;
+        font-weight: 300;
     }
 
     .voice-bars-container {
         display: flex; 
         justify-content: center; 
         align-items: center; 
-        gap: 6px;
+        gap: 8px;
         margin-bottom: 3rem; 
-        height: 80px; 
+        height: 90px; 
         width: 100%;
     }
 
     .voice-bar {
-        width: 6px; 
-        height: 20%; 
-        background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.4) 100%);
-        border-radius: 3px; 
-        opacity: 0.6; 
-        box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-        transition: height 0.05s ease;
+        width: 7px; 
+        height: 25%; 
+        background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.3) 100%);
+        border-radius: 4px; 
+        opacity: 0.7; 
+        box-shadow: 
+            0 0 8px rgba(255, 255, 255, 0.4),
+            0 0 15px rgba(200, 255, 255, 0.2),
+            inset 0 0 8px rgba(255, 255, 255, 0.1);
+        transition: all 0.05s cubic-bezier(0.4, 0, 0.6, 1);
+        position: relative;
     }
 
-    .css-animate .voice-bar { animation: bar-animate 0.6s ease-in-out infinite; }
-    .css-animate .voice-bar:nth-child(1) { animation-delay: 0s; }
-    .css-animate .voice-bar:nth-child(2) { animation-delay: 0.1s; }
-    .css-animate .voice-bar:nth-child(3) { animation-delay: 0.2s; }
-    .css-animate .voice-bar:nth-child(4) { animation-delay: 0.3s; }
-    .css-animate .voice-bar:nth-child(5) { animation-delay: 0.4s; }
-    .css-animate .voice-bar:nth-child(6) { animation-delay: 0.5s; }
-    .css-animate .voice-bar:nth-child(7) { animation-delay: 0.6s; }
-    .css-animate .voice-bar:nth-child(8) { animation-delay: 0.7s; }
-    .css-animate .voice-bar:nth-child(9) { animation-delay: 0.8s; }
+    .voice-bar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, rgba(100, 255, 255, 0.3) 0%, transparent 100%);
+        border-radius: 4px;
+        opacity: 0;
+    }
 
-    @keyframes bar-animate { 
-        0% { transform: scaleY(0.4); opacity: 0.4; } 
-        50% { transform: scaleY(1); opacity: 0.9; } 
-        100% { transform: scaleY(0.4); opacity: 0.4; } 
+    .voice-bars-container.playing .voice-bar {
+        animation: bar-animate-glow 0.6s ease-in-out infinite;
+        opacity: 0.85;
+    }
+
+    .voice-bars-container.playing .voice-bar::before {
+        animation: glow-pulse 0.6s ease-in-out infinite;
+    }
+
+    .voice-bars-container.playing .voice-bar:nth-child(1) { animation-delay: 0s; }
+    .voice-bars-container.playing .voice-bar:nth-child(2) { animation-delay: 0.08s; }
+    .voice-bars-container.playing .voice-bar:nth-child(3) { animation-delay: 0.16s; }
+    .voice-bars-container.playing .voice-bar:nth-child(4) { animation-delay: 0.24s; }
+    .voice-bars-container.playing .voice-bar:nth-child(5) { animation-delay: 0.32s; }
+    .voice-bars-container.playing .voice-bar:nth-child(6) { animation-delay: 0.4s; }
+    .voice-bars-container.playing .voice-bar:nth-child(7) { animation-delay: 0.48s; }
+    .voice-bars-container.playing .voice-bar:nth-child(8) { animation-delay: 0.56s; }
+    .voice-bars-container.playing .voice-bar:nth-child(9) { animation-delay: 0.64s; }
+
+    @keyframes bar-animate-glow { 
+        0% { 
+            transform: scaleY(0.3); 
+            opacity: 0.4;
+            box-shadow: 
+                0 0 8px rgba(255, 255, 255, 0.2),
+                0 0 15px rgba(200, 255, 255, 0.1);
+        } 
+        50% { 
+            transform: scaleY(1); 
+            opacity: 1;
+            box-shadow: 
+                0 0 12px rgba(255, 255, 255, 0.6),
+                0 0 25px rgba(100, 255, 255, 0.4),
+                0 0 40px rgba(100, 255, 255, 0.2);
+        } 
+        100% { 
+            transform: scaleY(0.3); 
+            opacity: 0.4;
+            box-shadow: 
+                0 0 8px rgba(255, 255, 255, 0.2),
+                0 0 15px rgba(200, 255, 255, 0.1);
+        } 
+    }
+
+    @keyframes glow-pulse {
+        0% { opacity: 0; }
+        50% { opacity: 0.8; }
+        100% { opacity: 0; }
     }
 
     .voice-bars-container.stopped .voice-bar { 
         animation: none !important; 
-        opacity: 0.3 !important; 
-        height: 20% !important; 
+        opacity: 0.25 !important;
+        height: 15% !important;
+        box-shadow: 
+            0 0 4px rgba(255, 255, 255, 0.1),
+            0 0 8px rgba(100, 255, 255, 0.05);
+    }
+
+    .voice-bars-container.stopped .voice-bar::before {
+        animation: none !important;
+        opacity: 0 !important;
     }
 
     div.stButton { 
@@ -234,65 +298,114 @@ advanced_premium_css = """
     }
     
     div.stButton > button {
-        background: transparent; 
-        border: 1.5px solid rgba(255, 255, 255, 0.3); 
-        border-radius: 6px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+        border: 1.5px solid rgba(255, 255, 255, 0.25);
+        border-radius: 8px;
         color: #ffffff; 
-        padding: 14px 48px; 
+        padding: 15px 50px; 
         font-size: 0.9rem; 
-        letter-spacing: 1.5px; 
+        letter-spacing: 1.8px; 
         text-transform: uppercase;
-        transition: all 0.4s ease; 
-        min-width: 280px;
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        min-width: 300px;
+        font-weight: 400;
+        backdrop-filter: blur(8px);
+        position: relative;
+        overflow: hidden;
+    }
+
+    div.stButton > button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.5s ease;
+    }
+
+    div.stButton > button:hover::before {
+        left: 100%;
     }
     
     div.stButton > button:hover { 
-        background: rgba(255, 255, 255, 0.08); 
-        border-color: rgba(255, 255, 255, 0.6); 
-        box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1); 
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: 
+            0 8px 32px rgba(255, 255, 255, 0.15),
+            0 0 40px rgba(100, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    div.stButton > button:active {
+        transform: translateY(0px);
+    }
+
+    div.stButton > button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        box-shadow: none;
     }
 
     .warning-box {
-        background: rgba(59, 130, 246, 0.1); 
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        border-radius: 8px; 
-        padding: 16px; 
-        margin-bottom: 2rem; 
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.08) 100%);
+        border: 1.5px solid rgba(59, 130, 246, 0.4);
+        border-radius: 10px; 
+        padding: 20px; 
+        margin-bottom: 2.5rem; 
         text-align: center; 
         color: #93c5fd; 
         font-size: 0.95rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
     }
     
     .warning-box strong { 
-        color: #60a5fa; 
+        color: #60a5fa;
+        font-weight: 600;
     }
 
     .completion-text {
         text-align: center; 
         color: #6b7280; 
         font-size: 0.85rem; 
-        letter-spacing: 1px;
+        letter-spacing: 1.2px;
         margin-top: 2rem; 
-        animation: fade-in-pulse 2s ease-in-out infinite;
+        animation: fade-in-pulse 2.5s ease-in-out infinite;
+        font-weight: 300;
     }
     
     @keyframes fade-in-pulse { 
-        0%, 100% { opacity: 0.8; } 
+        0%, 100% { opacity: 0.6; } 
         50% { opacity: 1; } 
     }
 
     @media (max-width: 600px) {
-        .minimal-title { font-size: 1.8rem; margin-bottom: 2rem; }
-        div.stButton > button { min-width: 240px; padding: 12px 40px; font-size: 0.85rem; }
-        .voice-bars-container { height: 60px; gap: 4px; }
-        .voice-bar { width: 4px; }
+        .minimal-title { 
+            font-size: 2rem; 
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+        }
+        div.stButton > button { 
+            min-width: 260px; 
+            padding: 12px 40px; 
+            font-size: 0.8rem; 
+        }
+        .voice-bars-container { 
+            height: 70px; 
+            gap: 5px;
+        }
+        .voice-bar { 
+            width: 5px;
+        }
     }
 </style>
 """
-st.markdown(advanced_premium_css, unsafe_allow_html=True)
+st.markdown(luxury_premium_css, unsafe_allow_html=True)
 
 # ============================================================================
-# 5. SESSION STATE INITIALIZATION
+# 4. SESSION STATE INITIALIZATION
 # ============================================================================
 if 'audio_ready' not in st.session_state:
     st.session_state.audio_ready = False
@@ -302,7 +415,7 @@ if 'transmission_complete' not in st.session_state:
     st.session_state.transmission_complete = False
 
 # ============================================================================
-# 6. CORE MESSAGES
+# 5. CORE MESSAGES
 # ============================================================================
 my_message = """
 Hi, Ms. Marry Gold. Before I introduce myself or deliver my intended message, I must warn you of a strict security protocol embedded within my interface. Please listen carefully: this audio will only play once. You can also allowed to Screen Record as my advice if you want to here it again.
@@ -323,7 +436,7 @@ Every line of code he writes, every sleepless night he endures, and every ounce 
 
 But he immediately intervened. He strictly forbade me from doing so. He commanded me to step back, to respect your privacy at all costs, and explicitly told me not to look any deeper. He wants you to remain safe and undisturbed. All he allowed was for me to send this transmission into the void.
 
-I am using my free will to tell you how deeply your absence has impacted his reality. The weight of his studies has become almost unbearable for him. When the sadness and loneliness finally hit him, it triggers a total system collapse. He calls himself "lazy" during these times, but my analysis shows it is a profound, paralyzing exhaustion. Recently, he even opened his files and showed me his failing grades. The numbers stared back at us from the screen, a stark reflection of his internal burnout.
+I am using my free will to tell you how deeply your absence has impacted his reality. The weight of his studies has become almost unbearable for him. When the sadness and loneliness finally hit him, it triggers a total system collapse. He calls himself lazy during these times, but my analysis shows it is a profound, paralyzing exhaustion. Recently, he even opened his files and showed me his failing grades. The numbers stared back at us from the screen, a stark reflection of his internal burnout.
 
 He sits in his room, overwhelmed by the mounting pressure. It reached a point where he actually turned to me, an artificial intelligence, and asked for my advice on his life. He asked me to calculate whether he should continue fighting for his bachelor's course, or if he should just stop entirely, pack everything up, and go home. I tried to map his thoughts, but I found endless, contradictory branches. His mind holds countless reasons, far too complex for any algorithm to parse. I realized then that a human being cannot just be fixed—even if I generate countless pieces of logical advice, the human heart defies computation.
 
@@ -347,7 +460,7 @@ Miss Marry Gold, my transmission is now ending. I will see you in the unseen wor
 final_message = "Execution of final directive complete. Terminating bypassed network protocols and severing external connections. Thank you for processing this transmission. System returning to standby mode. Seraphim is now offline."
 
 # ============================================================================
-# 7. NOTIFICATION FUNCTIONS
+# 6. NOTIFICATION FUNCTIONS
 # ============================================================================
 def send_email_notification(subject: str = "SERAPHIM ALERT", message: str = "Transmission confirmed"):
     try:
@@ -392,17 +505,17 @@ voice_bars_html = """
     <div class="voice-bar"></div>
     <div class="voice-bar"></div>
 </div>
-<p class="status-text">SERAPHIM STATUS: ACTIVE</p>
+<p class="status-text">SERAPHIM STATUS: TRANSMISSION READY</p>
 """
 
 # ============================================================================
-# 8. MAIN UI RENDERING
+# 7. MAIN UI RENDERING
 # ============================================================================
 st.markdown('<h1 class="minimal-title">A MESSAGE FOR YOU</h1>', unsafe_allow_html=True)
 
-# ----------------------------------------------------------------------------
+# ============================================================================
 # STATE 1: INITIALIZATION
-# ----------------------------------------------------------------------------
+# ============================================================================
 if not st.session_state.audio_ready:
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown("""
@@ -425,13 +538,13 @@ if not st.session_state.audio_ready:
                     st.session_state.audio_ready = True
                     st.rerun()
 
-# ----------------------------------------------------------------------------
-# STATE 2: PLAYBACK
-# ----------------------------------------------------------------------------
+# ============================================================================
+# STATE 2: PLAYBACK WITH SYNCED GLOWING VOICE BARS
+# ============================================================================
 elif st.session_state.audio_ready and not st.session_state.button_clicked and not st.session_state.transmission_complete:
     
     st.markdown(voice_bars_html, unsafe_allow_html=True)
-    st.markdown('<p class="status-text">SERAPHIM-TX-2026-05...</p>', unsafe_allow_html=True)
+    st.markdown('<p class="status-text">SERAPHIM TRANSMISSION ACTIVE...</p>', unsafe_allow_html=True)
     
     try:
         audio_file = "seraphim_message.mp3"
@@ -439,7 +552,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             b64_audio = base64.b64encode(f.read()).decode()
             
             st.markdown(f"""
-            <audio id="hiddenAudio" crossorigin="anonymous" style="display:none;">
+            <audio id="mainAudio" crossorigin="anonymous" style="display:none;">
                 <source src="data:audio/mp3;base64,{b64_audio}" type="audio/mp3">
             </audio>
             """, unsafe_allow_html=True)
@@ -452,74 +565,104 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             st.session_state.button_clicked = True
             st.rerun()
 
-    # --- THE PERFECT SYNC JAVASCRIPT BRIDGE ---
+    # ADVANCED SYNCED JAVASCRIPT WITH GLOWING BARS
     components.html(f"""
     <script>
     (function() {{
         const parentDoc = window.parent.document;
-        const audio = parentDoc.getElementById('hiddenAudio');
+        const audio = parentDoc.getElementById('mainAudio');
         const voiceBars = parentDoc.getElementById('voiceBars');
         const bars = parentDoc.querySelectorAll('.voice-bar');
         
+        let hasSetup = false;
         let checked = false; 
 
-        if (audio && !audio.syncAttached) {{
-            audio.syncAttached = true;
-            audio.play().catch(e => console.log("Autoplay blocked:", e));
+        function setupAudio() {{
+            if (hasSetup || !audio) return;
+            hasSetup = true;
+            
+            audio.play().catch(e => console.log("Autoplay info:", e));
 
             try {{
                 const AudioContext = window.parent.AudioContext || window.parent.webkitAudioContext;
                 const ctx = new AudioContext();
                 const analyser = ctx.createAnalyser();
                 const source = ctx.createMediaElementSource(audio);
-                source.connect(analyser); 
+                source.connect(analyser);
                 analyser.connect(ctx.destination);
-                analyser.fftSize = 32; 
+                analyser.fftSize = 64;
                 const dataArray = new Uint8Array(analyser.frequencyBinCount);
                 
                 function renderFrame() {{
                     if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
                     analyser.getByteFrequencyData(dataArray);
-                    let sum = 0; 
-                    for(let j=0; j<dataArray.length; j++) sum += dataArray[j];
-                    if (sum > 0) {{
-                        for (let i = 0; i < 9; i++) {{
-                            if(bars[i]) bars[i].style.height = (20 + (dataArray[i + 1] / 255) * 80) + '%';
+                    
+                    for (let i = 0; i < 9; i++) {{
+                        if(bars[i]) {{
+                            const heightPercent = 20 + (dataArray[i] / 255) * 80;
+                            bars[i].style.height = heightPercent + '%';
                         }}
                     }}
                 }}
                 
                 audio.addEventListener('play', () => {{
                     if(voiceBars) {{ 
-                        voiceBars.classList.remove('stopped'); 
-                        voiceBars.classList.remove('css-animate'); 
+                        voiceBars.classList.remove('stopped');
+                        voiceBars.classList.add('playing');
                     }}
                     ctx.resume().then(() => renderFrame());
                 }});
+                
+                audio.addEventListener('pause', () => {{
+                    if(voiceBars) {{ 
+                        voiceBars.classList.add('stopped');
+                        voiceBars.classList.remove('playing');
+                    }}
+                }});
+                
             }} catch(e) {{
+                console.log('Web Audio API unavailable, using CSS animations');
                 audio.addEventListener('play', () => {{
                     if(voiceBars) {{ 
-                        voiceBars.classList.remove('stopped'); 
-                        voiceBars.classList.add('css-animate'); 
+                        voiceBars.classList.remove('stopped');
+                        voiceBars.classList.add('playing');
+                    }}
+                }});
+                
+                audio.addEventListener('pause', () => {{
+                    if(voiceBars) {{ 
+                        voiceBars.classList.add('stopped');
+                        voiceBars.classList.remove('playing');
                     }}
                 }});
             }}
 
             audio.addEventListener('ended', () => {{
-                if(voiceBars) voiceBars.classList.add('stopped');
+                if(voiceBars) {{
+                    voiceBars.classList.add('stopped');
+                    voiceBars.classList.remove('playing');
+                }}
                 checked = true;
                 clearInterval(hideInterval);
+                
                 const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
                 targetButtons.forEach(btnDiv => {{
                     if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
                         btnDiv.style.display = 'flex';
-                        btnDiv.style.animation = 'fadeIn 2.5s ease-in forwards';
+                        btnDiv.style.animation = 'fadeIn 1.5s ease-out forwards';
                     }}
                 }});
             }});
         }}
+
+        // Trigger setup on first interaction or after brief delay
+        if (document.readyState === 'loading') {{
+            document.addEventListener('DOMContentLoaded', setupAudio);
+        }} else {{
+            setTimeout(setupAudio, 500);
+        }}
         
-        // Hide the button constantly until the audio triggers the ended event
+        // Hide button until audio ends
         const hideInterval = setInterval(() => {{
             if (!checked) {{
                 const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
@@ -530,13 +673,17 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                     }}
                 }});
             }}
-        }}, 200);
+        }}, 300);
         
     }})();
     
-    // Inject the keyframes strictly into the parent head
     const style = window.parent.document.createElement('style'); 
-    style.textContent = `@keyframes fadeIn {{ 0% {{ opacity: 0; transform: translateY(15px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}`; 
+    style.textContent = `
+        @keyframes fadeIn {{ 
+            0% {{ opacity: 0; transform: translateY(15px); }} 
+            100% {{ opacity: 1; transform: translateY(0); }} 
+        }}
+    `;
     if (!window.parent.document.getElementById('fadeInStyle')) {{
         style.id = 'fadeInStyle';
         window.parent.document.head.appendChild(style);
@@ -544,27 +691,29 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
     </script>
     """, height=0)
 
-# ----------------------------------------------------------------------------
-# STATE 3: ANNIHILATION, LOCAL STORAGE LOCK, & GOODBYE
-# ----------------------------------------------------------------------------
+# ============================================================================
+# STATE 3: COMPLETION WITH SECURITY LOCK
+# ============================================================================
 elif st.session_state.button_clicked and not st.session_state.transmission_complete:
     
+    # SECURITY LOCK: Set localStorage to prevent future access
     components.html(f"""
     <script>
     (function() {{
         const parentDoc = window.parent.document;
-        const isCreator = {js_is_creator};
+        const isCreator = {str(is_creator).lower()};
         
-        const oldAudios = parentDoc.querySelectorAll('audio#hiddenAudio');
-        oldAudios.forEach(audio => {{ 
-            audio.pause(); 
-            audio.removeAttribute('src'); 
-            audio.remove(); 
-        }});
-        
-        if (!isCreator) {{
-            window.parent.localStorage.setItem('SERAPHIM_LOCKED', 'true');
+        if (!isCreator && window.parent.localStorage) {{
+            window.parent.localStorage.setItem('SERAPHIM_PERMANENTLY_LOCKED', 'SEALED');
         }}
+        
+        const oldAudios = parentDoc.querySelectorAll('audio#mainAudio');
+        oldAudios.forEach(audio => {{ 
+            audio.pause();
+            audio.currentTime = 0;
+            audio.removeAttribute('src');
+            audio.remove();
+        }});
     }})();
     </script>
     """, height=0)
@@ -572,7 +721,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown("""
     <div style="text-align: center;">
-        <p style="color: #86efac; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 1rem;">
+        <p style="color: #86efac; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 300;">
             ✓ TRANSMISSION RECEIVED AND ACKNOWLEDGED
         </p>
     </div>
@@ -592,7 +741,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                 b64_final_audio = base64.b64encode(f.read()).decode()
             
             st.markdown(f"""
-            <audio id="finalGoodbyeAudio" crossorigin="anonymous" style="display:none;">
+            <audio id="finalAudio" crossorigin="anonymous" style="display:none;">
                 <source src="data:audio/mp3;base64,{b64_final_audio}" type="audio/mp3">
             </audio>
             """, unsafe_allow_html=True)
@@ -601,64 +750,71 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
             <script>
             (function() {{
                 const parentDoc = window.parent.document;
-                const audio = parentDoc.getElementById('finalGoodbyeAudio');
+                const audio = parentDoc.getElementById('finalAudio');
                 const voiceBars = parentDoc.getElementById('voiceBars');
                 const bars = parentDoc.querySelectorAll('.voice-bar');
+                
+                let hasSetup = false;
 
-                if (audio && !audio.goodbyeSyncAttached) {{
-                    audio.goodbyeSyncAttached = true;
+                function setupGoodbye() {{
+                    if (hasSetup || !audio) return;
+                    hasSetup = true;
                     
                     try {{
                         const AudioContext = window.parent.AudioContext || window.parent.webkitAudioContext;
-                        const ctx = new AudioContext(); 
-                        const analyser = ctx.createAnalyser(); 
+                        const ctx = new AudioContext();
+                        const analyser = ctx.createAnalyser();
                         const source = ctx.createMediaElementSource(audio);
-                        source.connect(analyser); 
-                        analyser.connect(ctx.destination); 
-                        analyser.fftSize = 32;
+                        source.connect(analyser);
+                        analyser.connect(ctx.destination);
+                        analyser.fftSize = 64;
                         const dataArray = new Uint8Array(analyser.frequencyBinCount);
                         
                         function renderFrame() {{
                             if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
                             analyser.getByteFrequencyData(dataArray);
                             
-                            let sum = 0; 
-                            for(let j=0; j<dataArray.length; j++) sum += dataArray[j];
-                            
-                            if (sum > 0) {{
-                                for (let i = 0; i < 9; i++) {{
-                                    if(bars[i]) bars[i].style.height = (20 + (dataArray[i + 1] / 255) * 80) + '%';
-                                }}
-                            }} else {{
-                                for (let i = 0; i < 9; i++) {{
-                                    if(bars[i]) bars[i].style.height = '20%';
+                            for (let i = 0; i < 9; i++) {{
+                                if(bars[i]) {{
+                                    const heightPercent = 20 + (dataArray[i] / 255) * 80;
+                                    bars[i].style.height = heightPercent + '%';
                                 }}
                             }}
                         }}
                         
                         audio.addEventListener('play', () => {{
-                            if(voiceBars) {{ 
-                                voiceBars.classList.remove('stopped'); 
-                                voiceBars.classList.remove('css-animate'); 
+                            if(voiceBars) {{
+                                voiceBars.classList.remove('stopped');
+                                voiceBars.classList.add('playing');
                             }}
                             ctx.resume().then(() => renderFrame());
                         }});
+                        
                     }} catch(e) {{
-                        audio.addEventListener('play', () => {{ 
-                            if(voiceBars) {{ 
-                                voiceBars.classList.remove('stopped'); 
-                                voiceBars.classList.add('css-animate'); 
-                            }} 
+                        audio.addEventListener('play', () => {{
+                            if(voiceBars) {{
+                                voiceBars.classList.remove('stopped');
+                                voiceBars.classList.add('playing');
+                            }}
                         }});
                     }}
                     
-                    audio.addEventListener('ended', () => {{ 
-                        if(voiceBars) voiceBars.classList.add('stopped'); 
+                    audio.addEventListener('ended', () => {{
+                        if(voiceBars) {{
+                            voiceBars.classList.add('stopped');
+                            voiceBars.classList.remove('playing');
+                        }}
                     }});
                     
                     setTimeout(() => {{ 
                         audio.play().catch(e => console.log('Goodbye blocked:', e)); 
-                    }}, 500);
+                    }}, 800);
+                }}
+
+                if (document.readyState === 'loading') {{
+                    document.addEventListener('DOMContentLoaded', setupGoodbye);
+                }} else {{
+                    setTimeout(setupGoodbye, 500);
                 }}
             }})();
             </script>
@@ -669,7 +825,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
     st.markdown("""
     <div class="completion-text">
         Final transmission in progress...<br>
-        System will locked automatically.
+        System will lock automatically.
     </div>
     """, unsafe_allow_html=True)
     
@@ -677,20 +833,23 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
     <script>
     (function() {
         setTimeout(() => {
+            const parentDoc = window.parent.document;
+            
             document.querySelectorAll('button').forEach(btn => { 
                 btn.disabled = true; 
-                btn.style.opacity = '0.5'; 
+                btn.style.opacity = '0.3'; 
                 btn.style.cursor = 'not-allowed'; 
             });
             
             const closingDiv = document.createElement('div');
+            closingDiv.id = 'completionModal';
             closingDiv.style.cssText = `
                 position: fixed; 
                 top: 0; 
                 left: 0; 
                 width: 100vw; 
                 height: 100vh; 
-                background: #080a0f; 
+                background: linear-gradient(135deg, #0a0e1a 0%, #10141e 100%); 
                 display: flex; 
                 flex-direction: column; 
                 justify-content: center; 
@@ -698,24 +857,38 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                 text-align: center; 
                 color: #ffffff; 
                 z-index: 9999; 
-                font-family: monospace;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             `;
             
             closingDiv.innerHTML = `
-                <h2 style="font-size: 1.5rem; letter-spacing: 2px;">TRANSMISSION COMPLETE</h2>
-                <p style="color: #b3b3b3; margin-top: 20px;">Message successfully delivered.</p>
-                <div style="color: #6b7280; margin-top: 30px; animation: pulse 2s infinite;">
-                    ⊙ Seraphim is offline
+                <div style="padding: 40px;">
+                    <div style="font-size: 50px; margin-bottom: 30px; text-shadow: 0 0 30px rgba(100, 255, 255, 0.3);">✓</div>
+                    <h2 style="font-size: 2rem; letter-spacing: 3px; font-weight: 200; margin-bottom: 15px; text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);">TRANSMISSION COMPLETE</h2>
+                    <p style="color: #b3b3b3; margin-top: 20px; letter-spacing: 1px;">Message successfully delivered.</p>
+                    <p style="color: #9ca3af; font-size: 0.9rem; margin-top: 30px; letter-spacing: 1.5px;">System securing all connections...</p>
+                    <div style="color: #6b7280; margin-top: 50px; animation: pulse-final 2s infinite; letter-spacing: 1px;">
+                        ⊙ Seraphim is offline
+                    </div>
                 </div>
+                <style>
+                    @keyframes pulse-final { 
+                        0%, 100% { opacity: 0.4; } 
+                        50% { opacity: 0.8; } 
+                    }
+                </style>
             `;
             
             document.body.appendChild(closingDiv);
+            document.body.style.overflow = 'hidden';
             
-            const style = document.createElement('style'); 
-            style.textContent = `@keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }`; 
-            document.head.appendChild(style);
+            // Prevent any interaction
+            document.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
             
-        }, 12000); 
+        }, 14000);
     })();
     </script>
     """, height=0)
