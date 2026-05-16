@@ -431,7 +431,7 @@ if not st.session_state.audio_ready:
 elif st.session_state.audio_ready and not st.session_state.button_clicked and not st.session_state.transmission_complete:
     
     st.markdown(voice_bars_html, unsafe_allow_html=True)
-    st.markdown('<p class="status-text">SERAPHIM NOW SPEAKING...</p>', unsafe_allow_html=True)
+    st.markdown('<p class="status-text">SERAPHIM-TX-2026-05...</p>', unsafe_allow_html=True)
     
     try:
         audio_file = "seraphim_message.mp3"
