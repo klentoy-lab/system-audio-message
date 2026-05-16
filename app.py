@@ -25,11 +25,6 @@ NTFY_TOPIC = "Seraphim_Protocol_Gold_99283"
 TARGET_EMAIL = "klentdagsa21@gmail.com"
 VOICE_CODE = "en-AU-WilliamNeural"
 
-# *** THE PERFECT SYNC TIMER ***
-# Listen to the new, longer MP3 file. Find the exact second he says "I ask that you simply click..."
-# Put that total number of seconds right here:
-AUDIO_TRIGGER_TIME = 390
-
 # ============================================================================
 # 1.5 THE CREATOR BACKDOOR
 # ============================================================================
@@ -69,6 +64,7 @@ components.html(f"""
     if (!isCreator && window.parent.localStorage.getItem('SERAPHIM_LOCKED') === 'true') {{
         const app = parentDoc.querySelector('.stApp');
         if (app) {{
+            // We now embed the <audio> tag directly inside the parent window's HTML
             app.innerHTML = `
                 <div id="securityLockScreen" style="
                     background-color: #080a0f; 
@@ -87,6 +83,7 @@ components.html(f"""
                     left: 0;
                     cursor: pointer;
                 ">
+                    <audio id="securityAudioData" src="data:audio/mp3;base64,{warning_b64}"></audio>
                     <div style="font-size: 40px; margin-bottom: 20px; text-shadow: 0 0 20px #ef4444;">⚠️</div>
                     <h2 style="letter-spacing: 4px; font-weight: 300; text-align: center;">SECURITY LOCK ENGAGED</h2>
                     <p style="opacity: 0.7; font-size: 14px; letter-spacing: 2px; margin-top: 10px; text-align: center;">TRANSMISSION PERMANENTLY SEALED</p>
@@ -105,8 +102,11 @@ components.html(f"""
             
             lockScreen.addEventListener('click', () => {{
                 if (!audioPlayed) {{
-                    const audio = new Audio("data:audio/mp3;base64,{warning_b64}");
-                    audio.play().catch(e => console.log('Audio error:', e));
+                    // Trigger the audio from the parent DOM, satisfying browser security
+                    const audioEl = parentDoc.getElementById('securityAudioData');
+                    if (audioEl) {{
+                        audioEl.play().catch(e => console.log('Audio error:', e));
+                    }}
                     audioPlayed = true;
                     
                     parentDoc.getElementById('tapText').innerText = "[ AUDIO WARNING PLAYING ]";
@@ -431,7 +431,7 @@ if not st.session_state.audio_ready:
 elif st.session_state.audio_ready and not st.session_state.button_clicked and not st.session_state.transmission_complete:
     
     st.markdown(voice_bars_html, unsafe_allow_html=True)
-    st.markdown('<p class="status-text">NOW PLAYING MESSAGE...</p>', unsafe_allow_html=True)
+    st.markdown('<p class="status-text">SERAPHIM NOW SPEAKING...</p>', unsafe_allow_html=True)
     
     try:
         audio_file = "seraphim_message.mp3"
@@ -462,7 +462,6 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
         const bars = parentDoc.querySelectorAll('.voice-bar');
         
         let checked = false; 
-        const triggerTime = {AUDIO_TRIGGER_TIME};
 
         if (audio && !audio.syncAttached) {{
             audio.syncAttached = true;
@@ -508,35 +507,31 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
 
             audio.addEventListener('ended', () => {{
                 if(voiceBars) voiceBars.classList.add('stopped');
+                checked = true;
+                clearInterval(hideInterval);
+                const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
+                targetButtons.forEach(btnDiv => {{
+                    if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
+                        btnDiv.style.display = 'flex';
+                        btnDiv.style.animation = 'fadeIn 2.5s ease-in forwards';
+                    }}
+                }});
             }});
         }}
         
-        // Timer to reveal the button with a forced CSS Fade-In
-        const checkAudio = setInterval(() => {{
-            if (audio && !checked) {{
-                // Target the exact Streamlit DOM element
+        // Hide the button constantly until the audio triggers the ended event
+        const hideInterval = setInterval(() => {{
+            if (!checked) {{
                 const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
-                
-                if (audio.currentTime >= triggerTime) {{
-                    targetButtons.forEach(btnDiv => {{
-                        if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
-                            btnDiv.style.display = 'flex';
-                            btnDiv.style.animation = 'fadeIn 2.5s ease-in forwards';
-                            checked = true;
-                        }}
-                    }});
-                    clearInterval(checkAudio);
-                }} else {{
-                    // Keep it completely hidden before the trigger time hits
-                    targetButtons.forEach(btnDiv => {{
-                        if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
-                            btnDiv.style.display = 'none';
-                            btnDiv.style.opacity = '0';
-                        }}
-                    }});
-                }}
+                targetButtons.forEach(btnDiv => {{
+                    if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
+                        btnDiv.style.display = 'none';
+                        btnDiv.style.opacity = '0';
+                    }}
+                }});
             }}
         }}, 200);
+        
     }})();
     
     // Inject the keyframes strictly into the parent head
@@ -674,7 +669,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
     st.markdown("""
     <div class="completion-text">
         Final transmission in progress...<br>
-        System will close automatically.
+        System will locked automatically.
     </div>
     """, unsafe_allow_html=True)
     
