@@ -314,7 +314,6 @@ ultra_luxury_premium_css = """
     }
 
     .voice-bars-container.playing .voice-bar {
-        animation: bar-glow-color 0.6s ease-in-out infinite;
         opacity: 0.95;
     }
 
@@ -331,12 +330,6 @@ ultra_luxury_premium_css = """
     .voice-bars-container.playing .voice-bar:nth-child(7) { filter: hue-rotate(20deg); }
     .voice-bars-container.playing .voice-bar:nth-child(8) { filter: hue-rotate(10deg); }
     .voice-bars-container.playing .voice-bar:nth-child(9) { filter: hue-rotate(0deg); }
-
-    @keyframes bar-glow-color { 
-        0% { transform: scaleY(0.2); opacity: 0.3; } 
-        50% { transform: scaleY(1); opacity: 1; } 
-        100% { transform: scaleY(0.2); opacity: 0.3; } 
-    }
 
     @keyframes glow-inner-pulse {
         0% { opacity: 0; }
@@ -665,7 +658,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             b64_audio = base64.b64encode(f.read()).decode()
             
             st.markdown(f"""
-            <audio id="mainAudio" crossorigin="anonymous" style="display:none;">
+            <audio id="mainAudio" style="display:none;">
                 <source src="data:audio/mp3;base64,{b64_audio}" type="audio/mp3">
             </audio>
             """, unsafe_allow_html=True)
@@ -697,8 +690,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             audio.play().catch(e => console.log("Autoplay info:", e));
 
             try {{
-                const AudioContext = window.parent.AudioContext || window.parent.webkitAudioContext;
-                const ctx = new AudioContext();
+                const ctx = new (window.parent.AudioContext || window.parent.webkitAudioContext)();
                 const analyser = ctx.createAnalyser();
                 const source = ctx.createMediaElementSource(audio);
                 source.connect(analyser);
@@ -867,7 +859,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                 b64_final_audio = base64.b64encode(f.read()).decode()
             
             st.markdown(f"""
-            <audio id="finalAudio" crossorigin="anonymous" style="display:none;">
+            <audio id="finalAudio" style="display:none;">
                 <source src="data:audio/mp3;base64,{b64_final_audio}" type="audio/mp3">
             </audio>
             """, unsafe_allow_html=True)
@@ -887,8 +879,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                     hasSetup = true;
                     
                     try {{
-                        const AudioContext = window.parent.AudioContext || window.parent.webkitAudioContext;
-                        const ctx = new AudioContext();
+                        const ctx = new (window.parent.AudioContext || window.parent.webkitAudioContext)();
                         const analyser = ctx.createAnalyser();
                         const source = ctx.createMediaElementSource(audio);
                         source.connect(analyser);
