@@ -43,42 +43,40 @@ if not Path(warning_file).exists():
     except:
         pass
 
-# EARLY SECURITY CHECK WITH AUDIO PLAYBACK (Wrapped in hidden div to fix text leak)
-check_lock_js = """
-<div style="display: none;">
+# Check if warning audio exists and encode it early
+warning_b64 = ""
+if Path(warning_file).exists():
+    try:
+        with open(warning_file, "rb") as f:
+            warning_b64 = base64.b64encode(f.read()).decode()
+    except:
+        pass
+
+# EARLY SECURITY CHECK (Using components.html so Streamlit doesn't block the script)
+check_lock_js = f"""
 <script>
-(function() {
-    const isCreator = """ + ("true" if is_creator else "false") + """;
-    if (!isCreator && window.localStorage && window.localStorage.getItem('SERAPHIM_PERMANENTLY_LOCKED') === 'SEALED') {
-        document.documentElement.innerHTML = '';
-        document.body.innerHTML = '';
+(function() {{
+    const isCreator = {'true' if is_creator else 'false'};
+    const pWin = window.parent || window;
+    const pDoc = pWin.document;
+
+    if (!isCreator && pWin.localStorage && pWin.localStorage.getItem('SERAPHIM_PERMANENTLY_LOCKED') === 'SEALED') {{
+        pDoc.documentElement.innerHTML = '';
+        pDoc.body.innerHTML = '';
         
-        const lockScreen = document.createElement('div');
+        const lockScreen = pDoc.createElement('div');
         lockScreen.id = 'permanentLockScreen';
         lockScreen.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, #0a0e1a 0%, #1a0a0a 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            z-index: 999999;
-            margin: 0;
-            padding: 0;
-            font-family: monospace;
-            color: #ef4444;
-            cursor: not-allowed;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            z-index: 999999; margin: 0; padding: 0; font-family: monospace; color: #ef4444;
+            cursor: not-allowed; user-select: none; -webkit-user-select: none; -moz-user-select: none;
         `;
         
         lockScreen.innerHTML = `
             <audio id="lockoutAudio" autoplay style="display:none;">
+                <source src="data:audio/mp3;base64,{warning_b64}" type="audio/mp3">
             </audio>
             <div style="text-align: center; padding: 40px;">
                 <div style="font-size: 60px; margin-bottom: 30px; text-shadow: 0 0 30px rgba(239, 68, 68, 0.8); animation: pulse-lock 1.5s infinite;">🔒</div>
@@ -88,74 +86,35 @@ check_lock_js = """
                 <p style="font-size: 12px; letter-spacing: 1.5px; color: #6b7280; margin-top: 10px;">Further attempts to access this data have been logged.</p>
                 <p style="font-size: 11px; letter-spacing: 1px; margin-top: 40px; opacity: 0.6; animation: pulse-text 2s infinite;">🔊 SECURITY WARNING PLAYING...</p>
                 <style>
-                    @keyframes pulse-lock { 
-                        0%, 100% { opacity: 0.5; transform: scale(1); } 
-                        50% { opacity: 1; transform: scale(1.05); } 
-                    }
-                    @keyframes pulse-text { 
-                        0%, 100% { opacity: 0.4; } 
-                        50% { opacity: 0.9; } 
-                    }
+                    @keyframes pulse-lock {{ 0%, 100% {{ opacity: 0.5; transform: scale(1); }} 50% {{ opacity: 1; transform: scale(1.05); }} }}
+                    @keyframes pulse-text {{ 0%, 100% {{ opacity: 0.4; }} 50% {{ opacity: 0.9; }} }}
                 </style>
             </div>
         `;
         
-        document.body.appendChild(lockScreen);
+        pDoc.body.appendChild(lockScreen);
         
-        // Play warning audio after a brief delay
-        setTimeout(() => {
-            const audioEl = document.getElementById('lockoutAudio');
-            if (audioEl) {
-                audioEl.play().catch(err => {
-                    console.log('Audio autoplay blocked, waiting for user interaction');
-                    // Fallback: play on click
-                    document.addEventListener('click', () => {
+        setTimeout(() => {{
+            const audioEl = pDoc.getElementById('lockoutAudio');
+            if (audioEl) {{
+                audioEl.play().catch(err => {{
+                    pDoc.addEventListener('click', () => {{
                         audioEl.play().catch(e => console.log('Still blocked'));
-                    }, { once: true });
-                });
-            }
-        }, 500);
+                    }}, {{ once: true }});
+                }});
+            }}
+        }}, 500);
         
-        // Prevent any interaction
-        document.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-        }, true);
+        pDoc.addEventListener('click', (e) => {{ e.preventDefault(); e.stopPropagation(); return false; }}, true);
+        pDoc.addEventListener('keydown', (e) => {{ e.preventDefault(); return false; }}, true);
+        pWin.onbeforeunload = null;
         
-        document.addEventListener('keydown', (e) => {
-            e.preventDefault();
-            return false;
-        }, true);
-        
-        window.onbeforeunload = null;
-        
-        throw new Error('SERAPHIM: PERMANENTLY LOCKED - NO ACCESS PERMITTED');
-    }
-})();
+        throw new Error('SERAPHIM: PERMANENTLY LOCKED');
+    }}
+}})();
 </script>
-</div>
 """
-
-# Check if warning audio exists and embed it
-warning_b64 = ""
-if Path(warning_file).exists():
-    try:
-        with open(warning_file, "rb") as f:
-            warning_b64 = base64.b64encode(f.read()).decode()
-        check_lock_js = check_lock_js.replace(
-            '<source src="data:audio/mp3;base64,">',
-            f'<source src="data:audio/mp3;base64,{warning_b64}" type="audio/mp3">'
-        )
-        # Insert audio source into the HTML
-        check_lock_js = check_lock_js.replace(
-            '<audio id="lockoutAudio" autoplay style="display:none;"></audio>',
-            f'<audio id="lockoutAudio" autoplay style="display:none;"><source src="data:audio/mp3;base64,{warning_b64}" type="audio/mp3"></audio>'
-        )
-    except:
-        pass
-
-st.markdown(check_lock_js, unsafe_allow_html=True)
+components.html(check_lock_js, height=0)
 
 # ============================================================================
 # 2. AUDIO GENERATION HELPER
@@ -610,7 +569,7 @@ voice_bars_html = """
     <div class="voice-bar"></div>
     <div class="voice-bar"></div>
 </div>
-<p class="status-text">⚡SERAPHIM TRANSMISSION READY⚡</p>
+<p class="status-text">SERAPHIM TRANSMISSION READY</p>
 """
 
 # ============================================================================
@@ -635,7 +594,7 @@ if not st.session_state.audio_ready:
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("INITIALIZE PROTOCOL", key="init", use_container_width=True):
-            with st.spinner("✨ Compiling transmission... PLEASE WAIT"):
+            with st.spinner("Compiling transmission... PLEASE WAIT"):
                 audio_file = "seraphim_message.mp3"
                 success = asyncio.run(generate_voice(my_message, VOICE_CODE, audio_file))
                 
