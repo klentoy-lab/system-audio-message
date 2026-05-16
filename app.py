@@ -274,7 +274,7 @@ ultra_luxury_premium_css = """
         align-items: center; 
         gap: 10px;
         margin-bottom: 3.5rem; 
-        height: 60px; /* Reduced from 110px */
+        height: 60px; 
         width: 100%;
         perspective: 1000px;
         transition: filter 0.1s ease-out;
@@ -499,7 +499,7 @@ ultra_luxury_premium_css = """
             font-size: 0.85rem; 
         }
         .voice-bars-container { 
-            height: 45px; /* Reduced from 85px */
+            height: 45px;
             gap: 7px;
         }
         .voice-bar { 
@@ -671,7 +671,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             st.session_state.button_clicked = True
             st.rerun()
 
-    # ADVANCED SYNCED JAVASCRIPT WITH DYNAMIC AUDIO GLOW
+    # ADVANCED SYNCED JAVASCRIPT WITH SOFTER DYNAMIC AUDIO GLOW
     components.html(f"""
     <script>
     (function() {{
@@ -711,18 +711,18 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                             const heightPercent = 20 + (val / 255) * 80;
                             bars[i].style.height = heightPercent + '%';
                             
-                            // REAL-TIME DYNAMIC NEON GLOW SYNCED TO FREQUENCY
+                            // SOFTER REAL-TIME DYNAMIC NEON GLOW SYNCED TO FREQUENCY
                             const glowVal = val / 255;
-                            bars[i].style.boxShadow = '0 0 ' + (5 + val/3) + 'px ' + (val/8) + 'px rgba(100, 255, 255, ' + (glowVal * 0.95) + ')';
-                            bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.5 + glowVal * 0.5) + ')';
+                            bars[i].style.boxShadow = '0 0 ' + (3 + val/5) + 'px ' + (val/12) + 'px rgba(100, 255, 255, ' + (glowVal * 0.4) + ')';
+                            bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.2 + glowVal * 0.4) + ')';
                         }}
                     }}
                     
-                    // OVERARCHING CONTAINER GLOW SYNCED TO TOTAL VOLUME
+                    // SOFTER OVERARCHING CONTAINER GLOW SYNCED TO TOTAL VOLUME
                     if(voiceBars) {{
                         const avgVolume = totalVolume / 9;
-                        const containerGlow = Math.min(avgVolume / 150, 0.85); // Prevent clipping
-                        voiceBars.style.filter = 'drop-shadow(0 0 ' + (15 + avgVolume/1.5) + 'px rgba(100, 255, 255, ' + containerGlow + '))';
+                        const containerGlow = Math.min(avgVolume / 200, 0.35); // Prevent clipping
+                        voiceBars.style.filter = 'drop-shadow(0 0 ' + (8 + avgVolume/3) + 'px rgba(100, 255, 255, ' + containerGlow + '))';
                     }}
                 }}
                 
@@ -900,18 +900,18 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                                     const heightPercent = 20 + (val / 255) * 80;
                                     bars[i].style.height = heightPercent + '%';
                                     
-                                    // REAL-TIME DYNAMIC NEON GLOW SYNCED TO FREQUENCY
+                                    // SOFTER REAL-TIME DYNAMIC NEON GLOW SYNCED TO FREQUENCY
                                     const glowVal = val / 255;
-                                    bars[i].style.boxShadow = '0 0 ' + (5 + val/3) + 'px ' + (val/8) + 'px rgba(100, 255, 255, ' + (glowVal * 0.95) + ')';
-                                    bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.5 + glowVal * 0.5) + ')';
+                                    bars[i].style.boxShadow = '0 0 ' + (3 + val/5) + 'px ' + (val/12) + 'px rgba(100, 255, 255, ' + (glowVal * 0.4) + ')';
+                                    bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.2 + glowVal * 0.4) + ')';
                                 }}
                             }}
 
-                            // OVERARCHING CONTAINER GLOW SYNCED TO TOTAL VOLUME
+                            // SOFTER OVERARCHING CONTAINER GLOW SYNCED TO TOTAL VOLUME
                             if(voiceBars) {{
                                 const avgVolume = totalVolume / 9;
-                                const containerGlow = Math.min(avgVolume / 150, 0.85);
-                                voiceBars.style.filter = 'drop-shadow(0 0 ' + (15 + avgVolume/1.5) + 'px rgba(100, 255, 255, ' + containerGlow + '))';
+                                const containerGlow = Math.min(avgVolume / 200, 0.35);
+                                voiceBars.style.filter = 'drop-shadow(0 0 ' + (8 + avgVolume/3) + 'px rgba(100, 255, 255, ' + containerGlow + '))';
                             }}
                         }}
                         
