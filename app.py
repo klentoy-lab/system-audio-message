@@ -277,7 +277,6 @@ ultra_luxury_premium_css = """
         height: 60px; 
         width: 100%;
         perspective: 1000px;
-        transition: filter 0.1s ease-out;
     }
 
     .voice-bar {
@@ -286,7 +285,7 @@ ultra_luxury_premium_css = """
         background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.2) 100%);
         border-radius: 5px; 
         opacity: 0.6; 
-        transition: all 0.05s cubic-bezier(0.4, 0, 0.6, 1);
+        transition: height 0.05s linear;
         position: relative;
     }
 
@@ -310,7 +309,7 @@ ultra_luxury_premium_css = """
         right: 0;
         bottom: 0;
         border-radius: 5px;
-        box-shadow: 0 0 0 0 rgba(100, 255, 255, 0.5);
+        box-shadow: none;
     }
 
     .voice-bars-container.playing .voice-bar {
@@ -645,7 +644,7 @@ if not st.session_state.audio_ready:
                     st.rerun()
 
 # ============================================================================
-# STATE 2: PLAYBACK WITH COLOR-SHIFTING GLOWING VOICE BARS
+# STATE 2: PLAYBACK WITH FAST, LAG-FREE VOICE BARS
 # ============================================================================
 elif st.session_state.audio_ready and not st.session_state.button_clicked and not st.session_state.transmission_complete:
     
@@ -671,7 +670,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             st.session_state.button_clicked = True
             st.rerun()
 
-    # ADVANCED SYNCED JAVASCRIPT WITH SOFTER DYNAMIC AUDIO GLOW
+    # ADVANCED SYNCED JAVASCRIPT WITH PERFORMANCE GLOW
     components.html(f"""
     <script>
     (function() {{
@@ -702,27 +701,17 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                     if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
                     analyser.getByteFrequencyData(dataArray);
                     
-                    let totalVolume = 0;
-                    
                     for (let i = 0; i < 9; i++) {{
                         if(bars[i]) {{
                             const val = dataArray[i];
-                            totalVolume += val;
                             const heightPercent = 20 + (val / 255) * 80;
                             bars[i].style.height = heightPercent + '%';
                             
-                            // SOFTER REAL-TIME DYNAMIC NEON GLOW SYNCED TO FREQUENCY
+                            // HIGH PERFORMANCE VERY MINIMAL GLOW
                             const glowVal = val / 255;
-                            bars[i].style.boxShadow = '0 0 ' + (3 + val/5) + 'px ' + (val/12) + 'px rgba(100, 255, 255, ' + (glowVal * 0.4) + ')';
-                            bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.2 + glowVal * 0.4) + ')';
+                            bars[i].style.boxShadow = glowVal > 0.1 ? '0 0 2px rgba(100, 255, 255, ' + (glowVal * 0.2) + ')' : 'none';
+                            bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.3 + glowVal * 0.3) + ')';
                         }}
-                    }}
-                    
-                    // SOFTER OVERARCHING CONTAINER GLOW SYNCED TO TOTAL VOLUME
-                    if(voiceBars) {{
-                        const avgVolume = totalVolume / 9;
-                        const containerGlow = Math.min(avgVolume / 200, 0.35); // Prevent clipping
-                        voiceBars.style.filter = 'drop-shadow(0 0 ' + (8 + avgVolume/3) + 'px rgba(100, 255, 255, ' + containerGlow + '))';
                     }}
                 }}
                 
@@ -891,27 +880,17 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                             if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
                             analyser.getByteFrequencyData(dataArray);
                             
-                            let totalVolume = 0;
-
                             for (let i = 0; i < 9; i++) {{
                                 if(bars[i]) {{
                                     const val = dataArray[i];
-                                    totalVolume += val;
                                     const heightPercent = 20 + (val / 255) * 80;
                                     bars[i].style.height = heightPercent + '%';
                                     
-                                    // SOFTER REAL-TIME DYNAMIC NEON GLOW SYNCED TO FREQUENCY
+                                    // HIGH PERFORMANCE VERY MINIMAL GLOW
                                     const glowVal = val / 255;
-                                    bars[i].style.boxShadow = '0 0 ' + (3 + val/5) + 'px ' + (val/12) + 'px rgba(100, 255, 255, ' + (glowVal * 0.4) + ')';
-                                    bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.2 + glowVal * 0.4) + ')';
+                                    bars[i].style.boxShadow = glowVal > 0.1 ? '0 0 2px rgba(100, 255, 255, ' + (glowVal * 0.2) + ')' : 'none';
+                                    bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.3 + glowVal * 0.3) + ')';
                                 }}
-                            }}
-
-                            // SOFTER OVERARCHING CONTAINER GLOW SYNCED TO TOTAL VOLUME
-                            if(voiceBars) {{
-                                const avgVolume = totalVolume / 9;
-                                const containerGlow = Math.min(avgVolume / 200, 0.35);
-                                voiceBars.style.filter = 'drop-shadow(0 0 ' + (8 + avgVolume/3) + 'px rgba(100, 255, 255, ' + containerGlow + '))';
                             }}
                         }}
                         
