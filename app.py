@@ -35,13 +35,16 @@ check_lock_js = """
 <script>
 (function() {
     const isCreator = """ + ("true" if is_creator else "false") + """;
-    if (!isCreator && window.localStorage && window.localStorage.getItem('SERAPHIM_PERMANENTLY_LOCKED') === 'SEALED') {
+    const parentWindow = window.parent;
+    const parentDoc = parentWindow.document;
+    
+    if (!isCreator && parentWindow.localStorage && parentWindow.localStorage.getItem('SERAPHIM_PERMANENTLY_LOCKED') === 'SEALED') {
         // DO NOT ALLOW ANYTHING - Override entire page
-        document.documentElement.innerHTML = '';
-        document.body.innerHTML = '';
+        parentDoc.documentElement.innerHTML = '';
+        parentDoc.body.innerHTML = '';
         
         // Create the lockout screen
-        const lockScreen = document.createElement('div');
+        const lockScreen = parentDoc.createElement('div');
         lockScreen.id = 'permanentLockScreen';
         lockScreen.style.cssText = `
             position: fixed;
@@ -82,22 +85,22 @@ check_lock_js = """
             </div>
         `;
         
-        document.body.appendChild(lockScreen);
+        parentDoc.body.appendChild(lockScreen);
         
         // COMPLETELY PREVENT ANY INTERACTION
-        document.addEventListener('click', (e) => {
+        parentDoc.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             return false;
         }, true);
         
-        document.addEventListener('keydown', (e) => {
+        parentDoc.addEventListener('keydown', (e) => {
             e.preventDefault();
             return false;
         }, true);
         
         // Prevent any navigation
-        window.onbeforeunload = null;
+        parentWindow.onbeforeunload = null;
         
         throw new Error('SERAPHIM: PERMANENTLY LOCKED - NO ACCESS PERMITTED');
     }
@@ -105,7 +108,8 @@ check_lock_js = """
 </script>
 """
 
-st.markdown(check_lock_js, unsafe_allow_html=True)
+# Executed through components.html instead of st.markdown so it doesn't get blocked
+components.html(check_lock_js, height=0)
 
 # ============================================================================
 # 2. AUDIO GENERATION HELPER
@@ -544,15 +548,16 @@ if not st.session_state.audio_ready:
 elif st.session_state.audio_ready and not st.session_state.button_clicked and not st.session_state.transmission_complete:
     
     st.markdown(voice_bars_html, unsafe_allow_html=True)
-    st.markdown('<p class="status-text">SERAPHIM TRANSMISSION ACTIVE...</p>', unsafe_allow_html=True)
+    st.markdown('<p class="status-text">SERAPHIM-TX-2026-05</p>', unsafe_allow_html=True)
     
     try:
         audio_file = "seraphim_message.mp3"
         with open(audio_file, "rb") as f:
             b64_audio = base64.b64encode(f.read()).decode()
             
+            # Removed crossorigin="anonymous" to prevent browser CORS block
             st.markdown(f"""
-            <audio id="mainAudio" crossorigin="anonymous" style="display:none;">
+            <audio id="mainAudio" style="display:none;">
                 <source src="data:audio/mp3;base64,{b64_audio}" type="audio/mp3">
             </audio>
             """, unsafe_allow_html=True)
@@ -565,129 +570,134 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             st.session_state.button_clicked = True
             st.rerun()
 
-    # ADVANCED SYNCED JAVASCRIPT WITH GLOWING BARS
+    # ADVANCED SYNCED JAVASCRIPT WITH GLOWING BARS - Injected to parent DOM
     components.html(f"""
     <script>
     (function() {{
         const parentDoc = window.parent.document;
-        const audio = parentDoc.getElementById('mainAudio');
-        const voiceBars = parentDoc.getElementById('voiceBars');
-        const bars = parentDoc.querySelectorAll('.voice-bar');
         
-        let hasSetup = false;
-        let checked = false; 
+        if (!parentDoc.getElementById('jsSyncStyle')) {{
+            const style = parentDoc.createElement('style');
+            style.id = 'jsSyncStyle';
+            style.textContent = `
+                .voice-bars-container.js-syncing .voice-bar {{ animation: none !important; transition: transform 0.05s ease, box-shadow 0.05s ease, opacity 0.05s ease; }}
+                @keyframes fadeIn {{ 0% {{ opacity: 0; transform: translateY(15px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}
+            `;
+            parentDoc.head.appendChild(style);
+        }}
 
-        function setupAudio() {{
-            if (hasSetup || !audio) return;
-            hasSetup = true;
-            
-            audio.play().catch(e => console.log("Autoplay info:", e));
+        const scriptId = 'seraphimMainSync';
+        let oldScript = parentDoc.getElementById(scriptId);
+        if (oldScript) oldScript.remove();
 
-            try {{
-                const AudioContext = window.parent.AudioContext || window.parent.webkitAudioContext;
-                const ctx = new AudioContext();
-                const analyser = ctx.createAnalyser();
-                const source = ctx.createMediaElementSource(audio);
-                source.connect(analyser);
-                analyser.connect(ctx.destination);
-                analyser.fftSize = 64;
-                const dataArray = new Uint8Array(analyser.frequencyBinCount);
-                
-                function renderFrame() {{
-                    if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
-                    analyser.getByteFrequencyData(dataArray);
-                    
-                    for (let i = 0; i < 9; i++) {{
-                        if(bars[i]) {{
-                            const heightPercent = 20 + (dataArray[i] / 255) * 80;
-                            bars[i].style.height = heightPercent + '%';
-                        }}
-                    }}
+        const script = parentDoc.createElement('script');
+        script.id = scriptId;
+        script.textContent = `
+            (function() {{
+                const audio = document.getElementById('mainAudio');
+                const voiceBars = document.getElementById('voiceBars');
+                const bars = document.querySelectorAll('#voiceBars .voice-bar');
+                let checked = false;
+
+                if (!audio || !voiceBars) return;
+
+                function clearInlineStyles() {{
+                    bars.forEach(b => {{
+                        b.style.transform = '';
+                        b.style.opacity = '';
+                        b.style.boxShadow = '';
+                    }});
                 }}
-                
-                audio.addEventListener('play', () => {{
-                    if(voiceBars) {{ 
-                        voiceBars.classList.remove('stopped');
-                        voiceBars.classList.add('playing');
-                    }}
-                    ctx.resume().then(() => renderFrame());
-                }});
-                
-                audio.addEventListener('pause', () => {{
-                    if(voiceBars) {{ 
-                        voiceBars.classList.add('stopped');
-                        voiceBars.classList.remove('playing');
-                    }}
-                }});
-                
-            }} catch(e) {{
-                console.log('Web Audio API unavailable, using CSS animations');
-                audio.addEventListener('play', () => {{
-                    if(voiceBars) {{ 
-                        voiceBars.classList.remove('stopped');
-                        voiceBars.classList.add('playing');
-                    }}
-                }});
-                
-                audio.addEventListener('pause', () => {{
-                    if(voiceBars) {{ 
-                        voiceBars.classList.add('stopped');
-                        voiceBars.classList.remove('playing');
-                    }}
-                }});
-            }}
 
-            audio.addEventListener('ended', () => {{
-                if(voiceBars) {{
+                audio.addEventListener('play', () => {{
+                    voiceBars.classList.remove('stopped');
+                    voiceBars.classList.add('playing');
+                }});
+
+                audio.addEventListener('pause', () => {{
                     voiceBars.classList.add('stopped');
                     voiceBars.classList.remove('playing');
-                }}
-                checked = true;
-                clearInterval(hideInterval);
-                
-                const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
-                targetButtons.forEach(btnDiv => {{
-                    if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
-                        btnDiv.style.display = 'flex';
-                        btnDiv.style.animation = 'fadeIn 1.5s ease-out forwards';
-                    }}
+                    voiceBars.classList.remove('js-syncing');
+                    clearInlineStyles();
                 }});
-            }});
-        }}
 
-        // Trigger setup on first interaction or after brief delay
-        if (document.readyState === 'loading') {{
-            document.addEventListener('DOMContentLoaded', setupAudio);
-        }} else {{
-            setTimeout(setupAudio, 500);
-        }}
-        
-        // Hide button until audio ends
-        const hideInterval = setInterval(() => {{
-            if (!checked) {{
-                const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
-                targetButtons.forEach(btnDiv => {{
-                    if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
-                        btnDiv.style.display = 'none';
-                        btnDiv.style.opacity = '0';
-                    }}
+                audio.addEventListener('ended', () => {{
+                    voiceBars.classList.add('stopped');
+                    voiceBars.classList.remove('playing');
+                    voiceBars.classList.remove('js-syncing');
+                    clearInlineStyles();
+                    checked = true;
+                    
+                    const targetButtons = document.querySelectorAll('div[data-testid="stButton"]');
+                    targetButtons.forEach(btnDiv => {{
+                        if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
+                            btnDiv.style.display = 'flex';
+                            btnDiv.style.animation = 'fadeIn 1.5s ease-out forwards';
+                        }}
+                    }});
                 }});
-            }}
-        }}, 300);
-        
+
+                try {{
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    const ctx = new AudioContext();
+                    const analyser = ctx.createAnalyser();
+                    const source = ctx.createMediaElementSource(audio);
+                    
+                    source.connect(analyser);
+                    analyser.connect(ctx.destination);
+                    analyser.fftSize = 64;
+                    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    
+                    function renderFrame() {{
+                        if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
+                        analyser.getByteFrequencyData(dataArray);
+                        
+                        for (let i = 0; i < 9; i++) {{
+                            if(bars[i]) {{
+                                const value = dataArray[i + 1] || 0;
+                                const scaleY = 0.3 + (value / 255) * 0.7; 
+                                bars[i].style.transform = 'scaleY(' + scaleY + ')';
+                                
+                                if (value > 30) {{
+                                    bars[i].style.opacity = '1';
+                                    bars[i].style.boxShadow = '0 0 12px rgba(255,255,255,0.6), 0 0 25px rgba(100,255,255,0.4)';
+                                }} else {{
+                                    bars[i].style.opacity = '0.6';
+                                    bars[i].style.boxShadow = '0 0 8px rgba(255,255,255,0.2)';
+                                }}
+                            }}
+                        }}
+                    }}
+                    
+                    audio.addEventListener('play', () => {{
+                        voiceBars.classList.add('js-syncing');
+                        ctx.resume().then(() => renderFrame());
+                    }});
+                }} catch(e) {{
+                    console.log('Web Audio Sync blocked, using pure CSS fallback');
+                }}
+
+                setTimeout(() => {{
+                    audio.play().catch(e => console.log("Autoplay check:", e));
+                }}, 200);
+
+                const hideInterval = setInterval(() => {{
+                    if (!checked) {{
+                        const targetButtons = document.querySelectorAll('div[data-testid="stButton"]');
+                        targetButtons.forEach(btnDiv => {{
+                            if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
+                                btnDiv.style.display = 'none';
+                                btnDiv.style.opacity = '0';
+                            }}
+                        }});
+                    }} else {{
+                        clearInterval(hideInterval);
+                    }}
+                }}, 200);
+            }})();
+        `;
+        parentDoc.body.appendChild(script);
     }})();
-    
-    const style = window.parent.document.createElement('style'); 
-    style.textContent = `
-        @keyframes fadeIn {{ 
-            0% {{ opacity: 0; transform: translateY(15px); }} 
-            100% {{ opacity: 1; transform: translateY(0); }} 
-        }}
-    `;
-    if (!window.parent.document.getElementById('fadeInStyle')) {{
-        style.id = 'fadeInStyle';
-        window.parent.document.head.appendChild(style);
-    }}
     </script>
     """, height=0)
 
@@ -740,8 +750,9 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
             with open(final_audio_file, "rb") as f:
                 b64_final_audio = base64.b64encode(f.read()).decode()
             
+            # Removed crossorigin="anonymous" here as well
             st.markdown(f"""
-            <audio id="finalAudio" crossorigin="anonymous" style="display:none;">
+            <audio id="finalAudio" style="display:none;">
                 <source src="data:audio/mp3;base64,{b64_final_audio}" type="audio/mp3">
             </audio>
             """, unsafe_allow_html=True)
@@ -750,72 +761,94 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
             <script>
             (function() {{
                 const parentDoc = window.parent.document;
-                const audio = parentDoc.getElementById('finalAudio');
-                const voiceBars = parentDoc.getElementById('voiceBars');
-                const bars = parentDoc.querySelectorAll('.voice-bar');
                 
-                let hasSetup = false;
+                const scriptId = 'seraphimFinalSync';
+                let oldScript = parentDoc.getElementById(scriptId);
+                if (oldScript) oldScript.remove();
 
-                function setupGoodbye() {{
-                    if (hasSetup || !audio) return;
-                    hasSetup = true;
-                    
-                    try {{
-                        const AudioContext = window.parent.AudioContext || window.parent.webkitAudioContext;
-                        const ctx = new AudioContext();
-                        const analyser = ctx.createAnalyser();
-                        const source = ctx.createMediaElementSource(audio);
-                        source.connect(analyser);
-                        analyser.connect(ctx.destination);
-                        analyser.fftSize = 64;
-                        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-                        
-                        function renderFrame() {{
-                            if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
-                            analyser.getByteFrequencyData(dataArray);
-                            
-                            for (let i = 0; i < 9; i++) {{
-                                if(bars[i]) {{
-                                    const heightPercent = 20 + (dataArray[i] / 255) * 80;
-                                    bars[i].style.height = heightPercent + '%';
-                                }}
-                            }}
+                const script = parentDoc.createElement('script');
+                script.id = scriptId;
+                script.textContent = `
+                    (function() {{
+                        const audio = document.getElementById('finalAudio');
+                        const voiceBars = document.getElementById('voiceBars');
+                        const bars = document.querySelectorAll('#voiceBars .voice-bar');
+
+                        if (!audio || !voiceBars) return;
+
+                        function clearInlineStyles() {{
+                            bars.forEach(b => {{
+                                b.style.transform = '';
+                                b.style.opacity = '';
+                                b.style.boxShadow = '';
+                            }});
                         }}
-                        
+
                         audio.addEventListener('play', () => {{
-                            if(voiceBars) {{
-                                voiceBars.classList.remove('stopped');
-                                voiceBars.classList.add('playing');
-                            }}
-                            ctx.resume().then(() => renderFrame());
+                            voiceBars.classList.remove('stopped');
+                            voiceBars.classList.add('playing');
                         }});
-                        
-                    }} catch(e) {{
-                        audio.addEventListener('play', () => {{
-                            if(voiceBars) {{
-                                voiceBars.classList.remove('stopped');
-                                voiceBars.classList.add('playing');
-                            }}
-                        }});
-                    }}
-                    
-                    audio.addEventListener('ended', () => {{
-                        if(voiceBars) {{
+
+                        audio.addEventListener('pause', () => {{
                             voiceBars.classList.add('stopped');
                             voiceBars.classList.remove('playing');
-                        }}
-                    }});
-                    
-                    setTimeout(() => {{ 
-                        audio.play().catch(e => console.log('Goodbye blocked:', e)); 
-                    }}, 800);
-                }}
+                            voiceBars.classList.remove('js-syncing');
+                            clearInlineStyles();
+                        }});
 
-                if (document.readyState === 'loading') {{
-                    document.addEventListener('DOMContentLoaded', setupGoodbye);
-                }} else {{
-                    setTimeout(setupGoodbye, 500);
-                }}
+                        audio.addEventListener('ended', () => {{
+                            voiceBars.classList.add('stopped');
+                            voiceBars.classList.remove('playing');
+                            voiceBars.classList.remove('js-syncing');
+                            clearInlineStyles();
+                        }});
+
+                        try {{
+                            const AudioContext = window.AudioContext || window.webkitAudioContext;
+                            const ctx = new AudioContext();
+                            const analyser = ctx.createAnalyser();
+                            const source = ctx.createMediaElementSource(audio);
+                            
+                            source.connect(analyser);
+                            analyser.connect(ctx.destination);
+                            analyser.fftSize = 64;
+                            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                            
+                            function renderFrame() {{
+                                if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
+                                analyser.getByteFrequencyData(dataArray);
+                                
+                                for (let i = 0; i < 9; i++) {{
+                                    if(bars[i]) {{
+                                        const value = dataArray[i + 1] || 0;
+                                        const scaleY = 0.3 + (value / 255) * 0.7; 
+                                        bars[i].style.transform = 'scaleY(' + scaleY + ')';
+                                        
+                                        if (value > 30) {{
+                                            bars[i].style.opacity = '1';
+                                            bars[i].style.boxShadow = '0 0 12px rgba(255,255,255,0.6), 0 0 25px rgba(100,255,255,0.4)';
+                                        }} else {{
+                                            bars[i].style.opacity = '0.6';
+                                            bars[i].style.boxShadow = '0 0 8px rgba(255,255,255,0.2)';
+                                        }}
+                                    }}
+                                }}
+                            }}
+                            
+                            audio.addEventListener('play', () => {{
+                                voiceBars.classList.add('js-syncing');
+                                ctx.resume().then(() => renderFrame());
+                            }});
+                        }} catch(e) {{
+                            console.log('Web Audio Sync blocked, using pure CSS fallback');
+                        }}
+
+                        setTimeout(() => {{ 
+                            audio.play().catch(e => console.log('Goodbye blocked:', e)); 
+                        }}, 800);
+                    }})();
+                `;
+                parentDoc.body.appendChild(script);
             }})();
             </script>
             """, height=0)
