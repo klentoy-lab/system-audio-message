@@ -28,7 +28,7 @@ VOICE_CODE = "en-AU-WilliamNeural"
 # *** THE PERFECT SYNC TIMER ***
 # Listen to the new, longer MP3 file. Find the exact second he says "I ask that you simply click..."
 # Put that total number of seconds right here:
-AUDIO_TRIGGER_TIME = 260  
+AUDIO_TRIGGER_TIME = 390
 
 # ============================================================================
 # 1.5 THE CREATOR BACKDOOR
