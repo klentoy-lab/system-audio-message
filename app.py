@@ -84,7 +84,7 @@ check_lock_js = f"""
                 <p style="font-size: 14px; letter-spacing: 2px; color: #9ca3af; opacity: 0.8;">TRANSMISSION SECURITY LOCKOUT ENGAGED</p>
                 <p style="font-size: 12px; letter-spacing: 1.5px; margin-top: 30px; color: #6b7280;">This transmission was designed for single playback only.</p>
                 <p style="font-size: 12px; letter-spacing: 1.5px; color: #6b7280; margin-top: 10px;">Further attempts to access this data have been logged.</p>
-                <p style="font-size: 11px; letter-spacing: 1px; margin-top: 40px; opacity: 0.6; animation: pulse-text 2s infinite;">🔊 SECURITY WARNING PLAYING...</p>
+                <p style="font-size: 11px; letter-spacing: 1px; margin-top: 40px; opacity: 0.6; animation: pulse-text 2s infinite;">🔊 SECURITY WARNING..</p>
                 <style>
                     @keyframes pulse-lock {{ 0%, 100% {{ opacity: 0.5; transform: scale(1); }} 50% {{ opacity: 1; transform: scale(1.05); }} }}
                     @keyframes pulse-text {{ 0%, 100% {{ opacity: 0.4; }} 50% {{ opacity: 0.9; }} }}
