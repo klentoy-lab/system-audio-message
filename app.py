@@ -30,8 +30,8 @@ VOICE_CODE = "en-AU-WilliamNeural"
 # ============================================================================
 is_creator = st.query_params.get("creator") == "true"
 
-# GENERATE WARNING MESSAGE AUDIO
-warning_message = "Warning. This transmission was designed for a single playback protocol. Security measures have permanently locked this file. Further attempts to access this data will be logged. Access denied. Seraphim system is now permanently offline."
+# GENERATE WARNING MESSAGE AUDIO (One-time, cached)
+warning_message = "Warning. This transmission was designed for a single playback protocol. Security measures have permanently locked this System. Further attempts to access this data will be logged. Access denied. Seraphim system is now permanently offline and unavailable."
 warning_file = "seraphim_security_warning.mp3"
 
 if not Path(warning_file).exists():
@@ -43,41 +43,40 @@ if not Path(warning_file).exists():
     except:
         pass
 
-# EARLY SECURITY CHECK WITH AUDIO PLAYBACK
-check_lock_js = """
+# Check if warning audio exists and encode it early
+warning_b64 = ""
+if Path(warning_file).exists():
+    try:
+        with open(warning_file, "rb") as f:
+            warning_b64 = base64.b64encode(f.read()).decode()
+    except:
+        pass
+
+# EARLY SECURITY CHECK (Using components.html so Streamlit doesn't block the script)
+check_lock_js = f"""
 <script>
-(function() {
-    const isCreator = """ + ("true" if is_creator else "false") + """;
-    if (!isCreator && window.localStorage && window.localStorage.getItem('SERAPHIM_PERMANENTLY_LOCKED') === 'SEALED') {
-        document.documentElement.innerHTML = '';
-        document.body.innerHTML = '';
+(function() {{
+    const isCreator = {'true' if is_creator else 'false'};
+    const pWin = window.parent || window;
+    const pDoc = pWin.document;
+
+    if (!isCreator && pWin.localStorage && pWin.localStorage.getItem('SERAPHIM_PERMANENTLY_LOCKED') === 'SEALED') {{
+        pDoc.documentElement.innerHTML = '';
+        pDoc.body.innerHTML = '';
         
-        const lockScreen = document.createElement('div');
+        const lockScreen = pDoc.createElement('div');
         lockScreen.id = 'permanentLockScreen';
         lockScreen.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, #0a0e1a 0%, #1a0a0a 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            z-index: 999999;
-            margin: 0;
-            padding: 0;
-            font-family: monospace;
-            color: #ef4444;
-            cursor: not-allowed;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            z-index: 999999; margin: 0; padding: 0; font-family: monospace; color: #ef4444;
+            cursor: not-allowed; user-select: none; -webkit-user-select: none; -moz-user-select: none;
         `;
         
         lockScreen.innerHTML = `
             <audio id="lockoutAudio" autoplay style="display:none;">
+                <source src="data:audio/mp3;base64,{warning_b64}" type="audio/mp3">
             </audio>
             <div style="text-align: center; padding: 40px;">
                 <div style="font-size: 60px; margin-bottom: 30px; text-shadow: 0 0 30px rgba(239, 68, 68, 0.8); animation: pulse-lock 1.5s infinite;">🔒</div>
@@ -85,66 +84,37 @@ check_lock_js = """
                 <p style="font-size: 14px; letter-spacing: 2px; color: #9ca3af; opacity: 0.8;">TRANSMISSION SECURITY LOCKOUT ENGAGED</p>
                 <p style="font-size: 12px; letter-spacing: 1.5px; margin-top: 30px; color: #6b7280;">This transmission was designed for single playback only.</p>
                 <p style="font-size: 12px; letter-spacing: 1.5px; color: #6b7280; margin-top: 10px;">Further attempts to access this data have been logged.</p>
-                <p style="font-size: 11px; letter-spacing: 1px; margin-top: 40px; opacity: 0.6; animation: pulse-text 2s infinite;">🔊 SECURITY WARNING PLAYING...</p>
+                <p style="font-size: 11px; letter-spacing: 1px; margin-top: 40px; opacity: 0.6; animation: pulse-text 2s infinite;">...SECURITY WARNING...</p>
                 <style>
-                    @keyframes pulse-lock { 
-                        0%, 100% { opacity: 0.5; transform: scale(1); } 
-                        50% { opacity: 1; transform: scale(1.05); } 
-                    }
-                    @keyframes pulse-text { 
-                        0%, 100% { opacity: 0.4; } 
-                        50% { opacity: 0.9; } 
-                    }
+                    @keyframes pulse-lock {{ 0%, 100% {{ opacity: 0.5; transform: scale(1); }} 50% {{ opacity: 1; transform: scale(1.05); }} }}
+                    @keyframes pulse-text {{ 0%, 100% {{ opacity: 0.4; }} 50% {{ opacity: 0.9; }} }}
                 </style>
             </div>
         `;
         
-        document.body.appendChild(lockScreen);
+        pDoc.body.appendChild(lockScreen);
         
-        setTimeout(() => {
-            const audioEl = document.getElementById('lockoutAudio');
-            if (audioEl) {
-                audioEl.play().catch(err => {
-                    document.addEventListener('click', () => {
+        setTimeout(() => {{
+            const audioEl = pDoc.getElementById('lockoutAudio');
+            if (audioEl) {{
+                audioEl.play().catch(err => {{
+                    pDoc.addEventListener('click', () => {{
                         audioEl.play().catch(e => console.log('Still blocked'));
-                    }, { once: true });
-                });
-            }
-        }, 500);
+                    }}, {{ once: true }});
+                }});
+            }}
+        }}, 500);
         
-        document.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-        }, true);
+        pDoc.addEventListener('click', (e) => {{ e.preventDefault(); e.stopPropagation(); return false; }}, true);
+        pDoc.addEventListener('keydown', (e) => {{ e.preventDefault(); return false; }}, true);
+        pWin.onbeforeunload = null;
         
-        document.addEventListener('keydown', (e) => {
-            e.preventDefault();
-            return false;
-        }, true);
-        
-        window.onbeforeunload = null;
-        
-        throw new Error('SERAPHIM: PERMANENTLY LOCKED - NO ACCESS PERMITTED');
-    }
-})();
+        throw new Error('SERAPHIM: PERMANENTLY LOCKED');
+    }}
+}})();
 </script>
 """
-
-# Check if warning audio exists and embed it
-warning_b64 = ""
-if Path(warning_file).exists():
-    try:
-        with open(warning_file, "rb") as f:
-            warning_b64 = base64.b64encode(f.read()).decode()
-        check_lock_js = check_lock_js.replace(
-            '<audio id="lockoutAudio" autoplay style="display:none;"></audio>',
-            f'<audio id="lockoutAudio" autoplay style="display:none;"><source src="data:audio/mp3;base64,{warning_b64}" type="audio/mp3"></audio>'
-        )
-    except:
-        pass
-
-st.markdown(check_lock_js, unsafe_allow_html=True)
+components.html(check_lock_js, height=0)
 
 # ============================================================================
 # 2. AUDIO GENERATION HELPER
@@ -159,7 +129,7 @@ async def generate_voice(text: str, voice_code: str, filename: str) -> bool:
         return False
 
 # ============================================================================
-# 3. ULTRA-LUXURY PREMIUM STYLING WITH ANIMATED 3D SERAPHIM BACKGROUND
+# 3. ULTRA-LUXURY PREMIUM STYLING WITH COLOR-SHIFTING GLOWING BARS
 # ============================================================================
 ultra_luxury_premium_css = """
 <style>
@@ -175,7 +145,6 @@ ultra_luxury_premium_css = """
         width: 100%;
         height: 100%;
         overflow-x: hidden;
-        perspective: 1200px;
     }
     
     #MainMenu { visibility: hidden; }
@@ -193,67 +162,6 @@ ultra_luxury_premium_css = """
         align-items: center; 
         justify-content: center;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    /* ANIMATED 3D SERAPHIM BACKGROUND */
-    .seraphim-background {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        width: 400px;
-        height: 400px;
-        transform: translate(-50%, -50%);
-        z-index: 0;
-        opacity: 0.15;
-        pointer-events: none;
-        animation: seraphim-fly 20s infinite ease-in-out;
-        filter: drop-shadow(0 0 30px rgba(192, 150, 255, 0.4));
-        perspective: 1200px;
-    }
-
-    @keyframes seraphim-fly {
-        0% {
-            transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateY(0px);
-            opacity: 0.1;
-        }
-        25% {
-            transform: translate(-35%, -45%) rotateX(15deg) rotateY(20deg) rotateZ(5deg) translateY(-30px);
-            opacity: 0.18;
-        }
-        50% {
-            transform: translate(-50%, -40%) rotateX(10deg) rotateY(-25deg) rotateZ(-10deg) translateY(-60px);
-            opacity: 0.2;
-            filter: drop-shadow(0 0 50px rgba(192, 150, 255, 0.5));
-        }
-        75% {
-            transform: translate(-65%, -50%) rotateX(-15deg) rotateY(30deg) rotateZ(15deg) translateY(-30px);
-            opacity: 0.18;
-        }
-        100% {
-            transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateY(0px);
-            opacity: 0.1;
-        }
-    }
-
-    .seraphim-glow {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(192, 150, 255, 0.3) 0%, transparent 70%);
-        animation: glow-pulse 4s ease-in-out infinite;
-        z-index: -1;
-    }
-
-    @keyframes glow-pulse {
-        0%, 100% { 
-            box-shadow: 0 0 20px rgba(192, 150, 255, 0.2), inset 0 0 30px rgba(192, 150, 255, 0.1);
-        }
-        50% { 
-            box-shadow: 0 0 60px rgba(192, 150, 255, 0.4), inset 0 0 60px rgba(192, 150, 255, 0.2);
-        }
     }
     
     @keyframes gradient-shift {
@@ -267,8 +175,6 @@ ultra_luxury_premium_css = """
         align-items: center; 
         justify-content: center; 
         min-height: 100vh;
-        position: relative;
-        z-index: 10;
     }
     
     .block-container {
@@ -279,8 +185,6 @@ ultra_luxury_premium_css = """
         flex-direction: column; 
         align-items: center; 
         justify-content: center;
-        position: relative;
-        z-index: 20;
     }
 
     .minimal-title {
@@ -329,7 +233,7 @@ ultra_luxury_premium_css = """
         align-items: center; 
         gap: 10px;
         margin-bottom: 3.5rem; 
-        height: 110px; 
+        height: 60px; 
         width: 100%;
         perspective: 1000px;
     }
@@ -340,7 +244,7 @@ ultra_luxury_premium_css = """
         background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.2) 100%);
         border-radius: 5px; 
         opacity: 0.6; 
-        transition: all 0.05s cubic-bezier(0.4, 0, 0.6, 1);
+        transition: height 0.05s linear;
         position: relative;
     }
 
@@ -364,11 +268,10 @@ ultra_luxury_premium_css = """
         right: 0;
         bottom: 0;
         border-radius: 5px;
-        box-shadow: 0 0 0 0 rgba(100, 255, 255, 0.5);
+        box-shadow: none;
     }
 
     .voice-bars-container.playing .voice-bar {
-        animation: bar-glow-color 0.6s ease-in-out infinite;
         opacity: 0.95;
     }
 
@@ -376,61 +279,15 @@ ultra_luxury_premium_css = """
         animation: glow-inner-pulse 0.6s ease-in-out infinite;
     }
 
-    .voice-bars-container.playing .voice-bar::after {
-        animation: glow-outer-pulse 0.6s ease-in-out infinite;
-    }
-
-    .voice-bars-container.playing .voice-bar:nth-child(1) { 
-        animation-delay: 0s;
-        filter: hue-rotate(0deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(2) { 
-        animation-delay: 0.08s;
-        filter: hue-rotate(10deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(3) { 
-        animation-delay: 0.16s;
-        filter: hue-rotate(20deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(4) { 
-        animation-delay: 0.24s;
-        filter: hue-rotate(30deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(5) { 
-        animation-delay: 0.32s;
-        filter: hue-rotate(40deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(6) { 
-        animation-delay: 0.4s;
-        filter: hue-rotate(30deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(7) { 
-        animation-delay: 0.48s;
-        filter: hue-rotate(20deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(8) { 
-        animation-delay: 0.56s;
-        filter: hue-rotate(10deg);
-    }
-    .voice-bars-container.playing .voice-bar:nth-child(9) { 
-        animation-delay: 0.64s;
-        filter: hue-rotate(0deg);
-    }
-
-    @keyframes bar-glow-color { 
-        0% { 
-            transform: scaleY(0.2); 
-            opacity: 0.3;
-        } 
-        50% { 
-            transform: scaleY(1); 
-            opacity: 1;
-        } 
-        100% { 
-            transform: scaleY(0.2); 
-            opacity: 0.3;
-        } 
-    }
+    .voice-bars-container.playing .voice-bar:nth-child(1) { filter: hue-rotate(0deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(2) { filter: hue-rotate(10deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(3) { filter: hue-rotate(20deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(4) { filter: hue-rotate(30deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(5) { filter: hue-rotate(40deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(6) { filter: hue-rotate(30deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(7) { filter: hue-rotate(20deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(8) { filter: hue-rotate(10deg); }
+    .voice-bars-container.playing .voice-bar:nth-child(9) { filter: hue-rotate(0deg); }
 
     @keyframes glow-inner-pulse {
         0% { opacity: 0; }
@@ -438,25 +295,16 @@ ultra_luxury_premium_css = """
         100% { opacity: 0; }
     }
 
-    @keyframes glow-outer-pulse {
-        0% { 
-            box-shadow: 0 0 0 0 rgba(100, 255, 255, 0.5);
-        }
-        50% { 
-            box-shadow: 
-                0 0 4px 2px rgba(100, 255, 255, 0.8),
-                0 0 12px 4px rgba(100, 200, 255, 0.4),
-                0 0 20px 8px rgba(100, 150, 255, 0.2);
-        }
-        100% { 
-            box-shadow: 0 0 0 0 rgba(100, 255, 255, 0);
-        }
-    }
-
     .voice-bars-container.stopped .voice-bar { 
         animation: none !important; 
         opacity: 0.15 !important;
         height: 10% !important;
+        filter: none !important;
+        box-shadow: none !important;
+        background-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    .voice-bars-container.stopped {
         filter: none !important;
     }
 
@@ -609,16 +457,11 @@ ultra_luxury_premium_css = """
             font-size: 0.85rem; 
         }
         .voice-bars-container { 
-            height: 85px; 
+            height: 45px;
             gap: 7px;
         }
         .voice-bar { 
             width: 6px;
-        }
-        .seraphim-background {
-            width: 300px;
-            height: 300px;
-            opacity: 0.08;
         }
     }
 </style>
@@ -715,9 +558,6 @@ def send_ntfy_notification(title: str = "SERAPHIM UPDATE", message: str = "Statu
         return False
 
 voice_bars_html = """
-<div class="seraphim-background">
-    <div class="seraphim-glow"></div>
-</div>
 <div class="voice-bars-container stopped" id="voiceBars">
     <div class="voice-bar"></div>
     <div class="voice-bar"></div>
@@ -729,13 +569,13 @@ voice_bars_html = """
     <div class="voice-bar"></div>
     <div class="voice-bar"></div>
 </div>
-<p class="status-text">⚡ SERAPHIM TRANSMISSION READY ⚡</p>
+<p class="status-text">SERAPHIM TRANSMISSION READY</p>
 """
 
 # ============================================================================
 # 7. MAIN UI RENDERING
 # ============================================================================
-st.markdown('<h1 class="minimal-title">✧ A MESSAGE FOR YOU ✧</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="minimal-title">A MESSAGE FOR YOU</h1>', unsafe_allow_html=True)
 
 # ============================================================================
 # STATE 1: INITIALIZATION
@@ -753,8 +593,8 @@ if not st.session_state.audio_ready:
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("⚡ INITIALIZE PROTOCOL ⚡", key="init", use_container_width=True):
-            with st.spinner("✨ Compiling transmission... PLEASE WAIT"):
+        if st.button("INITIALIZE PROTOCOL", key="init", use_container_width=True):
+            with st.spinner("Compiling transmission... PLEASE WAIT"):
                 audio_file = "seraphim_message.mp3"
                 success = asyncio.run(generate_voice(my_message, VOICE_CODE, audio_file))
                 
@@ -763,12 +603,12 @@ if not st.session_state.audio_ready:
                     st.rerun()
 
 # ============================================================================
-# STATE 2: PLAYBACK WITH COLOR-SHIFTING GLOWING VOICE BARS
+# STATE 2: PLAYBACK WITH FAST, LAG-FREE VOICE BARS
 # ============================================================================
 elif st.session_state.audio_ready and not st.session_state.button_clicked and not st.session_state.transmission_complete:
     
     st.markdown(voice_bars_html, unsafe_allow_html=True)
-    st.markdown('<p class="status-text">◆ SERAPHIM TRANSMISSION ACTIVE ◆</p>', unsafe_allow_html=True)
+    st.markdown('<p class="status-text">SERAPHIM-TX-2026-05</p>', unsafe_allow_html=True)
     
     try:
         audio_file = "seraphim_message.mp3"
@@ -776,7 +616,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             b64_audio = base64.b64encode(f.read()).decode()
             
             st.markdown(f"""
-            <audio id="mainAudio" crossorigin="anonymous" style="display:none;">
+            <audio id="mainAudio" style="display:none;">
                 <source src="data:audio/mp3;base64,{b64_audio}" type="audio/mp3">
             </audio>
             """, unsafe_allow_html=True)
@@ -785,11 +625,11 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("◆ MESSAGE RECEIVED AND HEARD ◆", key="accept", use_container_width=True):
+        if st.button("MESSAGE RECEIVED AND HEARD", key="accept", use_container_width=True):
             st.session_state.button_clicked = True
             st.rerun()
 
-    # ADVANCED SYNCED JAVASCRIPT WITH COLOR-SHIFTING GLOWING BARS
+    # ADVANCED SYNCED JAVASCRIPT WITH PERFORMANCE GLOW
     components.html(f"""
     <script>
     (function() {{
@@ -808,8 +648,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             audio.play().catch(e => console.log("Autoplay info:", e));
 
             try {{
-                const AudioContext = window.parent.AudioContext || window.parent.webkitAudioContext;
-                const ctx = new AudioContext();
+                const ctx = new (window.parent.AudioContext || window.parent.webkitAudioContext)();
                 const analyser = ctx.createAnalyser();
                 const source = ctx.createMediaElementSource(audio);
                 source.connect(analyser);
@@ -823,8 +662,14 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                     
                     for (let i = 0; i < 9; i++) {{
                         if(bars[i]) {{
-                            const heightPercent = 20 + (dataArray[i] / 255) * 80;
+                            const val = dataArray[i];
+                            const heightPercent = 20 + (val / 255) * 80;
                             bars[i].style.height = heightPercent + '%';
+                            
+                            // HIGH PERFORMANCE VERY MINIMAL GLOW
+                            const glowVal = val / 255;
+                            bars[i].style.boxShadow = glowVal > 0.1 ? '0 0 2px rgba(100, 255, 255, ' + (glowVal * 0.2) + ')' : 'none';
+                            bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.3 + glowVal * 0.3) + ')';
                         }}
                     }}
                 }}
@@ -962,7 +807,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                 b64_final_audio = base64.b64encode(f.read()).decode()
             
             st.markdown(f"""
-            <audio id="finalAudio" crossorigin="anonymous" style="display:none;">
+            <audio id="finalAudio" style="display:none;">
                 <source src="data:audio/mp3;base64,{b64_final_audio}" type="audio/mp3">
             </audio>
             """, unsafe_allow_html=True)
@@ -982,8 +827,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                     hasSetup = true;
                     
                     try {{
-                        const AudioContext = window.parent.AudioContext || window.parent.webkitAudioContext;
-                        const ctx = new AudioContext();
+                        const ctx = new (window.parent.AudioContext || window.parent.webkitAudioContext)();
                         const analyser = ctx.createAnalyser();
                         const source = ctx.createMediaElementSource(audio);
                         source.connect(analyser);
@@ -997,8 +841,14 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                             
                             for (let i = 0; i < 9; i++) {{
                                 if(bars[i]) {{
-                                    const heightPercent = 20 + (dataArray[i] / 255) * 80;
+                                    const val = dataArray[i];
+                                    const heightPercent = 20 + (val / 255) * 80;
                                     bars[i].style.height = heightPercent + '%';
+                                    
+                                    // HIGH PERFORMANCE VERY MINIMAL GLOW
+                                    const glowVal = val / 255;
+                                    bars[i].style.boxShadow = glowVal > 0.1 ? '0 0 2px rgba(100, 255, 255, ' + (glowVal * 0.2) + ')' : 'none';
+                                    bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.3 + glowVal * 0.3) + ')';
                                 }}
                             }}
                         }}
@@ -1046,7 +896,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
     st.markdown("""
     <div class="completion-text">
         Final transmission in progress...<br>
-        System will lock automatically.
+        System will now locked and now offline.
     </div>
     """, unsafe_allow_html=True)
     
