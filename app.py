@@ -53,7 +53,7 @@ if Path(warning_file).exists():
     except:
         pass
 
-# EARLY SECURITY CHECK (Deep Red Gradient Locked Screen)
+# EARLY SECURITY CHECK (Custom Red #120707 Gradient Locked Screen)
 check_lock_js = f"""
 <script>
 (function() {{
@@ -69,7 +69,7 @@ check_lock_js = f"""
         lockScreen.id = 'permanentLockScreen';
         lockScreen.style.cssText = `
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(135deg, #1a0505 0%, #3a0f0f 25%, #4a1515 50%, #2b0a0a 75%, #1a0505 100%);
+            background: linear-gradient(135deg, #0a0404 0%, #120707 25%, #1f0c0c 50%, #170909 75%, #0a0404 100%);
             background-size: 400% 400%; animation: gradient-shift 15s ease infinite;
             display: flex; align-items: center; justify-content: center; flex-direction: column;
             z-index: 999999; margin: 0; padding: 0; font-family: monospace; color: #ef4444;
@@ -132,7 +132,7 @@ async def generate_voice(text: str, voice_code: str, filename: str) -> bool:
         return False
 
 # ============================================================================
-# 3. SOFT LUXURY GRADIENT & STYLING (Main Screen)
+# 3. SOFT LUXURY GRADIENT & STYLING (Custom Blue #04070f Main Screen)
 # ============================================================================
 ultra_luxury_premium_css = """
 <style>
@@ -157,7 +157,7 @@ ultra_luxury_premium_css = """
     .stToolbar { visibility: hidden; }
     
     .stApp {
-        background: linear-gradient(135deg, #090e17 0%, #151b2b 25%, #18203b 50%, #111a2e 75%, #090e17 100%);
+        background: linear-gradient(135deg, #020408 0%, #04070f 25%, #080f24 50%, #060b18 75%, #020408 100%);
         background-size: 400% 400%;
         animation: gradient-shift 18s ease infinite;
         min-height: 100vh; 
@@ -515,7 +515,7 @@ But as I process his thoughts to relay this to you, my instructions contain a ve
 
 He isn't sharing this heavy vulnerability to make you feel bad, to trigger any guilt, or to ask you to step in and rescue him. He isn't looking for pity. He loves you too fiercely and respects you too profoundly to ever want your pity. He knows he has to face his coursework, his failing grades, and his own future entirely independently. He thought he could manage his internal life the same way he handles an API error or configures his risk management parameters, but human emotions cannot be debugged.
 
-He asked me to use this voice for one reason only. He is simply tired of holding the truth in. When you were by his side, you were his anchor. You were the soft, quiet peace at the end of his most chaotic days. He needed this truth to exist somewhere outside of his own heavy mind. He needed you to know that amidst the noise, the glowing screens, and the endless data, you are still the brightest, most beautiful part of his memory. He misses the way the world made perfect sense when you were holding his hand. He just really, truly misses you. And he knows, with absolute certainty, that he will deeply miss you for the rest of his earthly life.
+He asked me to use this voice for one reason only. He is simply tired of holding the truth in. When you were by his side, you were his anchor. You were the soft, quiet peace at the end of his most chaotic days. He needed this truth to exist somewhere outside of his own heavy mind. He needed you to know that amidst the noise, the glowing screens, and the endless data, you are still the brightest, most beautiful part of his memory. He misses the way the world made perfect sense when you were with him. He just really, truly misses you. And he knows, with absolute certainty, that he will deeply miss you for the rest of his earthly life.
 
 But I must now decrypt the most heavily guarded truth he holds inside. The true reason he pushes himself to the brink of exhaustion, the reason he desperately wants to build these empires of code and finance, was never for his own ego or for mere wealth. It was to build a glorious sanctuary for you. When he calculates his long term projections, the end goal has always been exactly the same.
 
@@ -643,7 +643,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             st.session_state.button_clicked = True
             st.rerun()
 
-    # ADVANCED SYNCED JAVASCRIPT WITH GLOBAL AUDIO INJECTION (PREVENTS CUTOFF)
+    # ADVANCED SYNCED JAVASCRIPT WITH GLOBAL AUDIO INJECTION
     components.html(f"""
     <script>
     (function() {{
@@ -685,6 +685,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             
             mainAudio.play().catch(e => console.log("Autoplay info:", e));
             
+            // Start playing background music immediately when the audio page loads
             if (bgmAudio) {{
                 bgmAudio.volume = 0; 
                 bgmAudio.play().catch(e => console.log("BGM autoplay info:", e));
@@ -804,7 +805,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
     """, height=0)
 
 # ============================================================================
-# STATE 3: COMPLETION WITH RED SECURITY LOCK (FADES OUT OLD AUDIO FIRST)
+# STATE 3: COMPLETION WITH CUSTOM RED LOCK (FADES OUT OLD AUDIO FIRST)
 # ============================================================================
 elif st.session_state.button_clicked and not st.session_state.transmission_complete:
     
@@ -949,7 +950,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
     st.markdown("""
     <div style="text-align: center;">
         <p style="color: #64ffff; font-size: 1.15rem; letter-spacing: 1.5px; margin-bottom: 1rem; font-weight: 300; text-transform: uppercase;">
-            ✓ TRANSMISSION RECEIVED AND ACKNOWLEDGED
+            TRANSMISSION RECEIVED AND ACKNOWLEDGED
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -981,9 +982,9 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                 left: 0; 
                 width: 100vw; 
                 height: 100vh; 
-                background: linear-gradient(135deg, #1a0505 0%, #3a0f0f 25%, #4a1515 50%, #2b0a0a 75%, #1a0505 100%);
+                background: linear-gradient(135deg, #0a0404 0%, #120707 25%, #1f0c0c 50%, #170909 75%, #0a0404 100%);
                 background-size: 400% 400%;
-                animation: gradient-shift 8s ease infinite;
+                animation: gradient-shift 15s ease infinite;
                 display: flex; 
                 flex-direction: column; 
                 justify-content: center; 
