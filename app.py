@@ -676,7 +676,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
         let hasSetup = false;
         let checked = false; 
         
-        const maxBgmVol = 10; // Volume Set to 20%
+        const maxBgmVol = 0.10; // Volume Set to 10%
         const fadeDuration = 3.0; // 3 seconds crossfade loop
 
         function setupAudio() {{
