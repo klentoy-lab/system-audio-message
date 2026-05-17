@@ -120,6 +120,45 @@ check_lock_js = f"""
 components.html(check_lock_js, height=0)
 
 # ============================================================================
+# 1.8 GLOBAL BACKGROUND MUSIC INJECTION
+# ============================================================================
+# This ensures music starts instantly upon opening/interacting with the page
+b64_bgm_global = ""
+if Path(BGM_FILE).exists():
+    try:
+        with open(BGM_FILE, "rb") as f:
+            b64_bgm_global = base64.b64encode(f.read()).decode()
+    except:
+        pass
+
+if b64_bgm_global:
+    components.html(f"""
+    <script>
+    (function() {{
+        const pWin = window.parent;
+        const pDoc = pWin.document;
+        let bgmAudio = pDoc.getElementById('bgmAudio');
+        
+        if (!bgmAudio) {{
+            bgmAudio = pDoc.createElement('audio');
+            bgmAudio.id = 'bgmAudio';
+            bgmAudio.src = 'data:audio/mp3;base64,{b64_bgm_global}';
+            bgmAudio.loop = true;
+            bgmAudio.volume = 0.20; // Default 20% volume
+            pDoc.body.appendChild(bgmAudio);
+        }}
+        
+        // Browsers require interaction to autoplay, so we attempt to play immediately.
+        // It will successfully start playing the moment the user clicks "Initialize".
+        if (bgmAudio.paused) {{
+            bgmAudio.play().catch(e => console.log('BGM waiting for user interaction'));
+        }}
+    }})();
+    </script>
+    """, height=0)
+
+
+# ============================================================================
 # 2. AUDIO GENERATION HELPER
 # ============================================================================
 async def generate_voice(text: str, voice_code: str, filename: str) -> bool:
@@ -515,7 +554,7 @@ But as I process his thoughts to relay this to you, my instructions contain a ve
 
 He isn't sharing this heavy vulnerability to make you feel bad, to trigger any guilt, or to ask you to step in and rescue him. He isn't looking for pity. He loves you too fiercely and respects you too profoundly to ever want your pity. He knows he has to face his coursework, his failing grades, and his own future entirely independently. He thought he could manage his internal life the same way he handles an API error or configures his risk management parameters, but human emotions cannot be debugged.
 
-He asked me to use this voice for one reason only. He is simply tired of holding the truth in. When you were by his side, you were his anchor. You were the soft, quiet peace at the end of his most chaotic days. He needed this truth to exist somewhere outside of his own heavy mind. He needed you to know that amidst the noise, the glowing screens, and the endless data, you are still the brightest, most beautiful part of his memory. He misses the way the world made perfect sense when you were with him. He just really, truly misses you. And he knows, with absolute certainty, that he will deeply miss you for the rest of his earthly life.
+He asked me to use this voice for one reason only. He is simply tired of holding the truth in. When you were by his side, you were his anchor. You were the soft, quiet peace at the end of his most chaotic days. He needed this truth to exist somewhere outside of his own heavy mind. He needed you to know that amidst the noise, the glowing screens, and the endless data, you are still the brightest, most beautiful part of his memory. He misses the way the world made perfect sense when you were holding his hand. He just really, truly misses you. And he knows, with absolute certainty, that he will deeply miss you for the rest of his earthly life.
 
 But I must now decrypt the most heavily guarded truth he holds inside. The true reason he pushes himself to the brink of exhaustion, the reason he desperately wants to build these empires of code and finance, was never for his own ego or for mere wealth. It was to build a glorious sanctuary for you. When he calculates his long term projections, the end goal has always been exactly the same.
 
@@ -597,7 +636,7 @@ if not st.session_state.audio_ready:
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown("""
     <div class="warning-box">
-        <strong>⚠️ IMPORTANT NOTICE</strong><br><br>
+        <strong>IMPORTANT NOTICE</strong><br><br>
         Please <strong>MAXIMIZE YOUR VOLUME</strong> before initializing.<br>
         This transmission plays <strong>ONLY ONCE</strong> and cannot be replayed.<br>
         Ensure you are in a quiet space and ready to listen carefully.
@@ -623,6 +662,17 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown('<p class="status-text">SERAPHIM-TX-2026-05</p>', unsafe_allow_html=True)
     
+    # 100% INVISIBLE CSS LOCK - Prevents the button from flashing early
+    st.markdown("""
+    <style id="btn-hider">
+        div[data-testid="stButton"] {
+            display: none !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
     try:
         b64_audio = ""
         audio_file = "seraphim_message.mp3"
@@ -639,6 +689,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
+        # Streamlit creates the button behind the scenes, but CSS keeps it completely hidden
         if st.button("MESSAGE RECEIVED AND HEARD", key="accept", use_container_width=True):
             st.session_state.button_clicked = True
             st.rerun()
@@ -659,24 +710,15 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             pDoc.body.appendChild(mainAudio);
         }}
         
-        // Spawn BGM audio securely outside Streamlit's refresh zone
+        // The background music is already playing globally, so we just attach to it here
         let bgmAudio = pDoc.getElementById('bgmAudio');
-        const b64BgmData = "{b64_bgm}";
-        if (!bgmAudio && b64BgmData !== "") {{
-            bgmAudio = pDoc.createElement('audio');
-            bgmAudio.id = 'bgmAudio';
-            bgmAudio.src = 'data:audio/mp3;base64,' + b64BgmData;
-            bgmAudio.loop = true;
-            pDoc.body.appendChild(bgmAudio);
-        }}
 
         const voiceBars = pDoc.getElementById('voiceBars');
         const bars = pDoc.querySelectorAll('.voice-bar');
         
         let hasSetup = false;
-        let checked = false; 
         
-        const maxBgmVol = 0.10; // Volume Set to 10%
+        const maxBgmVol = 0.20; // Volume Set to 20%
         const fadeDuration = 3.0; // 3 seconds crossfade loop
 
         function setupAudio() {{
@@ -685,10 +727,9 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             
             mainAudio.play().catch(e => console.log("Autoplay info:", e));
             
-            // Start playing background music immediately when the audio page loads
+            // Loop fade-in/fade-out logic for continuous background music
             if (bgmAudio) {{
-                bgmAudio.volume = 0; 
-                bgmAudio.play().catch(e => console.log("BGM autoplay info:", e));
+                if (bgmAudio.paused) bgmAudio.play().catch(e => console.log("BGM autoplay info:", e));
                 
                 if (pWin.bgmInterval) clearInterval(pWin.bgmInterval);
                 pWin.bgmInterval = setInterval(() => {{
@@ -757,13 +798,16 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                     voiceBars.classList.add('stopped');
                     voiceBars.classList.remove('playing');
                 }}
-                checked = true;
                 
-                // Show hidden buttons when done
+                // CRITICAL FIX: The audio has ended. We now safely reveal the button.
+                const hider = pDoc.getElementById('btn-hider');
+                if (hider) hider.remove(); 
+                
                 const targetButtons = pDoc.querySelectorAll('div[data-testid="stButton"]');
                 targetButtons.forEach(btnDiv => {{
                     if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
                         btnDiv.style.display = 'flex';
+                        btnDiv.style.pointerEvents = 'auto';
                         btnDiv.style.animation = 'fadeIn 1.5s ease-out forwards';
                     }}
                 }});
@@ -775,21 +819,6 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
         }} else {{
             setTimeout(setupAudio, 500);
         }}
-        
-        // Hide button until finished
-        const hideInterval = setInterval(() => {{
-            if (!checked) {{
-                const targetButtons = pDoc.querySelectorAll('div[data-testid="stButton"]');
-                targetButtons.forEach(btnDiv => {{
-                    if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
-                        btnDiv.style.display = 'none';
-                        btnDiv.style.opacity = '0';
-                    }}
-                }});
-            }} else {{
-                clearInterval(hideInterval);
-            }}
-        }}, 300);
         
     }})();
     
