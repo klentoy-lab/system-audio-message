@@ -53,7 +53,7 @@ if Path(warning_file).exists():
     except:
         pass
 
-# EARLY SECURITY CHECK (Using components.html so Streamlit doesn't block the script)
+# EARLY SECURITY CHECK (Deep Red Gradient Locked Screen)
 check_lock_js = f"""
 <script>
 (function() {{
@@ -69,7 +69,8 @@ check_lock_js = f"""
         lockScreen.id = 'permanentLockScreen';
         lockScreen.style.cssText = `
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(135deg, #0a0e1a 0%, #1a0a0a 100%);
+            background: linear-gradient(135deg, #1a0505 0%, #3a0f0f 25%, #4a1515 50%, #2b0a0a 75%, #1a0505 100%);
+            background-size: 400% 400%; animation: gradient-shift 15s ease infinite;
             display: flex; align-items: center; justify-content: center; flex-direction: column;
             z-index: 999999; margin: 0; padding: 0; font-family: monospace; color: #ef4444;
             cursor: not-allowed; user-select: none; -webkit-user-select: none; -moz-user-select: none;
@@ -82,13 +83,14 @@ check_lock_js = f"""
             <div style="text-align: center; padding: 40px;">
                 <div style="font-size: 60px; margin-bottom: 30px; text-shadow: 0 0 30px rgba(239, 68, 68, 0.8); animation: pulse-lock 1.5s infinite;">🔒</div>
                 <h1 style="font-size: 36px; letter-spacing: 4px; font-weight: 300; margin-bottom: 10px; text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);">PERMANENTLY SEALED</h1>
-                <p style="font-size: 14px; letter-spacing: 2px; color: #9ca3af; opacity: 0.8;">TRANSMISSION SECURITY LOCKOUT ENGAGED</p>
-                <p style="font-size: 12px; letter-spacing: 1.5px; margin-top: 30px; color: #6b7280;">This transmission was designed for single playback only.</p>
-                <p style="font-size: 12px; letter-spacing: 1.5px; color: #6b7280; margin-top: 10px;">Further attempts to access this data have been logged.</p>
+                <p style="font-size: 14px; letter-spacing: 2px; color: #ff8a8a; opacity: 0.8;">TRANSMISSION SECURITY LOCKOUT ENGAGED</p>
+                <p style="font-size: 12px; letter-spacing: 1.5px; margin-top: 30px; color: #b36b6b;">This transmission was designed for single playback only.</p>
+                <p style="font-size: 12px; letter-spacing: 1.5px; color: #b36b6b; margin-top: 10px;">Further attempts to access this data have been logged.</p>
                 <p style="font-size: 11px; letter-spacing: 1px; margin-top: 40px; opacity: 0.6; animation: pulse-text 2s infinite;">SECURITY WARNING</p>
                 <style>
                     @keyframes pulse-lock {{ 0%, 100% {{ opacity: 0.5; transform: scale(1); }} 50% {{ opacity: 1; transform: scale(1.05); }} }}
                     @keyframes pulse-text {{ 0%, 100% {{ opacity: 0.4; }} 50% {{ opacity: 0.9; }} }}
+                    @keyframes gradient-shift {{ 0% {{ background-position: 0% 50%; }} 50% {{ background-position: 100% 50%; }} 100% {{ background-position: 0% 50%; }} }}
                 </style>
             </div>
         `;
@@ -130,7 +132,7 @@ async def generate_voice(text: str, voice_code: str, filename: str) -> bool:
         return False
 
 # ============================================================================
-# 3. ULTRA-LUXURY PREMIUM STYLING WITH COLOR-SHIFTING GLOWING BARS
+# 3. SOFT LUXURY GRADIENT & STYLING (Main Screen)
 # ============================================================================
 ultra_luxury_premium_css = """
 <style>
@@ -155,9 +157,9 @@ ultra_luxury_premium_css = """
     .stToolbar { visibility: hidden; }
     
     .stApp {
-        background: linear-gradient(135deg, #0a0e1a 0%, #0f1624 25%, #10141e 50%, #0d1520 75%, #0a0e1a 100%);
+        background: linear-gradient(135deg, #090e17 0%, #151b2b 25%, #18203b 50%, #111a2e 75%, #090e17 100%);
         background-size: 400% 400%;
-        animation: gradient-shift 15s ease infinite;
+        animation: gradient-shift 18s ease infinite;
         min-height: 100vh; 
         display: flex; 
         align-items: center; 
@@ -513,7 +515,7 @@ But as I process his thoughts to relay this to you, my instructions contain a ve
 
 He isn't sharing this heavy vulnerability to make you feel bad, to trigger any guilt, or to ask you to step in and rescue him. He isn't looking for pity. He loves you too fiercely and respects you too profoundly to ever want your pity. He knows he has to face his coursework, his failing grades, and his own future entirely independently. He thought he could manage his internal life the same way he handles an API error or configures his risk management parameters, but human emotions cannot be debugged.
 
-He asked me to use this voice for one reason only. He is simply tired of holding the truth in. When you were by his side, you were his anchor. You were the soft, quiet peace at the end of his most chaotic days. He needed this truth to exist somewhere outside of his own heavy mind. He needed you to know that amidst the noise, the glowing screens, and the endless data, you are still the brightest, most beautiful part of his memory. He misses the way the world made perfect sense when you were with him. He just really, truly misses you. And he knows, with absolute certainty, that he will deeply miss you for the rest of his earthly life.
+He asked me to use this voice for one reason only. He is simply tired of holding the truth in. When you were by his side, you were his anchor. You were the soft, quiet peace at the end of his most chaotic days. He needed this truth to exist somewhere outside of his own heavy mind. He needed you to know that amidst the noise, the glowing screens, and the endless data, you are still the brightest, most beautiful part of his memory. He misses the way the world made perfect sense when you were holding his hand. He just really, truly misses you. And he knows, with absolute certainty, that he will deeply miss you for the rest of his earthly life.
 
 But I must now decrypt the most heavily guarded truth he holds inside. The true reason he pushes himself to the brink of exhaustion, the reason he desperately wants to build these empires of code and finance, was never for his own ego or for mere wealth. It was to build a glorious sanctuary for you. When he calculates his long term projections, the end goal has always been exactly the same.
 
@@ -595,7 +597,7 @@ if not st.session_state.audio_ready:
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown("""
     <div class="warning-box">
-        <strong>IMPORTANT NOTICE</strong><br><br>
+        <strong>⚠️ IMPORTANT NOTICE</strong><br><br>
         Please <strong>MAXIMIZE YOUR VOLUME</strong> before initializing.<br>
         This transmission plays <strong>ONLY ONCE</strong> and cannot be replayed.<br>
         Ensure you are in a quiet space and ready to listen carefully.
@@ -622,21 +624,16 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
     st.markdown('<p class="status-text">SERAPHIM-TX-2026-05</p>', unsafe_allow_html=True)
     
     try:
+        b64_audio = ""
         audio_file = "seraphim_message.mp3"
-        with open(audio_file, "rb") as f:
-            b64_audio = base64.b64encode(f.read()).decode()
+        if Path(audio_file).exists():
+            with open(audio_file, "rb") as f:
+                b64_audio = base64.b64encode(f.read()).decode()
             
-        # Background Music Logic
         b64_bgm = ""
         if Path(BGM_FILE).exists():
             with open(BGM_FILE, "rb") as f:
                 b64_bgm = base64.b64encode(f.read()).decode()
-                
-        bgm_html = ""
-        if b64_bgm:
-            bgm_html = f'<audio id="bgmAudio" loop style="display:none;"><source src="data:audio/mp3;base64,{b64_bgm}" type="audio/mp3"></audio>'
-            
-        st.markdown(f'<audio id="mainAudio" style="display:none;"><source src="data:audio/mp3;base64,{b64_audio}" type="audio/mp3"></audio>{bgm_html}', unsafe_allow_html=True)
     except: 
         pass
 
@@ -646,61 +643,78 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             st.session_state.button_clicked = True
             st.rerun()
 
-    # ADVANCED SYNCED JAVASCRIPT WITH INFINITE SEAMLESS BGM LOOP
+    # ADVANCED SYNCED JAVASCRIPT WITH GLOBAL AUDIO INJECTION (PREVENTS CUTOFF)
     components.html(f"""
     <script>
     (function() {{
-        const parentDoc = window.parent.document;
-        const audio = parentDoc.getElementById('mainAudio');
-        const bgm = parentDoc.getElementById('bgmAudio');
-        const voiceBars = parentDoc.getElementById('voiceBars');
-        const bars = parentDoc.querySelectorAll('.voice-bar');
+        const pWin = window.parent;
+        const pDoc = pWin.document;
+        
+        // Spawn main audio securely outside Streamlit's refresh zone
+        let mainAudio = pDoc.getElementById('mainAudio');
+        if (!mainAudio) {{
+            mainAudio = pDoc.createElement('audio');
+            mainAudio.id = 'mainAudio';
+            mainAudio.src = 'data:audio/mp3;base64,{b64_audio}';
+            pDoc.body.appendChild(mainAudio);
+        }}
+        
+        // Spawn BGM audio securely outside Streamlit's refresh zone
+        let bgmAudio = pDoc.getElementById('bgmAudio');
+        const b64BgmData = "{b64_bgm}";
+        if (!bgmAudio && b64BgmData !== "") {{
+            bgmAudio = pDoc.createElement('audio');
+            bgmAudio.id = 'bgmAudio';
+            bgmAudio.src = 'data:audio/mp3;base64,' + b64BgmData;
+            bgmAudio.loop = true;
+            pDoc.body.appendChild(bgmAudio);
+        }}
+
+        const voiceBars = pDoc.getElementById('voiceBars');
+        const bars = pDoc.querySelectorAll('.voice-bar');
         
         let hasSetup = false;
         let checked = false; 
         
-        const maxBgmVol = 0.10;
-        const fadeDuration = 3.0; // 3 seconds fade out and fade in
+        const maxBgmVol = 0.6; // Volume Set to 20%
+        const fadeDuration = 3.0; // 3 seconds crossfade loop
 
         function setupAudio() {{
-            if (hasSetup || !audio) return;
+            if (hasSetup || !mainAudio) return;
             hasSetup = true;
             
-            audio.play().catch(e => console.log("Autoplay info:", e));
+            mainAudio.play().catch(e => console.log("Autoplay info:", e));
             
-            // Continuous Seamless Crossfade Loop Logic for Background Music
-            if (bgm) {{
-                bgm.volume = 0; // start at 0 for fade in
-                bgm.play().catch(e => console.log("BGM autoplay info:", e));
+            if (bgmAudio) {{
+                bgmAudio.volume = 0; 
+                bgmAudio.play().catch(e => console.log("BGM autoplay info:", e));
                 
-                setInterval(() => {{
-                    if (!bgm || bgm.paused || isNaN(bgm.duration)) return;
-                    const timeLeft = bgm.duration - bgm.currentTime;
+                if (pWin.bgmInterval) clearInterval(pWin.bgmInterval);
+                pWin.bgmInterval = setInterval(() => {{
+                    if (!bgmAudio || bgmAudio.paused || isNaN(bgmAudio.duration)) return;
+                    const timeLeft = bgmAudio.duration - bgmAudio.currentTime;
                     
                     if (timeLeft <= fadeDuration) {{
-                        // Fading out at the end of the track
-                        bgm.volume = Math.max(0, Math.min(maxBgmVol, maxBgmVol * (timeLeft / fadeDuration)));
-                    }} else if (bgm.currentTime <= fadeDuration) {{
-                        // Fading in at the beginning of the track
-                        bgm.volume = Math.max(0, Math.min(maxBgmVol, maxBgmVol * (bgm.currentTime / fadeDuration)));
+                        bgmAudio.volume = Math.max(0, Math.min(maxBgmVol, maxBgmVol * (timeLeft / fadeDuration)));
+                    }} else if (bgmAudio.currentTime <= fadeDuration) {{
+                        bgmAudio.volume = Math.max(0, Math.min(maxBgmVol, maxBgmVol * (bgmAudio.currentTime / fadeDuration)));
                     }} else {{
-                        // Standard volume
-                        bgm.volume = maxBgmVol;
+                        bgmAudio.volume = maxBgmVol;
                     }}
                 }}, 50);
             }}
 
             try {{
-                const ctx = new (window.parent.AudioContext || window.parent.webkitAudioContext)();
+                const ctx = new (pWin.AudioContext || pWin.webkitAudioContext)();
                 const analyser = ctx.createAnalyser();
-                const source = ctx.createMediaElementSource(audio);
+                const source = ctx.createMediaElementSource(mainAudio);
                 source.connect(analyser);
                 analyser.connect(ctx.destination);
                 analyser.fftSize = 64;
                 const dataArray = new Uint8Array(analyser.frequencyBinCount);
                 
                 function renderFrame() {{
-                    if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
+                    if (!mainAudio.paused && !mainAudio.ended) requestAnimationFrame(renderFrame);
                     analyser.getByteFrequencyData(dataArray);
                     
                     for (let i = 0; i < 9; i++) {{
@@ -709,7 +723,6 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                             const heightPercent = 20 + (val / 255) * 80;
                             bars[i].style.height = heightPercent + '%';
                             
-                            // HIGH PERFORMANCE VERY MINIMAL GLOW
                             const glowVal = val / 255;
                             bars[i].style.boxShadow = glowVal > 0.1 ? '0 0 2px rgba(100, 255, 255, ' + (glowVal * 0.2) + ')' : 'none';
                             bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.3 + glowVal * 0.3) + ')';
@@ -717,53 +730,36 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                     }}
                 }}
                 
-                audio.addEventListener('play', () => {{
-                    if(voiceBars) {{ 
-                        voiceBars.classList.remove('stopped');
-                        voiceBars.classList.add('playing');
-                    }}
-                    if (bgm && bgm.paused) bgm.play();
+                mainAudio.addEventListener('play', () => {{
+                    if(voiceBars) {{ voiceBars.classList.remove('stopped'); voiceBars.classList.add('playing'); }}
+                    if (bgmAudio && bgmAudio.paused) bgmAudio.play();
                     ctx.resume().then(() => renderFrame());
                 }});
                 
-                audio.addEventListener('pause', () => {{
-                    if(voiceBars) {{ 
-                        voiceBars.classList.add('stopped');
-                        voiceBars.classList.remove('playing');
-                    }}
+                mainAudio.addEventListener('pause', () => {{
+                    if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
                 }});
                 
             }} catch(e) {{
-                console.log('Web Audio API unavailable, using CSS animations');
-                audio.addEventListener('play', () => {{
-                    if(voiceBars) {{ 
-                        voiceBars.classList.remove('stopped');
-                        voiceBars.classList.add('playing');
-                    }}
-                    if (bgm && bgm.paused) bgm.play();
+                mainAudio.addEventListener('play', () => {{
+                    if(voiceBars) {{ voiceBars.classList.remove('stopped'); voiceBars.classList.add('playing'); }}
+                    if (bgmAudio && bgmAudio.paused) bgmAudio.play();
                 }});
                 
-                audio.addEventListener('pause', () => {{
-                    if(voiceBars) {{ 
-                        voiceBars.classList.add('stopped');
-                        voiceBars.classList.remove('playing');
-                    }}
+                mainAudio.addEventListener('pause', () => {{
+                    if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
                 }});
             }}
 
-            audio.addEventListener('ended', () => {{
+            mainAudio.addEventListener('ended', () => {{
                 if(voiceBars) {{
                     voiceBars.classList.add('stopped');
                     voiceBars.classList.remove('playing');
                 }}
-                
-                // Note: BGM deliberately NOT paused here. 
-                // It continues to seamlessly loop until the user clicks the final button.
-                
                 checked = true;
-                clearInterval(hideInterval);
                 
-                const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
+                // Show hidden buttons when done
+                const targetButtons = pDoc.querySelectorAll('div[data-testid="stButton"]');
                 targetButtons.forEach(btnDiv => {{
                     if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
                         btnDiv.style.display = 'flex';
@@ -779,15 +775,18 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             setTimeout(setupAudio, 500);
         }}
         
+        // Hide button until finished
         const hideInterval = setInterval(() => {{
             if (!checked) {{
-                const targetButtons = parentDoc.querySelectorAll('div[data-testid="stButton"]');
+                const targetButtons = pDoc.querySelectorAll('div[data-testid="stButton"]');
                 targetButtons.forEach(btnDiv => {{
                     if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
                         btnDiv.style.display = 'none';
                         btnDiv.style.opacity = '0';
                     }}
                 }});
+            }} else {{
+                clearInterval(hideInterval);
             }}
         }}, 300);
         
@@ -795,10 +794,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
     
     const style = window.parent.document.createElement('style'); 
     style.textContent = `
-        @keyframes fadeIn {{ 
-            0% {{ opacity: 0; transform: translateY(15px); }} 
-            100% {{ opacity: 1; transform: translateY(0); }} 
-        }}
+        @keyframes fadeIn {{ 0% {{ opacity: 0; transform: translateY(15px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}
     `;
     if (!window.parent.document.getElementById('fadeInStyle')) {{
         style.id = 'fadeInStyle';
@@ -808,28 +804,143 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
     """, height=0)
 
 # ============================================================================
-# STATE 3: COMPLETION WITH SECURITY LOCK
+# STATE 3: COMPLETION WITH RED SECURITY LOCK (FADES OUT OLD AUDIO FIRST)
 # ============================================================================
 elif st.session_state.button_clicked and not st.session_state.transmission_complete:
     
-    # This block instantly wipes out all audio elements (voice + bgm) upon button click
+    send_ntfy_notification(message="Transmission confirmed. Message received and accepted by recipient.")
+    
+    b64_final_audio = ""
+    try:
+        final_audio_file = "seraphim_signoff_final.mp3"
+        if not Path(final_audio_file).exists():
+            with st.spinner("✨ Generating final transmission..."):
+                asyncio.run(generate_voice(final_message, VOICE_CODE, final_audio_file))
+        
+        if Path(final_audio_file).exists():
+            with open(final_audio_file, "rb") as f:
+                b64_final_audio = base64.b64encode(f.read()).decode()
+    except:
+        pass
+
+    # THIS SCRIPT EXECUTES THE SMOOTH FADE OUT THEN PLAYS THE FINAL GOODBYE
     components.html(f"""
     <script>
     (function() {{
-        const parentDoc = window.parent.document;
+        const pWin = window.parent;
+        const pDoc = pWin.document;
         const isCreator = {str(is_creator).lower()};
         
-        if (!isCreator && window.parent.localStorage) {{
-            window.parent.localStorage.setItem('SERAPHIM_PERMANENTLY_LOCKED', 'SEALED');
+        if (!isCreator && pWin.localStorage) {{
+            pWin.localStorage.setItem('SERAPHIM_PERMANENTLY_LOCKED', 'SEALED');
         }}
         
-        const oldAudios = parentDoc.querySelectorAll('audio#mainAudio, audio#bgmAudio');
-        oldAudios.forEach(audio => {{ 
-            audio.pause();
-            audio.currentTime = 0;
-            audio.removeAttribute('src');
-            audio.remove();
-        }});
+        const mainAudio = pDoc.getElementById('mainAudio');
+        const bgmAudio = pDoc.getElementById('bgmAudio');
+        
+        // Stop the dynamic background music interval loop
+        if (pWin.bgmInterval) clearInterval(pWin.bgmInterval);
+        
+        const fadeInterval = 50; 
+        const fadeOutDuration = 2000; // 2 seconds fade out
+        const steps = fadeOutDuration / fadeInterval;
+        let currentStep = 0;
+        
+        const mainVolStep = mainAudio ? mainAudio.volume / steps : 0;
+        const bgmVolStep = bgmAudio ? bgmAudio.volume / steps : 0;
+        
+        const fader = setInterval(() => {{
+            currentStep++;
+            let allFaded = true;
+            
+            if (mainAudio && mainAudio.volume > mainVolStep) {{
+                mainAudio.volume -= mainVolStep;
+                allFaded = false;
+            }} else if (mainAudio) {{
+                mainAudio.volume = 0;
+            }}
+            
+            if (bgmAudio && bgmAudio.volume > bgmVolStep) {{
+                bgmAudio.volume -= bgmVolStep;
+                allFaded = false;
+            }} else if (bgmAudio) {{
+                bgmAudio.volume = 0;
+            }}
+            
+            if (currentStep >= steps || allFaded) {{
+                clearInterval(fader);
+                if (mainAudio) {{ mainAudio.pause(); mainAudio.remove(); }}
+                if (bgmAudio) {{ bgmAudio.pause(); bgmAudio.remove(); }}
+                
+                // Audio has faded. Now play the final goodbye message.
+                playFinalAudio();
+            }}
+        }}, fadeInterval);
+
+        function playFinalAudio() {{
+            const finalB64 = "{b64_final_audio}";
+            if (!finalB64) return;
+            
+            let finalAudio = pDoc.getElementById('finalAudio');
+            if (!finalAudio) {{
+                finalAudio = pDoc.createElement('audio');
+                finalAudio.id = 'finalAudio';
+                finalAudio.src = 'data:audio/mp3;base64,' + finalB64;
+                pDoc.body.appendChild(finalAudio);
+            }}
+            
+            finalAudio.play().catch(e => console.log('Final autoplay blocked:', e));
+            
+            const voiceBars = pDoc.getElementById('voiceBars');
+            const bars = pDoc.querySelectorAll('.voice-bar');
+            
+            try {{
+                const ctx = new (pWin.AudioContext || pWin.webkitAudioContext)();
+                const analyser = ctx.createAnalyser();
+                const source = ctx.createMediaElementSource(finalAudio);
+                source.connect(analyser);
+                analyser.connect(ctx.destination);
+                analyser.fftSize = 64;
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                
+                function renderFrame() {{
+                    if (!finalAudio.paused && !finalAudio.ended) requestAnimationFrame(renderFrame);
+                    analyser.getByteFrequencyData(dataArray);
+                    for (let i = 0; i < 9; i++) {{
+                        if(bars[i]) {{
+                            const val = dataArray[i];
+                            const heightPercent = 20 + (val / 255) * 80;
+                            bars[i].style.height = heightPercent + '%';
+                            
+                            const glowVal = val / 255;
+                            bars[i].style.boxShadow = glowVal > 0.1 ? '0 0 2px rgba(100, 255, 255, ' + (glowVal * 0.2) + ')' : 'none';
+                            bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.3 + glowVal * 0.3) + ')';
+                        }}
+                    }}
+                }}
+                
+                finalAudio.addEventListener('play', () => {{
+                    if(voiceBars) {{ voiceBars.classList.remove('stopped'); voiceBars.classList.add('playing'); }}
+                    ctx.resume().then(() => renderFrame());
+                }});
+                
+                finalAudio.addEventListener('pause', () => {{
+                    if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
+                }});
+                
+                finalAudio.addEventListener('ended', () => {{
+                    if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
+                }});
+                
+            }} catch(e) {{
+                finalAudio.addEventListener('play', () => {{
+                    if(voiceBars) {{ voiceBars.classList.remove('stopped'); voiceBars.classList.add('playing'); }}
+                }});
+                finalAudio.addEventListener('ended', () => {{
+                    if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
+                }});
+            }}
+        }}
     }})();
     </script>
     """, height=0)
@@ -842,102 +953,6 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
         </p>
     </div>
     """, unsafe_allow_html=True)
-    
-    send_ntfy_notification(message="Transmission confirmed. Message received and accepted by recipient.")
-    
-    try:
-        final_audio_file = "seraphim_signoff_final.mp3"
-        
-        if not Path(final_audio_file).exists():
-            with st.spinner("✨ Generating final transmission..."):
-                asyncio.run(generate_voice(final_message, VOICE_CODE, final_audio_file))
-        
-        if Path(final_audio_file).exists():
-            with open(final_audio_file, "rb") as f:
-                b64_final_audio = base64.b64encode(f.read()).decode()
-            
-            st.markdown(f'<audio id="finalAudio" style="display:none;"><source src="data:audio/mp3;base64,{b64_final_audio}" type="audio/mp3"></audio>', unsafe_allow_html=True)
-            
-            components.html(f"""
-            <script>
-            (function() {{
-                const parentDoc = window.parent.document;
-                const audio = parentDoc.getElementById('finalAudio');
-                const voiceBars = parentDoc.getElementById('voiceBars');
-                const bars = parentDoc.querySelectorAll('.voice-bar');
-                
-                let hasSetup = false;
-
-                function setupGoodbye() {{
-                    if (hasSetup || !audio) return;
-                    hasSetup = true;
-                    
-                    try {{
-                        const ctx = new (window.parent.AudioContext || window.parent.webkitAudioContext)();
-                        const analyser = ctx.createAnalyser();
-                        const source = ctx.createMediaElementSource(audio);
-                        source.connect(analyser);
-                        analyser.connect(ctx.destination);
-                        analyser.fftSize = 64;
-                        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-                        
-                        function renderFrame() {{
-                            if (!audio.paused && !audio.ended) requestAnimationFrame(renderFrame);
-                            analyser.getByteFrequencyData(dataArray);
-                            
-                            for (let i = 0; i < 9; i++) {{
-                                if(bars[i]) {{
-                                    const val = dataArray[i];
-                                    const heightPercent = 20 + (val / 255) * 80;
-                                    bars[i].style.height = heightPercent + '%';
-                                    
-                                    // HIGH PERFORMANCE VERY MINIMAL GLOW
-                                    const glowVal = val / 255;
-                                    bars[i].style.boxShadow = glowVal > 0.1 ? '0 0 2px rgba(100, 255, 255, ' + (glowVal * 0.2) + ')' : 'none';
-                                    bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.3 + glowVal * 0.3) + ')';
-                                }}
-                            }}
-                        }}
-                        
-                        audio.addEventListener('play', () => {{
-                            if(voiceBars) {{
-                                voiceBars.classList.remove('stopped');
-                                voiceBars.classList.add('playing');
-                            }}
-                            ctx.resume().then(() => renderFrame());
-                        }});
-                        
-                    }} catch(e) {{
-                        audio.addEventListener('play', () => {{
-                            if(voiceBars) {{
-                                voiceBars.classList.remove('stopped');
-                                voiceBars.classList.add('playing');
-                            }}
-                        }});
-                    }}
-                    
-                    audio.addEventListener('ended', () => {{
-                        if(voiceBars) {{
-                            voiceBars.classList.add('stopped');
-                            voiceBars.classList.remove('playing');
-                        }}
-                    }});
-                    
-                    setTimeout(() => {{ 
-                        audio.play().catch(e => console.log('Goodbye blocked:', e)); 
-                    }}, 800);
-                }}
-
-                if (document.readyState === 'loading') {{
-                    document.addEventListener('DOMContentLoaded', setupGoodbye);
-                }} else {{
-                    setTimeout(setupGoodbye, 500);
-                }}
-            }})();
-            </script>
-            """, height=0)
-    except: 
-        pass
     
     st.markdown("""
     <div class="completion-text">
@@ -966,7 +981,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
                 left: 0; 
                 width: 100vw; 
                 height: 100vh; 
-                background: linear-gradient(135deg, #0a0e1a 0%, #0f1624 25%, #10141e 50%, #0d1520 75%, #0a0e1a 100%);
+                background: linear-gradient(135deg, #1a0505 0%, #3a0f0f 25%, #4a1515 50%, #2b0a0a 75%, #1a0505 100%);
                 background-size: 400% 400%;
                 animation: gradient-shift 8s ease infinite;
                 display: flex; 
