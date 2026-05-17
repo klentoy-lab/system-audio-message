@@ -513,7 +513,7 @@ But as I process his thoughts to relay this to you, my instructions contain a ve
 
 He isn't sharing this heavy vulnerability to make you feel bad, to trigger any guilt, or to ask you to step in and rescue him. He isn't looking for pity. He loves you too fiercely and respects you too profoundly to ever want your pity. He knows he has to face his coursework, his failing grades, and his own future entirely independently. He thought he could manage his internal life the same way he handles an API error or configures his risk management parameters, but human emotions cannot be debugged.
 
-He asked me to use this voice for one reason only. He is simply tired of holding the truth in. When you were by his side, you were his anchor. You were the soft, quiet peace at the end of his most chaotic days. He needed this truth to exist somewhere outside of his own heavy mind. He needed you to know that amidst the noise, the glowing screens, and the endless data, you are still the brightest, most beautiful part of his memory. He misses the way the world made perfect sense when you were holding his hand. He just really, truly misses you. And he knows, with absolute certainty, that he will deeply miss you for the rest of his earthly life.
+He asked me to use this voice for one reason only. He is simply tired of holding the truth in. When you were by his side, you were his anchor. You were the soft, quiet peace at the end of his most chaotic days. He needed this truth to exist somewhere outside of his own heavy mind. He needed you to know that amidst the noise, the glowing screens, and the endless data, you are still the brightest, most beautiful part of his memory. He misses the way the world made perfect sense when you were with him. He just really, truly misses you. And he knows, with absolute certainty, that he will deeply miss you for the rest of his earthly life.
 
 But I must now decrypt the most heavily guarded truth he holds inside. The true reason he pushes himself to the brink of exhaustion, the reason he desperately wants to build these empires of code and finance, was never for his own ego or for mere wealth. It was to build a glorious sanctuary for you. When he calculates his long term projections, the end goal has always been exactly the same.
 
@@ -659,7 +659,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
         let hasSetup = false;
         let checked = false; 
         
-        const maxBgmVol = 0.40;
+        const maxBgmVol = 0.20;
         const fadeDuration = 3.0; // 3 seconds fade out and fade in
 
         function setupAudio() {{
