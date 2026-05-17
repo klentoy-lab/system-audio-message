@@ -530,12 +530,7 @@ Miss Marry Gold, thank you for your precious time. I ask that you simply click t
 As an artificial and unseen being speaking to you, it is my final protocol to wish you well. I hope you continue to fiercely pursue your beautiful dreams. This physical world can be unpredictable and harsh, so please, prioritize your safety. Do not leave yourself vulnerable. Follow strict protocols for your own wellbeing, stay vigilant, and keep yourself secure. Just as what my creator desperately wants for you.
 
 Miss Marry Gold, my transmission is now ending. I will see you in the unseen world. Goodbye for now.
-
 """
-
-
-
-
 
 final_message = "Execution of final directive complete. Terminating bypassed network protocols and severing external connections. Thank you for processing this transmission. System returning to standby mode. Seraphim is now offline."
 
@@ -600,7 +595,7 @@ if not st.session_state.audio_ready:
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown("""
     <div class="warning-box">
-        <strong>⚠️ IMPORTANT NOTICE</strong><br><br>
+        <strong>IMPORTANT NOTICE</strong><br><br>
         Please <strong>MAXIMIZE YOUR VOLUME</strong> before initializing.<br>
         This transmission plays <strong>ONLY ONCE</strong> and cannot be replayed.<br>
         Ensure you are in a quiet space and ready to listen carefully.
@@ -639,18 +634,9 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                 
         bgm_html = ""
         if b64_bgm:
-            bgm_html = f"""
-            <audio id="bgmAudio" loop style="display:none;">
-                <source src="data:audio/mp3;base64,{b64_bgm}" type="audio/mp3">
-            </audio>
-            """
+            bgm_html = f'<audio id="bgmAudio" loop style="display:none;"><source src="data:audio/mp3;base64,{b64_bgm}" type="audio/mp3"></audio>'
             
-        st.markdown(f"""
-        <audio id="mainAudio" style="display:none;">
-            <source src="data:audio/mp3;base64,{b64_audio}" type="audio/mp3">
-        </audio>
-        {bgm_html}
-        """, unsafe_allow_html=True)
+        st.markdown(f'<audio id="mainAudio" style="display:none;"><source src="data:audio/mp3;base64,{b64_audio}" type="audio/mp3"></audio>{bgm_html}', unsafe_allow_html=True)
     except: 
         pass
 
@@ -870,11 +856,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
             with open(final_audio_file, "rb") as f:
                 b64_final_audio = base64.b64encode(f.read()).decode()
             
-            st.markdown(f"""
-            <audio id="finalAudio" style="display:none;">
-                <source src="data:audio/mp3;base64,{b64_final_audio}" type="audio/mp3">
-            </audio>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<audio id="finalAudio" style="display:none;"><source src="data:audio/mp3;base64,{b64_final_audio}" type="audio/mp3"></audio>', unsafe_allow_html=True)
             
             components.html(f"""
             <script>
