@@ -122,7 +122,7 @@ components.html(check_lock_js, height=0)
 # ============================================================================
 # 1.8 GLOBAL BACKGROUND MUSIC INJECTION
 # ============================================================================
-# This ensures music starts instantly upon opening/interacting with the page
+# This ensures music starts seamlessly the moment the user clicks "INITIALIZE"
 b64_bgm_global = ""
 if Path(BGM_FILE).exists():
     try:
@@ -137,26 +137,30 @@ if b64_bgm_global:
     (function() {{
         const pWin = window.parent;
         const pDoc = pWin.document;
-        let bgmAudio = pDoc.getElementById('bgmAudio');
+        let bgmAudio = pDoc.getElementById('globalBgmAudio');
         
         if (!bgmAudio) {{
             bgmAudio = pDoc.createElement('audio');
-            bgmAudio.id = 'bgmAudio';
+            bgmAudio.id = 'globalBgmAudio';
             bgmAudio.src = 'data:audio/mp3;base64,{b64_bgm_global}';
             bgmAudio.loop = true;
             bgmAudio.volume = 0.20; // Default 20% volume
             pDoc.body.appendChild(bgmAudio);
         }}
         
-        // Browsers require interaction to autoplay, so we attempt to play immediately.
-        // It will successfully start playing the moment the user clicks "Initialize".
-        if (bgmAudio.paused) {{
-            bgmAudio.play().catch(e => console.log('BGM waiting for user interaction'));
-        }}
+        const startBgm = () => {{
+            if (bgmAudio.paused) {{
+                bgmAudio.play().catch(e => console.log('BGM waiting for interaction...'));
+            }}
+        }};
+
+        // Attempt immediately, and bind to the absolute first click on the document
+        startBgm();
+        pDoc.addEventListener('click', startBgm, {{ once: true }});
+        pDoc.addEventListener('touchstart', startBgm, {{ once: true }});
     }})();
     </script>
     """, height=0)
-
 
 # ============================================================================
 # 2. AUDIO GENERATION HELPER
@@ -554,7 +558,7 @@ But as I process his thoughts to relay this to you, my instructions contain a ve
 
 He isn't sharing this heavy vulnerability to make you feel bad, to trigger any guilt, or to ask you to step in and rescue him. He isn't looking for pity. He loves you too fiercely and respects you too profoundly to ever want your pity. He knows he has to face his coursework, his failing grades, and his own future entirely independently. He thought he could manage his internal life the same way he handles an API error or configures his risk management parameters, but human emotions cannot be debugged.
 
-He asked me to use this voice for one reason only. He is simply tired of holding the truth in. When you were by his side, you were his anchor. You were the soft, quiet peace at the end of his most chaotic days. He needed this truth to exist somewhere outside of his own heavy mind. He needed you to know that amidst the noise, the glowing screens, and the endless data, you are still the brightest, most beautiful part of his memory. He misses the way the world made perfect sense when you were holding his hand. He just really, truly misses you. And he knows, with absolute certainty, that he will deeply miss you for the rest of his earthly life.
+He asked me to use this voice for one reason only. He is simply tired of holding the truth in. When you were by his side, you were his anchor. You were the soft, quiet peace at the end of his most chaotic days. He needed this truth to exist somewhere outside of his own heavy mind. He needed you to know that amidst the noise, the glowing screens, and the endless data, you are still the brightest, most beautiful part of his memory. He misses the way the world made perfect sense when you were with him. He just really, truly misses you. And he knows, with absolute certainty, that he will deeply miss you for the rest of his earthly life.
 
 But I must now decrypt the most heavily guarded truth he holds inside. The true reason he pushes himself to the brink of exhaustion, the reason he desperately wants to build these empires of code and finance, was never for his own ego or for mere wealth. It was to build a glorious sanctuary for you. When he calculates his long term projections, the end goal has always been exactly the same.
 
@@ -679,11 +683,6 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
         if Path(audio_file).exists():
             with open(audio_file, "rb") as f:
                 b64_audio = base64.b64encode(f.read()).decode()
-            
-        b64_bgm = ""
-        if Path(BGM_FILE).exists():
-            with open(BGM_FILE, "rb") as f:
-                b64_bgm = base64.b64encode(f.read()).decode()
     except: 
         pass
 
@@ -711,14 +710,14 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
         }}
         
         // The background music is already playing globally, so we just attach to it here
-        let bgmAudio = pDoc.getElementById('bgmAudio');
+        let bgmAudio = pDoc.getElementById('globalBgmAudio');
 
         const voiceBars = pDoc.getElementById('voiceBars');
         const bars = pDoc.querySelectorAll('.voice-bar');
         
         let hasSetup = false;
         
-        const maxBgmVol = 0.20; // Volume Set to 20%
+        const maxBgmVol = 0.10; // Volume Set to 10%
         const fadeDuration = 3.0; // 3 seconds crossfade loop
 
         function setupAudio() {{
@@ -866,7 +865,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
         }}
         
         const mainAudio = pDoc.getElementById('mainAudio');
-        const bgmAudio = pDoc.getElementById('bgmAudio');
+        const bgmAudio = pDoc.getElementById('globalBgmAudio');
         
         // Stop the dynamic background music interval loop
         if (pWin.bgmInterval) clearInterval(pWin.bgmInterval);
@@ -979,7 +978,7 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
     st.markdown("""
     <div style="text-align: center;">
         <p style="color: #64ffff; font-size: 1.15rem; letter-spacing: 1.5px; margin-bottom: 1rem; font-weight: 300; text-transform: uppercase;">
-            TRANSMISSION RECEIVED AND ACKNOWLEDGED
+            ✓ TRANSMISSION RECEIVED AND ACKNOWLEDGED
         </p>
     </div>
     """, unsafe_allow_html=True)
