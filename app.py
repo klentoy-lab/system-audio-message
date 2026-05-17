@@ -122,7 +122,7 @@ components.html(check_lock_js, height=0)
 # ============================================================================
 # 1.8 GLOBAL BACKGROUND MUSIC INJECTION
 # ============================================================================
-# This ensures music starts seamlessly the moment the user clicks "INITIALIZE"
+# This ensures music starts seamlessly the moment the user interacts with the page
 b64_bgm_global = ""
 if Path(BGM_FILE).exists():
     try:
@@ -149,18 +149,20 @@ if b64_bgm_global:
         }}
         
         const startBgm = () => {{
-            if (bgmAudio.paused) {{
+            if (bgmAudio && bgmAudio.paused) {{
                 bgmAudio.play().catch(e => console.log('BGM waiting for interaction...'));
             }}
         }};
 
-        // Attempt immediately, and bind to the absolute first click on the document
+        // Bind to multiple interaction events to start audio ASAP
         startBgm();
-        pDoc.addEventListener('click', startBgm, {{ once: true }});
-        pDoc.addEventListener('touchstart', startBgm, {{ once: true }});
+        ['click', 'touchstart', 'scroll', 'keydown'].forEach(evt => {{
+            pDoc.addEventListener(evt, startBgm, {{ once: true }});
+        }});
     }})();
     </script>
     """, height=0)
+
 
 # ============================================================================
 # 2. AUDIO GENERATION HELPER
@@ -798,9 +800,9 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                     voiceBars.classList.remove('playing');
                 }}
                 
-                // CRITICAL FIX: The audio has ended. We now safely reveal the button.
+                // CRITICAL FIX: The audio has ended. We now safely reveal the button without crashing React.
                 const hider = pDoc.getElementById('btn-hider');
-                if (hider) hider.remove(); 
+                if (hider) hider.innerHTML = ''; 
                 
                 const targetButtons = pDoc.querySelectorAll('div[data-testid="stButton"]');
                 targetButtons.forEach(btnDiv => {{
