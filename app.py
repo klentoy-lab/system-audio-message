@@ -31,7 +31,7 @@ VOICE_CODE = "en-AU-WilliamNeural"
 is_creator = st.query_params.get("creator") == "true"
 
 # GENERATE WARNING MESSAGE AUDIO (One-time, cached)
-warning_message = "Warning. This transmission was designed for a single playback protocol. Security measures have permanently locked this System. Further attempts to access this data will be logged. Access denied. Seraphim system is now permanently offline and unavailable."
+warning_message = "Warning. This transmission was Unavailable due to playback protocol. Security measures have permanently locked this System. Further attempts to access this data will be logged. Seraphim system is now permanently offline and unavailable."
 warning_file = "seraphim_security_warning.mp3"
 
 if not Path(warning_file).exists():
