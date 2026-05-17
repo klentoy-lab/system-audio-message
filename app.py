@@ -530,7 +530,12 @@ Miss Marry Gold, thank you for your precious time. I ask that you simply click t
 As an artificial and unseen being speaking to you, it is my final protocol to wish you well. I hope you continue to fiercely pursue your beautiful dreams. This physical world can be unpredictable and harsh, so please, prioritize your safety. Do not leave yourself vulnerable. Follow strict protocols for your own wellbeing, stay vigilant, and keep yourself secure. Just as what my creator desperately wants for you.
 
 Miss Marry Gold, my transmission is now ending. I will see you in the unseen world. Goodbye for now.
+
 """
+
+
+
+
 
 final_message = "Execution of final directive complete. Terminating bypassed network protocols and severing external connections. Thank you for processing this transmission. System returning to standby mode. Seraphim is now offline."
 
@@ -614,7 +619,7 @@ if not st.session_state.audio_ready:
                     st.rerun()
 
 # ============================================================================
-# STATE 2: PLAYBACK WITH FAST, LAG-FREE VOICE BARS AND BACKGROUND MUSIC
+# STATE 2: PLAYBACK WITH FAST, LAG-FREE VOICE BARS AND SEAMLESS BGM
 # ============================================================================
 elif st.session_state.audio_ready and not st.session_state.button_clicked and not st.session_state.transmission_complete:
     
@@ -655,7 +660,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             st.session_state.button_clicked = True
             st.rerun()
 
-    # ADVANCED SYNCED JAVASCRIPT WITH BGM CONTROL
+    # ADVANCED SYNCED JAVASCRIPT WITH INFINITE SEAMLESS BGM LOOP
     components.html(f"""
     <script>
     (function() {{
@@ -667,6 +672,9 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
         
         let hasSetup = false;
         let checked = false; 
+        
+        const maxBgmVol = 0.40;
+        const fadeDuration = 3.0; // 3 seconds fade out and fade in
 
         function setupAudio() {{
             if (hasSetup || !audio) return;
@@ -674,10 +682,26 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
             
             audio.play().catch(e => console.log("Autoplay info:", e));
             
-            // Start BGM at 40% volume as requested
+            // Continuous Seamless Crossfade Loop Logic for Background Music
             if (bgm) {{
-                bgm.volume = 0.40; 
+                bgm.volume = 0; // start at 0 for fade in
                 bgm.play().catch(e => console.log("BGM autoplay info:", e));
+                
+                setInterval(() => {{
+                    if (!bgm || bgm.paused || isNaN(bgm.duration)) return;
+                    const timeLeft = bgm.duration - bgm.currentTime;
+                    
+                    if (timeLeft <= fadeDuration) {{
+                        // Fading out at the end of the track
+                        bgm.volume = Math.max(0, Math.min(maxBgmVol, maxBgmVol * (timeLeft / fadeDuration)));
+                    }} else if (bgm.currentTime <= fadeDuration) {{
+                        // Fading in at the beginning of the track
+                        bgm.volume = Math.max(0, Math.min(maxBgmVol, maxBgmVol * (bgm.currentTime / fadeDuration)));
+                    }} else {{
+                        // Standard volume
+                        bgm.volume = maxBgmVol;
+                    }}
+                }}, 50);
             }}
 
             try {{
@@ -721,7 +745,6 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                         voiceBars.classList.add('stopped');
                         voiceBars.classList.remove('playing');
                     }}
-                    if (bgm) bgm.pause();
                 }});
                 
             }} catch(e) {{
@@ -739,7 +762,6 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                         voiceBars.classList.add('stopped');
                         voiceBars.classList.remove('playing');
                     }}
-                    if (bgm) bgm.pause();
                 }});
             }}
 
@@ -748,7 +770,9 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                     voiceBars.classList.add('stopped');
                     voiceBars.classList.remove('playing');
                 }}
-                if (bgm) bgm.pause(); // Stop background music when voice ends
+                
+                // Note: BGM deliberately NOT paused here. 
+                // It continues to seamlessly loop until the user clicks the final button.
                 
                 checked = true;
                 clearInterval(hideInterval);
@@ -802,6 +826,7 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
 # ============================================================================
 elif st.session_state.button_clicked and not st.session_state.transmission_complete:
     
+    # This block instantly wipes out all audio elements (voice + bgm) upon button click
     components.html(f"""
     <script>
     (function() {{
