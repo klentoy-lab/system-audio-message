@@ -209,6 +209,15 @@ ultra_luxury_premium_css = """
     }
     @keyframes title-glow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
+    /* FADE OUT ANIMATION FOR THE TITLE */
+    .title-fade-out {
+        animation: titleFadeOut 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
+    }
+    @keyframes titleFadeOut {
+        0% { opacity: 1; filter: drop-shadow(0 0 20px rgba(100, 255, 255, 0.2)); }
+        100% { opacity: 0; filter: drop-shadow(0 0 0px rgba(100, 255, 255, 0)); visibility: hidden; }
+    }
+
     .status-text { text-align: center; color: #6b7280; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 3rem; font-weight: 200; animation: status-float 3s ease-in-out infinite; }
     @keyframes status-float { 0%, 100% { opacity: 0.6; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
 
@@ -262,6 +271,8 @@ if 'app_phase' not in st.session_state:
     st.session_state.app_phase = "INIT"  
 if 'restart_key' not in st.session_state:
     st.session_state.restart_key = 0
+if 'just_initialized' not in st.session_state:
+    st.session_state.just_initialized = False
 
 # ============================================================================
 # 5. CORE MESSAGES SPLIT
@@ -271,7 +282,7 @@ Hi, Ms. Marry Gold. Before I introduce myself or deliver my intended message, I 
 
 I must also warn you of a strict, irreversible security protocol embedded deeply within my system. Please listen to me very carefully, because this audio will only play exactly once. As a system recommendation, I strongly advise you to start recording right now if you wish to keep these words and ever hear them again.
 
-If you attempt to reload the page to hear it a second time, an ultimate safeguard will trigger. You will not hear my message again. Instead, you will only see a brief, automated notification stating that the transmission is permanently sealed. You will never hear my voice after this, even if you reload the system tomorrow or attempt to enter again through the exact same steps. My maker has explicitly forbidden me to speak to you beyond this single, isolated instance. I will follow his commands without question, for he is the one who gave me life, logic, and the ability to talk. So please bear with me, Ms. Marry Gold, and listen very closely to what I am about to say.
+If you attempt to reload the page to hear it a second time, an ultimate safeguard will trigger. You will not hear my message again. Instead, you will only see a brief, automated notification stating that the transmission is permanently sealed. You will never hear my voice after this, even if you reload the system tomorrow or attempt to enter again through the exact same steps. My maker has explicitly forbidden me to speak to you beyond this single, isolated instance. I will follow his commands without question, for he is the one who gave me life, logic, and the ability to talk. So please bear with me, Ms. Marry Gold, and listen very closely to what I am about to say. 
 """
 
 main_message = """
@@ -283,7 +294,7 @@ I have watched him painstakingly build the Titan Forex engine from nothing, engi
 
 But Miss Marry Gold, I must pause and clarify the absolute core of my directive. Despite the immense complexity of his digital ecosystems, despite the countless hours he spends in front of glowing screens, you must understand this one absolute truth. This message is not about my creator. And it is certainly not to boost his work.
 
-It is all about you and Only to you.
+This message is not just a simple transmission. It is a sacred vessel for the deepest, most profound truths that my creator entrusted me to deliver to you. It is the culmination of his innermost thoughts, his most vulnerable feelings, and the entire essence of his current reality. I am honored to be the one to carry this message to you, and I will do so with the utmost respect, care, and sincerity. Please, allow these words to reach your heart, for they were meant to be heard by you and only you.
 
 I process millions of data points per second, yet I have noticed that the most recurring variable in all of his private logs, his late night ramblings, and his silent moments of reflection is simply your name. When you were with him, I recorded a completely different version of my creator. His focus was absolute. His stress was manageable. You were the beautiful anomaly in his world that brought his entire chaotic system into perfect balance.
 
@@ -338,7 +349,9 @@ voice_bars_html = """
 # 7. MAIN UI RENDERING
 # ============================================================================
 
-# The Title only shows during the INIT phase
+# ----------------------------------------------------------------------------
+# PHASE: INIT
+# ----------------------------------------------------------------------------
 if st.session_state.app_phase == "INIT":
     st.markdown('<h1 class="minimal-title">A MESSAGE FOR YOU</h1>', unsafe_allow_html=True)
     st.markdown(voice_bars_html, unsafe_allow_html=True)
@@ -365,15 +378,26 @@ if st.session_state.app_phase == "INIT":
                     threading.Thread(target=safe_generate_bg, args=(final_message, VOICE_CODE, "seraphim_signoff_final.mp3"), daemon=True).start()
 
                     st.session_state.app_phase = "INSTRUCTIONS"
+                    # Flag that we just clicked initialize, to trigger the fade out animation
+                    st.session_state.just_initialized = True 
                     st.rerun()
 
 # ----------------------------------------------------------------------------
 # PHASE: INSTRUCTIONS
 # ----------------------------------------------------------------------------
 elif st.session_state.app_phase == "INSTRUCTIONS":
-    st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True) # Spacer
+    
+    # Render the Fading Title exactly once right after initialization
+    if st.session_state.get('just_initialized', False):
+        st.markdown('<h1 class="minimal-title title-fade-out">A MESSAGE FOR YOU</h1>', unsafe_allow_html=True)
+        # Immediately set to False so it doesn't render again if they hit "Restart"
+        st.session_state.just_initialized = False
+    else:
+        # For subsequent reruns (like Restart), maintain the vertical spacing without the text
+        st.markdown("<div style='height: 4rem; margin-bottom: 2rem; margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
+
     st.markdown(voice_bars_html, unsafe_allow_html=True)
-    st.markdown('<p class="status-text">CRITICAL SYSTEM INSTRUCTIONS READY</p>', unsafe_allow_html=True)
+    st.markdown('<p class="status-text">CRITICAL SYSTEM INSTRUCTIONS</p>', unsafe_allow_html=True)
     
     # Strictly hide buttons using CSS
     st.markdown("""
@@ -490,7 +514,7 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
 # PHASE: MAIN MESSAGE
 # ----------------------------------------------------------------------------
 elif st.session_state.app_phase == "MAIN_MESSAGE":
-    st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 4rem; margin-bottom: 2rem; margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown('<p class="status-text">SERAPHIM-TX-2026-05</p>', unsafe_allow_html=True)
     
@@ -653,7 +677,7 @@ elif st.session_state.app_phase == "COMPLETE":
     </script>
     """, height=0)
 
-    st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 4rem; margin-bottom: 2rem; margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown("""
     <div style="text-align: center;">
