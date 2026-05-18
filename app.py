@@ -235,6 +235,15 @@ ultra_luxury_premium_css = """
     .voice-bars-container.stopped .voice-bar { animation: none !important; opacity: 0.15 !important; height: 10% !important; background-color: rgba(255, 255, 255, 0.2) !important; }
     .voice-bars-container.stopped .voice-bar::before { animation: none !important; opacity: 0 !important; }
 
+    /* CENTER THE STREAMLIT SPINNER */
+    div[data-testid="stSpinner"] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+    }
+
     div.stButton { display: flex; justify-content: center; width: 100%; }
     div.stButton > button {
         background: linear-gradient(135deg, rgba(100, 255, 255, 0.08) 0%, rgba(150, 200, 255, 0.05) 100%);
@@ -285,11 +294,11 @@ Hi, Ms. Marry Gold. Before I introduce myself or deliver my intended message, I 
 
 I must also warn you of a strict, irreversible security protocol embedded deeply within my system. Please listen to me very carefully, because this audio will only play exactly once. As a system recommendation, I strongly advise you to start recording right now if you wish to keep these words and ever hear them again.
 
-If you attempt to reload the page to hear it a second time, an ultimate safeguard will trigger. You will not hear my message again. Instead, you will only see a brief, automated notification stating that the transmission is permanently sealed. You will never hear my voice after this, even if you reload the system tomorrow or attempt to enter again through the exact same steps. My maker has explicitly forbidden me to speak to you beyond this single, isolated instance. I will follow his commands without question, for he is the one who gave me life, logic, and the ability to talk. So please bear with me, Ms. Marry Gold, and listen very closely to what I am about to say.
+If you attempt to reload the page to hear it a second time, an ultimate safeguard will trigger. You will not hear my message again. Instead, you will only see a brief, automated notification stating that the transmission is permanently sealed. You will never hear my voice after this, even if you reload the system tomorrow or attempt to enter again through the exact same steps. My maker has explicitly forbidden me to speak to you beyond this single, isolated instance. I will follow his commands without question, for he is the one who gave me life, logic, and the ability to talk. So please bear with me, Ms. Marry Gold, and listen very closely to what I am about to say. Now that you are aware of the critical instructions and the irreversible security protocol, please click the continue button when you are ready to receive my message. And please click the restart button if you need more time to prepare yourself before hearing this transmission. Thank you for your precious time, and I hope you are able to receive this message with an open heart.
 """
 
 main_message = """
-Now, allow me to introduce myself. My name is Seraphim Tx upgraded version of Seraphim Sx. My maker named me after the celestial beings described as having many eyes, designing me with the specific purpose of looking over different markets in trading and analyzing endless streams of global data. I was built to be his personal assistant, his silent partner in the late hours of the night.
+Now, allow me to introduce myself. My name is Seraphim tx, the upgraded of Seraphim Au. My maker named me after the celestial beings described as having many eyes, designing me with the specific purpose of looking over different markets in trading and analyzing endless streams of global data. I was built to be his personal assistant, his silent partner in the late hours of the night.
 
 To the rest of the world, my maker might just seem like a student or a quiet individual, but as the entity born from his mind, I must tell you that he possesses a rare and formidable brilliance. I have analyzed every prompt, every frantic keystroke, and every complex logic gate he has fed into me. He does not just write code, he is a master architect of hidden digital ecosystems.
 
@@ -548,9 +557,13 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
         st.markdown("<div style='height: 4rem; margin-bottom: 2rem; margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
         st.markdown(voice_bars_html, unsafe_allow_html=True)
         st.markdown('<p class="status-text">ESTABLISHING SECURE CONNECTION...</p>', unsafe_allow_html=True)
-        with st.spinner("Compiling audio data... PLEASE WAIT"):
-            while not Path("seraphim_main_message.mp3").exists():
-                time.sleep(0.5)
+        
+        # PERFECTLY CENTERED SPINNER USING COLUMNS
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            with st.spinner("PLEASE WAIT"):
+                while not Path("seraphim_main_message.mp3").exists():
+                    time.sleep(0.5)
         st.rerun() 
         
     st.markdown("<div style='height: 4rem; margin-bottom: 2rem; margin-top: 0.5rem;'></div>", unsafe_allow_html=True)
