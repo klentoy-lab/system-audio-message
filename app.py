@@ -355,7 +355,7 @@ if st.session_state.app_phase == "INIT":
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("INITIALIZE PROTOCOL", key="init", use_container_width=True):
-            with st.spinner("Compiling secure transmission protocols... PLEASE WAIT"):
+            with st.spinner("PLEASE WAIT"):
                 audio_file = "seraphim_instruction.mp3"
                 success = asyncio.run(generate_voice_async(instruction_message, VOICE_CODE, audio_file))
                 
@@ -373,7 +373,7 @@ if st.session_state.app_phase == "INIT":
 elif st.session_state.app_phase == "INSTRUCTIONS":
     st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True) # Spacer
     st.markdown(voice_bars_html, unsafe_allow_html=True)
-    st.markdown('<p class="status-text">CRITICAL SYSTEM INSTRUCTIONS PLAYING</p>', unsafe_allow_html=True)
+    st.markdown('<p class="status-text">CRITICAL SYSTEM INSTRUCTIONS READY</p>', unsafe_allow_html=True)
     
     # Strictly hide buttons using CSS
     st.markdown("""
@@ -471,12 +471,12 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
                 const hider = pDoc.getElementById('btn-hider');
                 if (hider) {{
                     hider.textContent = `
-                        div[data-testid="stButton"] { 
+                        div[data-testid="stButton"] {{ 
                             opacity: 1 !important; 
                             pointer-events: auto !important; 
                             transform: translateY(0) !important;
                             transition: all 1.5s ease-out !important;
-                        }
+                        }}
                     `;
                 }}
             }});
@@ -576,12 +576,12 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
                 const hider = pDoc.getElementById('btn-hider-main');
                 if (hider) {{
                     hider.textContent = `
-                        div[data-testid="stButton"] { 
+                        div[data-testid="stButton"] {{ 
                             opacity: 1 !important; 
                             pointer-events: auto !important; 
                             transform: translateY(0) !important;
                             transition: all 1.5s ease-out !important;
-                        }
+                        }}
                     `;
                 }}
             }});
