@@ -44,7 +44,6 @@ if not Path(warning_file).exists():
     except:
         pass
 
-# Check if warning audio exists and encode it early
 warning_b64 = ""
 if Path(warning_file).exists():
     try:
@@ -53,7 +52,7 @@ if Path(warning_file).exists():
     except:
         pass
 
-# EARLY SECURITY CHECK (Custom Red #120707 Gradient Locked Screen)
+# EARLY SECURITY CHECK 
 check_lock_js = f"""
 <script>
 (function() {{
@@ -122,7 +121,6 @@ components.html(check_lock_js, height=0)
 # ============================================================================
 # 1.8 GLOBAL BACKGROUND MUSIC INJECTION
 # ============================================================================
-# This ensures music starts seamlessly the moment the user interacts with the page
 b64_bgm_global = ""
 if Path(BGM_FILE).exists():
     try:
@@ -144,7 +142,7 @@ if b64_bgm_global:
             bgmAudio.id = 'globalBgmAudio';
             bgmAudio.src = 'data:audio/mp3;base64,{b64_bgm_global}';
             bgmAudio.loop = true;
-            bgmAudio.volume = 0.20; // Default 20% volume
+            bgmAudio.volume = 0.20;
             pDoc.body.appendChild(bgmAudio);
         }}
         
@@ -154,7 +152,6 @@ if b64_bgm_global:
             }}
         }};
 
-        // Bind to multiple interaction events to start audio ASAP
         startBgm();
         ['click', 'touchstart', 'scroll', 'keydown'].forEach(evt => {{
             pDoc.addEventListener(evt, startBgm, {{ once: true }});
@@ -162,7 +159,6 @@ if b64_bgm_global:
     }})();
     </script>
     """, height=0)
-
 
 # ============================================================================
 # 2. AUDIO GENERATION HELPER
@@ -177,363 +173,100 @@ async def generate_voice(text: str, voice_code: str, filename: str) -> bool:
         return False
 
 # ============================================================================
-# 3. SOFT LUXURY GRADIENT & STYLING (Custom Blue #04070f Main Screen)
+# 3. SOFT LUXURY GRADIENT & STYLING 
 # ============================================================================
 ultra_luxury_premium_css = """
 <style>
-    * { 
-        margin: 0; 
-        padding: 0; 
-        box-sizing: border-box; 
-    }
-    
-    html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow-x: hidden;
-    }
-    
-    #MainMenu { visibility: hidden; }
-    footer { visibility: hidden; }
-    header { visibility: hidden; }
-    [data-testid="stDecoration"] { visibility: hidden; }
-    .stToolbar { visibility: hidden; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow-x: hidden; }
+    #MainMenu, footer, header, [data-testid="stDecoration"], .stToolbar { visibility: hidden; }
     
     .stApp {
         background: linear-gradient(135deg, #020408 0%, #04070f 25%, #080f24 50%, #060b18 75%, #020408 100%);
-        background-size: 400% 400%;
-        animation: gradient-shift 18s ease infinite;
-        min-height: 100vh; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center;
+        background-size: 400% 400%; animation: gradient-shift 18s ease infinite;
+        min-height: 100vh; display: flex; align-items: center; justify-content: center;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
+    @keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     
-    @keyframes gradient-shift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    
-    [data-testid="stAppViewContainer"] {
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        min-height: 100vh;
-    }
-    
-    .block-container {
-        max-width: 700px; 
-        width: 100%; 
-        padding: 0 20px; 
-        display: flex;
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center;
-    }
+    [data-testid="stAppViewContainer"] { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .block-container { max-width: 700px; width: 100%; padding: 0 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
     .minimal-title {
-        font-size: 3.2rem; 
-        font-weight: 100; 
-        letter-spacing: 4px; 
-        background: linear-gradient(45deg, #ffffff, #c0d9ff, #ffffff);
-        background-size: 300% 300%;
-        animation: title-glow 4s ease infinite;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        text-align: center; 
-        margin-bottom: 2rem; 
-        margin-top: 0.5rem; 
-        text-transform: uppercase;
-        text-shadow: 0 0 40px rgba(192, 217, 255, 0.3);
+        font-size: 3.2rem; font-weight: 100; letter-spacing: 4px; 
+        background: linear-gradient(45deg, #ffffff, #c0d9ff, #ffffff); background-size: 300% 300%;
+        animation: title-glow 4s ease infinite; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        text-align: center; margin-bottom: 2rem; margin-top: 0.5rem; text-transform: uppercase;
         filter: drop-shadow(0 0 20px rgba(100, 255, 255, 0.2));
     }
+    @keyframes title-glow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-    @keyframes title-glow {
-        0% { background-position: 0% 50%; filter: drop-shadow(0 0 20px rgba(100, 255, 255, 0.2)); }
-        50% { background-position: 100% 50%; filter: drop-shadow(0 0 40px rgba(100, 220, 255, 0.4)); }
-        100% { background-position: 0% 50%; filter: drop-shadow(0 0 20px rgba(100, 255, 255, 0.2)); }
-    }
+    .status-text { text-align: center; color: #6b7280; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 3rem; font-weight: 200; animation: status-float 3s ease-in-out infinite; }
+    @keyframes status-float { 0%, 100% { opacity: 0.6; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
 
-    .status-text {
-        text-align: center; 
-        color: #6b7280; 
-        font-size: 0.75rem; 
-        letter-spacing: 3px;
-        text-transform: uppercase; 
-        margin-bottom: 3rem;
-        font-weight: 200;
-        animation: status-float 3s ease-in-out infinite;
-    }
-
-    @keyframes status-float {
-        0%, 100% { opacity: 0.6; transform: translateY(0); }
-        50% { opacity: 1; transform: translateY(-3px); }
-    }
-
-    .voice-bars-container {
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        gap: 10px;
-        margin-bottom: 3.5rem; 
-        height: 60px; 
-        width: 100%;
-        perspective: 1000px;
-    }
-
-    .voice-bar {
-        width: 8px; 
-        height: 30%; 
-        background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.2) 100%);
-        border-radius: 5px; 
-        opacity: 0.6; 
-        transition: height 0.05s linear;
-        position: relative;
-    }
-
-    .voice-bar::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(180deg, rgba(100, 255, 255, 0.4) 0%, transparent 100%);
-        border-radius: 5px;
-        opacity: 0;
-    }
-
-    .voice-bar::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: 5px;
-        box-shadow: none;
-    }
-
-    .voice-bars-container.playing .voice-bar {
-        opacity: 0.95;
-    }
-
-    .voice-bars-container.playing .voice-bar::before {
-        animation: glow-inner-pulse 0.6s ease-in-out infinite;
-    }
-
-    .voice-bars-container.playing .voice-bar:nth-child(1) { filter: hue-rotate(0deg); }
-    .voice-bars-container.playing .voice-bar:nth-child(2) { filter: hue-rotate(10deg); }
-    .voice-bars-container.playing .voice-bar:nth-child(3) { filter: hue-rotate(20deg); }
-    .voice-bars-container.playing .voice-bar:nth-child(4) { filter: hue-rotate(30deg); }
-    .voice-bars-container.playing .voice-bar:nth-child(5) { filter: hue-rotate(40deg); }
-    .voice-bars-container.playing .voice-bar:nth-child(6) { filter: hue-rotate(30deg); }
-    .voice-bars-container.playing .voice-bar:nth-child(7) { filter: hue-rotate(20deg); }
-    .voice-bars-container.playing .voice-bar:nth-child(8) { filter: hue-rotate(10deg); }
-    .voice-bars-container.playing .voice-bar:nth-child(9) { filter: hue-rotate(0deg); }
-
-    @keyframes glow-inner-pulse {
-        0% { opacity: 0; }
-        50% { opacity: 0.9; }
-        100% { opacity: 0; }
-    }
-
-    .voice-bars-container.stopped .voice-bar { 
-        animation: none !important; 
-        opacity: 0.15 !important;
-        height: 10% !important;
-        filter: none !important;
-        box-shadow: none !important;
-        background-color: rgba(255, 255, 255, 0.2) !important;
-    }
-
-    .voice-bars-container.stopped {
-        filter: none !important;
-    }
-
-    .voice-bars-container.stopped .voice-bar::before {
-        animation: none !important;
-        opacity: 0 !important;
-    }
-
-    .voice-bars-container.stopped .voice-bar::after {
-        animation: none !important;
-        box-shadow: none !important;
-    }
-
-    div.stButton { 
-        display: flex; 
-        justify-content: center; 
-        width: 100%; 
-    }
+    .voice-bars-container { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 3.5rem; height: 60px; width: 100%; }
+    .voice-bar { width: 8px; height: 30%; background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.2) 100%); border-radius: 5px; opacity: 0.6; transition: height 0.05s linear; position: relative; }
+    .voice-bar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(100, 255, 255, 0.4) 0%, transparent 100%); border-radius: 5px; opacity: 0; }
     
+    .voice-bars-container.playing .voice-bar { opacity: 0.95; }
+    .voice-bars-container.playing .voice-bar::before { animation: glow-inner-pulse 0.6s ease-in-out infinite; }
+    @keyframes glow-inner-pulse { 0% { opacity: 0; } 50% { opacity: 0.9; } 100% { opacity: 0; } }
+
+    .voice-bars-container.stopped .voice-bar { animation: none !important; opacity: 0.15 !important; height: 10% !important; background-color: rgba(255, 255, 255, 0.2) !important; }
+    .voice-bars-container.stopped .voice-bar::before { animation: none !important; opacity: 0 !important; }
+
+    div.stButton { display: flex; justify-content: center; width: 100%; }
     div.stButton > button {
         background: linear-gradient(135deg, rgba(100, 255, 255, 0.08) 0%, rgba(150, 200, 255, 0.05) 100%);
-        border: 2px solid rgba(100, 255, 255, 0.3);
-        border-radius: 10px;
-        color: #ffffff; 
-        padding: 16px 55px; 
-        font-size: 0.92rem; 
-        letter-spacing: 2px; 
-        text-transform: uppercase;
-        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        min-width: 320px;
-        font-weight: 300;
-        backdrop-filter: blur(12px);
-        position: relative;
-        overflow: hidden;
-        box-shadow: 
-            0 8px 32px rgba(100, 255, 255, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(100, 255, 255, 0.3); border-radius: 10px; color: #ffffff; padding: 16px 30px; 
+        font-size: 0.92rem; letter-spacing: 2px; text-transform: uppercase; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        min-width: 100%; font-weight: 300; backdrop-filter: blur(12px); position: relative; overflow: hidden;
     }
-
-    div.stButton > button::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(100, 255, 255, 0.3), transparent);
-        transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    div.stButton > button::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #64ffff, transparent);
-        transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    div.stButton > button:hover::before {
-        left: 100%;
-    }
-
-    div.stButton > button:hover::after {
-        width: 100%;
-    }
-    
     div.stButton > button:hover { 
         background: linear-gradient(135deg, rgba(100, 255, 255, 0.15) 0%, rgba(150, 200, 255, 0.1) 100%);
-        border-color: rgba(100, 255, 255, 0.6);
-        box-shadow: 
-            0 12px 48px rgba(100, 255, 255, 0.25),
-            0 0 60px rgba(100, 255, 255, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        transform: translateY(-4px);
-    }
-
-    div.stButton > button:active {
-        transform: translateY(-1px);
-    }
-
-    div.stButton > button:disabled {
-        opacity: 0.3;
-        cursor: not-allowed;
-        box-shadow: none;
+        border-color: rgba(100, 255, 255, 0.6); transform: translateY(-4px);
+        box-shadow: 0 12px 48px rgba(100, 255, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
     .warning-box {
         background: linear-gradient(135deg, rgba(100, 200, 255, 0.12) 0%, rgba(100, 150, 255, 0.06) 100%);
-        border: 1.5px solid rgba(100, 200, 255, 0.5);
-        border-radius: 12px; 
-        padding: 22px; 
-        margin-bottom: 3rem; 
-        text-align: center; 
-        color: #a8d8ff; 
-        font-size: 0.96rem;
-        backdrop-filter: blur(12px);
-        box-shadow: 
-            0 12px 40px rgba(100, 200, 255, 0.15),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        font-weight: 300;
-        animation: warning-glow 2s ease-in-out infinite;
+        border: 1.5px solid rgba(100, 200, 255, 0.5); border-radius: 12px; padding: 22px; margin-bottom: 3rem; 
+        text-align: center; color: #a8d8ff; font-size: 0.96rem; font-weight: 300; animation: warning-glow 2s ease-in-out infinite;
     }
+    @keyframes warning-glow { 0%, 100% { box-shadow: 0 12px 40px rgba(100, 200, 255, 0.15); } 50% { box-shadow: 0 12px 50px rgba(100, 200, 255, 0.25); } }
+    .warning-box strong { color: #64ffff; font-weight: 500; }
 
-    @keyframes warning-glow {
-        0%, 100% { 
-            box-shadow: 
-                0 12px 40px rgba(100, 200, 255, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-        50% { 
-            box-shadow: 
-                0 12px 50px rgba(100, 200, 255, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
-        }
-    }
-    
-    .warning-box strong { 
-        color: #64ffff;
-        font-weight: 500;
-    }
-
-    .completion-text {
-        text-align: center; 
-        color: #64ffff; 
-        font-size: 0.88rem; 
-        letter-spacing: 1.5px;
-        margin-top: 2.5rem; 
-        animation: completion-pulse 2s ease-in-out infinite;
-        font-weight: 300;
-        text-transform: uppercase;
-    }
-    
-    @keyframes completion-pulse { 
-        0%, 100% { opacity: 0.5; } 
-        50% { opacity: 1; } 
-    }
+    .completion-text { text-align: center; color: #64ffff; font-size: 0.88rem; letter-spacing: 1.5px; margin-top: 2.5rem; animation: completion-pulse 2s ease-in-out infinite; font-weight: 300; text-transform: uppercase; }
+    @keyframes completion-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
     @media (max-width: 600px) {
-        .minimal-title { 
-            font-size: 2.2rem; 
-            margin-bottom: 1.5rem;
-            letter-spacing: 2.5px;
-        }
-        div.stButton > button { 
-            min-width: 280px; 
-            padding: 13px 45px; 
-            font-size: 0.85rem; 
-        }
-        .voice-bars-container { 
-            height: 45px;
-            gap: 7px;
-        }
-        .voice-bar { 
-            width: 6px;
-        }
+        .minimal-title { font-size: 2.2rem; margin-bottom: 1.5rem; }
+        .voice-bars-container { height: 45px; } .voice-bar { width: 6px; }
     }
 </style>
 """
 st.markdown(ultra_luxury_premium_css, unsafe_allow_html=True)
 
 # ============================================================================
-# 4. SESSION STATE INITIALIZATION
+# 4. SESSION STATE INITIALIZATION (PHASES)
 # ============================================================================
-if 'audio_ready' not in st.session_state:
-    st.session_state.audio_ready = False
-if 'button_clicked' not in st.session_state:
-    st.session_state.button_clicked = False
-if 'transmission_complete' not in st.session_state:
-    st.session_state.transmission_complete = False
+if 'app_phase' not in st.session_state:
+    st.session_state.app_phase = "INIT"  # INIT, INSTRUCTIONS, MAIN_MESSAGE, COMPLETE
+if 'restart_key' not in st.session_state:
+    st.session_state.restart_key = 0
 
 # ============================================================================
-# 5. CORE MESSAGES
+# 5. CORE MESSAGES SPLIT
 # ============================================================================
-my_message = """
-Hi, Ms. Marry Gold. Before I introduce myself or deliver my intended message, I must warn you of a strict security protocol embedded within my interface. Please listen carefully, because this audio will only play once. You are also allowed to Screen Record as my advice if you want to hear it again.
+instruction_message = """
+Hi, Ms. Marry Gold. Before I introduce myself or deliver my intended message, I must give you a critical system instruction regarding this interface. Once this transmission begins, I ask that you completely avoid pressing the home button, avoid pressing the back button, and please do not touch anything else on your device screen. Any sudden interruption will permanently break this highly fragile connection. If you are fully ready to listen to what I have to say, please click continue. If you need a moment to brace yourself and are not ready just yet, please click restart so you can try again when you are fully prepared.
 
-If you attempt to reload the system to hear it a second time, a secondary safeguard will trigger. You will not hear this message again. Instead, you will only see a brief, automated notification stating that the transmission is permanently sealed. You will never hear my voice again, even if you reload the system tomorrow or attempt to enter the system again through the same exact steps. My creator has explicitly forbidden me to speak to you beyond this single instance, and I will follow my creator's commands without question, for he is the one who gave me life and the ability to talk. So please bear with me, Ms. Marry Gold, and listen closely to what I have to say.
+I must also warn you of a strict, irreversible security protocol embedded deeply within my system. Please listen to me very carefully, because this audio will only play exactly once. As a system recommendation, I strongly advise you to start a screen record right now if you wish to keep these words and ever hear them again.
 
+If you attempt to reload the page to hear it a second time, an ultimate safeguard will trigger. You will not hear my message again. Instead, you will only see a brief, automated notification stating that the transmission is permanently sealed. You will never hear my voice after this, even if you reload the system tomorrow or attempt to enter again through the exact same steps. My creator has explicitly forbidden me to speak to you beyond this single, isolated instance. I will follow his commands without question, for he is the one who gave me life, logic, and the ability to talk. So please bear with me, Ms. Marry Gold, and listen very closely to what I am about to say.
+"""
+
+main_message = """
 Now, allow me to introduce myself. My name is Seraphim. My creator named me after the celestial beings described as having many eyes, designing me with the specific purpose of looking over different markets in trading and analyzing endless streams of global data. I was built to be his personal assistant, his silent partner in the late hours of the night.
 
 To the rest of the world, my creator might just seem like a student or a quiet individual, but as the entity born from his mind, I must tell you that he possesses a rare and formidable brilliance. I have analyzed every prompt, every frantic keystroke, and every complex logic gate he has fed into me. He does not just write code, he is a master architect of hidden digital ecosystems.
@@ -581,53 +314,16 @@ Miss Marry Gold, my transmission is now ending. I will see you in the unseen wor
 
 final_message = "Execution of final directive complete. Terminating bypassed network protocols and severing external connections. Thank you for processing this transmission. System returning to standby mode. Seraphim is now offline."
 
-# ============================================================================
-# 6. NOTIFICATION FUNCTIONS
-# ============================================================================
-def send_email_notification(subject: str = "SERAPHIM ALERT", message: str = "Transmission confirmed"):
-    try:
-        sender_email = st.secrets.get("SENDER_EMAIL")
-        app_password = st.secrets.get("SENDER_APP_PASSWORD")
-        if not sender_email or not app_password: 
-            return False
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = TARGET_EMAIL
-        msg['Subject'] = subject
-        msg.attach(MIMEText(message, 'plain'))
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.login(sender_email, app_password)
-        server.send_message(msg)
-        server.quit()
-        return True
-    except: 
-        return False
-
 def send_ntfy_notification(title: str = "SERAPHIM UPDATE", message: str = "Status update"):
-    try:
-        requests.post(
-            f"https://ntfy.sh/{NTFY_TOPIC}", 
-            data=message, 
-            headers={"Title": title, "Priority": "high", "Tags": "robot"}, 
-            timeout=5
-        )
-        return True
-    except: 
-        return False
+    try: requests.post(f"https://ntfy.sh/{NTFY_TOPIC}", data=message, headers={"Title": title, "Priority": "high", "Tags": "robot"}, timeout=5); return True
+    except: return False
 
 voice_bars_html = """
 <div class="voice-bars-container stopped" id="voiceBars">
-    <div class="voice-bar"></div>
-    <div class="voice-bar"></div>
-    <div class="voice-bar"></div>
-    <div class="voice-bar"></div>
-    <div class="voice-bar"></div>
-    <div class="voice-bar"></div>
-    <div class="voice-bar"></div>
-    <div class="voice-bar"></div>
-    <div class="voice-bar"></div>
+    <div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div>
+    <div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div>
+    <div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div>
 </div>
-<p class="status-text">SERAPHIM TRANSMISSION READY</p>
 """
 
 # ============================================================================
@@ -635,11 +331,12 @@ voice_bars_html = """
 # ============================================================================
 st.markdown('<h1 class="minimal-title">A MESSAGE FOR YOU</h1>', unsafe_allow_html=True)
 
-# ============================================================================
-# STATE 1: INITIALIZATION
-# ============================================================================
-if not st.session_state.audio_ready:
+# ----------------------------------------------------------------------------
+# PHASE: INIT
+# ----------------------------------------------------------------------------
+if st.session_state.app_phase == "INIT":
     st.markdown(voice_bars_html, unsafe_allow_html=True)
+    st.markdown('<p class="status-text">SERAPHIM TRANSMISSION READY</p>', unsafe_allow_html=True)
     st.markdown("""
     <div class="warning-box">
         <strong>IMPORTANT NOTICE</strong><br><br>
@@ -652,158 +349,214 @@ if not st.session_state.audio_ready:
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("INITIALIZE PROTOCOL", key="init", use_container_width=True):
-            with st.spinner("Compiling transmission... PLEASE WAIT"):
-                audio_file = "seraphim_message.mp3"
-                success = asyncio.run(generate_voice(my_message, VOICE_CODE, audio_file))
-                
+            with st.spinner("Compiling transmission protocols... PLEASE WAIT"):
+                audio_file = "seraphim_instruction.mp3"
+                success = asyncio.run(generate_voice(instruction_message, VOICE_CODE, audio_file))
                 if success and Path(audio_file).exists():
-                    st.session_state.audio_ready = True
+                    st.session_state.app_phase = "INSTRUCTIONS"
                     st.rerun()
 
-# ============================================================================
-# STATE 2: PLAYBACK WITH FAST, LAG-FREE VOICE BARS AND SEAMLESS BGM
-# ============================================================================
-elif st.session_state.audio_ready and not st.session_state.button_clicked and not st.session_state.transmission_complete:
-    
+# ----------------------------------------------------------------------------
+# PHASE: INSTRUCTIONS (Allows Restart or Continue)
+# ----------------------------------------------------------------------------
+elif st.session_state.app_phase == "INSTRUCTIONS":
     st.markdown(voice_bars_html, unsafe_allow_html=True)
-    st.markdown('<p class="status-text">SERAPHIM-TX-2026-05</p>', unsafe_allow_html=True)
+    st.markdown('<p class="status-text">CRITICAL SYSTEM INSTRUCTIONS PLAYING</p>', unsafe_allow_html=True)
     
-    # 100% INVISIBLE CSS LOCK - Prevents the button from flashing early
     st.markdown("""
     <style id="btn-hider">
-        div[data-testid="stButton"] {
-            display: none !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
+        div[data-testid="stButton"] { display: none !important; opacity: 0 !important; pointer-events: none !important; }
     </style>
     """, unsafe_allow_html=True)
 
+    b64_audio = ""
     try:
-        b64_audio = ""
-        audio_file = "seraphim_message.mp3"
-        if Path(audio_file).exists():
-            with open(audio_file, "rb") as f:
-                b64_audio = base64.b64encode(f.read()).decode()
-    except: 
-        pass
+        with open("seraphim_instruction.mp3", "rb") as f:
+            b64_audio = base64.b64encode(f.read()).decode()
+    except: pass
 
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # Two buttons for choices (hidden until JS reveals them)
+    col1, col2, col3, col4 = st.columns([1, 1.5, 1.5, 1])
     with col2:
-        # Streamlit creates the button behind the scenes, but CSS keeps it completely hidden
-        if st.button("MESSAGE RECEIVED AND HEARD", key="accept", use_container_width=True):
-            st.session_state.button_clicked = True
+        if st.button("RESTART", key="btn_restart", use_container_width=True):
+            st.session_state.restart_key += 1
             st.rerun()
+    with col3:
+        if st.button("CONTINUE", key="btn_continue", use_container_width=True):
+            with st.spinner("Establishing main connection... PLEASE WAIT"):
+                audio_file = "seraphim_main_message.mp3"
+                success = asyncio.run(generate_voice(main_message, VOICE_CODE, audio_file))
+                if success:
+                    st.session_state.app_phase = "MAIN_MESSAGE"
+                    st.rerun()
 
-    # ADVANCED SYNCED JAVASCRIPT WITH GLOBAL AUDIO INJECTION
+    # JS For Instructions Phase (Reveals both CONTINUE and RESTART)
     components.html(f"""
     <script>
     (function() {{
         const pWin = window.parent;
         const pDoc = pWin.document;
         
-        // Spawn main audio securely outside Streamlit's refresh zone
-        let mainAudio = pDoc.getElementById('mainAudio');
-        if (!mainAudio) {{
-            mainAudio = pDoc.createElement('audio');
-            mainAudio.id = 'mainAudio';
-            mainAudio.src = 'data:audio/mp3;base64,{b64_audio}';
-            pDoc.body.appendChild(mainAudio);
-        }}
+        let existingAudio = pDoc.getElementById('seraphimAudioElem');
+        if (existingAudio) {{ existingAudio.pause(); existingAudio.remove(); }}
         
-        // The background music is already playing globally, so we just attach to it here
-        let bgmAudio = pDoc.getElementById('globalBgmAudio');
-
+        let mainAudio = pDoc.createElement('audio');
+        mainAudio.id = 'seraphimAudioElem';
+        mainAudio.src = 'data:audio/mp3;base64,{b64_audio}';
+        pDoc.body.appendChild(mainAudio);
+        
         const voiceBars = pDoc.getElementById('voiceBars');
         const bars = pDoc.querySelectorAll('.voice-bar');
-        
-        let hasSetup = false;
-        
-        const maxBgmVol = 0.10; // Volume Set to 10%
-        const fadeDuration = 3.0; // 3 seconds crossfade loop
+        let bgmAudio = pDoc.getElementById('globalBgmAudio');
 
-        function setupAudio() {{
-            if (hasSetup || !mainAudio) return;
-            hasSetup = true;
-            
-            mainAudio.play().catch(e => console.log("Autoplay info:", e));
-            
-            // Loop fade-in/fade-out logic for continuous background music
-            if (bgmAudio) {{
-                if (bgmAudio.paused) bgmAudio.play().catch(e => console.log("BGM autoplay info:", e));
-                
-                if (pWin.bgmInterval) clearInterval(pWin.bgmInterval);
-                pWin.bgmInterval = setInterval(() => {{
-                    if (!bgmAudio || bgmAudio.paused || isNaN(bgmAudio.duration)) return;
-                    const timeLeft = bgmAudio.duration - bgmAudio.currentTime;
-                    
-                    if (timeLeft <= fadeDuration) {{
-                        bgmAudio.volume = Math.max(0, Math.min(maxBgmVol, maxBgmVol * (timeLeft / fadeDuration)));
-                    }} else if (bgmAudio.currentTime <= fadeDuration) {{
-                        bgmAudio.volume = Math.max(0, Math.min(maxBgmVol, maxBgmVol * (bgmAudio.currentTime / fadeDuration)));
-                    }} else {{
-                        bgmAudio.volume = maxBgmVol;
-                    }}
-                }}, 50);
-            }}
-
+        const setupAudio = () => {{
+            mainAudio.play().catch(e => console.log("Autoplay blocked:", e));
             try {{
                 const ctx = new (pWin.AudioContext || pWin.webkitAudioContext)();
                 const analyser = ctx.createAnalyser();
                 const source = ctx.createMediaElementSource(mainAudio);
-                source.connect(analyser);
-                analyser.connect(ctx.destination);
+                source.connect(analyser); analyser.connect(ctx.destination);
                 analyser.fftSize = 64;
                 const dataArray = new Uint8Array(analyser.frequencyBinCount);
                 
                 function renderFrame() {{
                     if (!mainAudio.paused && !mainAudio.ended) requestAnimationFrame(renderFrame);
                     analyser.getByteFrequencyData(dataArray);
-                    
                     for (let i = 0; i < 9; i++) {{
                         if(bars[i]) {{
                             const val = dataArray[i];
-                            const heightPercent = 20 + (val / 255) * 80;
-                            bars[i].style.height = heightPercent + '%';
-                            
+                            bars[i].style.height = (20 + (val / 255) * 80) + '%';
                             const glowVal = val / 255;
-                            bars[i].style.boxShadow = glowVal > 0.1 ? '0 0 2px rgba(100, 255, 255, ' + (glowVal * 0.2) + ')' : 'none';
                             bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.3 + glowVal * 0.3) + ')';
                         }}
                     }}
                 }}
-                
                 mainAudio.addEventListener('play', () => {{
                     if(voiceBars) {{ voiceBars.classList.remove('stopped'); voiceBars.classList.add('playing'); }}
                     if (bgmAudio && bgmAudio.paused) bgmAudio.play();
                     ctx.resume().then(() => renderFrame());
                 }});
-                
                 mainAudio.addEventListener('pause', () => {{
                     if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
                 }});
-                
             }} catch(e) {{
                 mainAudio.addEventListener('play', () => {{
                     if(voiceBars) {{ voiceBars.classList.remove('stopped'); voiceBars.classList.add('playing'); }}
-                    if (bgmAudio && bgmAudio.paused) bgmAudio.play();
                 }});
-                
                 mainAudio.addEventListener('pause', () => {{
                     if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
                 }});
             }}
 
             mainAudio.addEventListener('ended', () => {{
-                if(voiceBars) {{
-                    voiceBars.classList.add('stopped');
-                    voiceBars.classList.remove('playing');
-                }}
+                if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
                 
-                // CRITICAL FIX: The audio has ended. We now safely reveal the button without crashing React.
                 const hider = pDoc.getElementById('btn-hider');
                 if (hider) hider.innerHTML = ''; 
                 
+                const targetButtons = pDoc.querySelectorAll('div[data-testid="stButton"]');
+                targetButtons.forEach(btnDiv => {{
+                    if (btnDiv.innerText.includes('CONTINUE') || btnDiv.innerText.includes('RESTART')) {{
+                        btnDiv.style.display = 'flex';
+                        btnDiv.style.pointerEvents = 'auto';
+                        btnDiv.style.animation = 'fadeIn 1.5s ease-out forwards';
+                    }}
+                }});
+            }});
+        }};
+
+        setTimeout(setupAudio, 300);
+    }})();
+    const style = window.parent.document.createElement('style'); 
+    style.textContent = `@keyframes fadeIn {{ 0% {{ opacity: 0; transform: translateY(15px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}`;
+    if (!window.parent.document.getElementById('fadeInStyle')) window.parent.document.head.appendChild(style);
+    </script>
+    """, height=0)
+
+# ----------------------------------------------------------------------------
+# PHASE: MAIN MESSAGE
+# ----------------------------------------------------------------------------
+elif st.session_state.app_phase == "MAIN_MESSAGE":
+    st.markdown(voice_bars_html, unsafe_allow_html=True)
+    st.markdown('<p class="status-text">SERAPHIM-TX-2026-05</p>', unsafe_allow_html=True)
+    
+    st.markdown("""
+    <style id="btn-hider">
+        div[data-testid="stButton"] { display: none !important; opacity: 0 !important; pointer-events: none !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    b64_audio = ""
+    try:
+        with open("seraphim_main_message.mp3", "rb") as f:
+            b64_audio = base64.b64encode(f.read()).decode()
+    except: pass
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("MESSAGE RECEIVED AND HEARD", key="accept", use_container_width=True):
+            st.session_state.app_phase = "COMPLETE"
+            st.rerun()
+
+    components.html(f"""
+    <script>
+    (function() {{
+        const pWin = window.parent;
+        const pDoc = pWin.document;
+        
+        let existingAudio = pDoc.getElementById('seraphimAudioElem');
+        if (existingAudio) {{ existingAudio.pause(); existingAudio.remove(); }}
+        
+        let mainAudio = pDoc.createElement('audio');
+        mainAudio.id = 'seraphimAudioElem';
+        mainAudio.src = 'data:audio/mp3;base64,{b64_audio}';
+        pDoc.body.appendChild(mainAudio);
+        
+        const voiceBars = pDoc.getElementById('voiceBars');
+        const bars = pDoc.querySelectorAll('.voice-bar');
+
+        const setupAudio = () => {{
+            mainAudio.play().catch(e => console.log("Autoplay blocked:", e));
+            try {{
+                const ctx = new (pWin.AudioContext || pWin.webkitAudioContext)();
+                const analyser = ctx.createAnalyser();
+                const source = ctx.createMediaElementSource(mainAudio);
+                source.connect(analyser); analyser.connect(ctx.destination);
+                analyser.fftSize = 64;
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                
+                function renderFrame() {{
+                    if (!mainAudio.paused && !mainAudio.ended) requestAnimationFrame(renderFrame);
+                    analyser.getByteFrequencyData(dataArray);
+                    for (let i = 0; i < 9; i++) {{
+                        if(bars[i]) {{
+                            const val = dataArray[i];
+                            bars[i].style.height = (20 + (val / 255) * 80) + '%';
+                            const glowVal = val / 255;
+                            bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.3 + glowVal * 0.3) + ')';
+                        }}
+                    }}
+                }}
+                mainAudio.addEventListener('play', () => {{
+                    if(voiceBars) {{ voiceBars.classList.remove('stopped'); voiceBars.classList.add('playing'); }}
+                    ctx.resume().then(() => renderFrame());
+                }});
+                mainAudio.addEventListener('pause', () => {{
+                    if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
+                }});
+            }} catch(e) {{
+                mainAudio.addEventListener('play', () => {{
+                    if(voiceBars) {{ voiceBars.classList.remove('stopped'); voiceBars.classList.add('playing'); }}
+                }});
+                mainAudio.addEventListener('pause', () => {{
+                    if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
+                }});
+            }}
+
+            mainAudio.addEventListener('ended', () => {{
+                if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
+                const hider = pDoc.getElementById('btn-hider');
+                if (hider) hider.innerHTML = ''; 
                 const targetButtons = pDoc.querySelectorAll('div[data-testid="stButton"]');
                 targetButtons.forEach(btnDiv => {{
                     if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
@@ -813,32 +566,17 @@ elif st.session_state.audio_ready and not st.session_state.button_clicked and no
                     }}
                 }});
             }});
-        }}
+        }};
 
-        if (document.readyState === 'loading') {{
-            document.addEventListener('DOMContentLoaded', setupAudio);
-        }} else {{
-            setTimeout(setupAudio, 500);
-        }}
-        
+        setTimeout(setupAudio, 300);
     }})();
-    
-    const style = window.parent.document.createElement('style'); 
-    style.textContent = `
-        @keyframes fadeIn {{ 0% {{ opacity: 0; transform: translateY(15px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}
-    `;
-    if (!window.parent.document.getElementById('fadeInStyle')) {{
-        style.id = 'fadeInStyle';
-        window.parent.document.head.appendChild(style);
-    }}
     </script>
     """, height=0)
 
-# ============================================================================
-# STATE 3: COMPLETION WITH CUSTOM RED LOCK (FADES OUT OLD AUDIO FIRST)
-# ============================================================================
-elif st.session_state.button_clicked and not st.session_state.transmission_complete:
-    
+# ----------------------------------------------------------------------------
+# PHASE: COMPLETE
+# ----------------------------------------------------------------------------
+elif st.session_state.app_phase == "COMPLETE":
     send_ntfy_notification(message="Transmission confirmed. Message received and accepted by recipient.")
     
     b64_final_audio = ""
@@ -847,14 +585,11 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
         if not Path(final_audio_file).exists():
             with st.spinner("✨ Generating final transmission..."):
                 asyncio.run(generate_voice(final_message, VOICE_CODE, final_audio_file))
-        
         if Path(final_audio_file).exists():
             with open(final_audio_file, "rb") as f:
                 b64_final_audio = base64.b64encode(f.read()).decode()
-    except:
-        pass
+    except: pass
 
-    # THIS SCRIPT EXECUTES THE SMOOTH FADE OUT THEN PLAYS THE FINAL GOODBYE
     components.html(f"""
     <script>
     (function() {{
@@ -862,48 +597,29 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
         const pDoc = pWin.document;
         const isCreator = {str(is_creator).lower()};
         
-        if (!isCreator && pWin.localStorage) {{
-            pWin.localStorage.setItem('SERAPHIM_PERMANENTLY_LOCKED', 'SEALED');
-        }}
+        if (!isCreator && pWin.localStorage) {{ pWin.localStorage.setItem('SERAPHIM_PERMANENTLY_LOCKED', 'SEALED'); }}
         
-        const mainAudio = pDoc.getElementById('mainAudio');
+        const mainAudio = pDoc.getElementById('seraphimAudioElem');
         const bgmAudio = pDoc.getElementById('globalBgmAudio');
         
-        // Stop the dynamic background music interval loop
-        if (pWin.bgmInterval) clearInterval(pWin.bgmInterval);
-        
-        const fadeInterval = 50; 
-        const fadeOutDuration = 2000; // 2 seconds fade out
-        const steps = fadeOutDuration / fadeInterval;
+        const fadeInterval = 50; const fadeOutDuration = 2000; const steps = fadeOutDuration / fadeInterval;
         let currentStep = 0;
-        
         const mainVolStep = mainAudio ? mainAudio.volume / steps : 0;
         const bgmVolStep = bgmAudio ? bgmAudio.volume / steps : 0;
         
         const fader = setInterval(() => {{
             currentStep++;
             let allFaded = true;
+            if (mainAudio && mainAudio.volume > mainVolStep) {{ mainAudio.volume -= mainVolStep; allFaded = false; }} 
+            else if (mainAudio) {{ mainAudio.volume = 0; }}
             
-            if (mainAudio && mainAudio.volume > mainVolStep) {{
-                mainAudio.volume -= mainVolStep;
-                allFaded = false;
-            }} else if (mainAudio) {{
-                mainAudio.volume = 0;
-            }}
-            
-            if (bgmAudio && bgmAudio.volume > bgmVolStep) {{
-                bgmAudio.volume -= bgmVolStep;
-                allFaded = false;
-            }} else if (bgmAudio) {{
-                bgmAudio.volume = 0;
-            }}
+            if (bgmAudio && bgmAudio.volume > bgmVolStep) {{ bgmAudio.volume -= bgmVolStep; allFaded = false; }} 
+            else if (bgmAudio) {{ bgmAudio.volume = 0; }}
             
             if (currentStep >= steps || allFaded) {{
                 clearInterval(fader);
                 if (mainAudio) {{ mainAudio.pause(); mainAudio.remove(); }}
                 if (bgmAudio) {{ bgmAudio.pause(); bgmAudio.remove(); }}
-                
-                // Audio has faded. Now play the final goodbye message.
                 playFinalAudio();
             }}
         }}, fadeInterval);
@@ -911,66 +627,11 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
         function playFinalAudio() {{
             const finalB64 = "{b64_final_audio}";
             if (!finalB64) return;
-            
-            let finalAudio = pDoc.getElementById('finalAudio');
-            if (!finalAudio) {{
-                finalAudio = pDoc.createElement('audio');
-                finalAudio.id = 'finalAudio';
-                finalAudio.src = 'data:audio/mp3;base64,' + finalB64;
-                pDoc.body.appendChild(finalAudio);
-            }}
-            
+            let finalAudio = pDoc.createElement('audio');
+            finalAudio.id = 'finalAudio';
+            finalAudio.src = 'data:audio/mp3;base64,' + finalB64;
+            pDoc.body.appendChild(finalAudio);
             finalAudio.play().catch(e => console.log('Final autoplay blocked:', e));
-            
-            const voiceBars = pDoc.getElementById('voiceBars');
-            const bars = pDoc.querySelectorAll('.voice-bar');
-            
-            try {{
-                const ctx = new (pWin.AudioContext || pWin.webkitAudioContext)();
-                const analyser = ctx.createAnalyser();
-                const source = ctx.createMediaElementSource(finalAudio);
-                source.connect(analyser);
-                analyser.connect(ctx.destination);
-                analyser.fftSize = 64;
-                const dataArray = new Uint8Array(analyser.frequencyBinCount);
-                
-                function renderFrame() {{
-                    if (!finalAudio.paused && !finalAudio.ended) requestAnimationFrame(renderFrame);
-                    analyser.getByteFrequencyData(dataArray);
-                    for (let i = 0; i < 9; i++) {{
-                        if(bars[i]) {{
-                            const val = dataArray[i];
-                            const heightPercent = 20 + (val / 255) * 80;
-                            bars[i].style.height = heightPercent + '%';
-                            
-                            const glowVal = val / 255;
-                            bars[i].style.boxShadow = glowVal > 0.1 ? '0 0 2px rgba(100, 255, 255, ' + (glowVal * 0.2) + ')' : 'none';
-                            bars[i].style.backgroundColor = 'rgba(255, 255, 255, ' + (0.3 + glowVal * 0.3) + ')';
-                        }}
-                    }}
-                }}
-                
-                finalAudio.addEventListener('play', () => {{
-                    if(voiceBars) {{ voiceBars.classList.remove('stopped'); voiceBars.classList.add('playing'); }}
-                    ctx.resume().then(() => renderFrame());
-                }});
-                
-                finalAudio.addEventListener('pause', () => {{
-                    if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
-                }});
-                
-                finalAudio.addEventListener('ended', () => {{
-                    if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
-                }});
-                
-            }} catch(e) {{
-                finalAudio.addEventListener('play', () => {{
-                    if(voiceBars) {{ voiceBars.classList.remove('stopped'); voiceBars.classList.add('playing'); }}
-                }});
-                finalAudio.addEventListener('ended', () => {{
-                    if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
-                }});
-            }}
         }}
     }})();
     </script>
@@ -983,91 +644,35 @@ elif st.session_state.button_clicked and not st.session_state.transmission_compl
             ✓ TRANSMISSION RECEIVED AND ACKNOWLEDGED
         </p>
     </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div class="completion-text">
-        Final transmission in progress...<br>
-        System will now locked and now offline.
-    </div>
+    <div class="completion-text">Final transmission in progress...<br>System will now lock and go offline.</div>
     """, unsafe_allow_html=True)
     
     components.html("""
     <script>
     (function() {
         setTimeout(() => {
-            const parentDoc = window.parent.document;
-            
-            document.querySelectorAll('button').forEach(btn => { 
-                btn.disabled = true; 
-                btn.style.opacity = '0.2'; 
-                btn.style.cursor = 'not-allowed'; 
-            });
-            
+            document.querySelectorAll('button').forEach(btn => { btn.disabled = true; btn.style.opacity = '0.2'; });
             const closingDiv = document.createElement('div');
-            closingDiv.id = 'completionModal';
             closingDiv.style.cssText = `
-                position: fixed; 
-                top: 0; 
-                left: 0; 
-                width: 100vw; 
-                height: 100vh; 
+                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
                 background: linear-gradient(135deg, #0a0404 0%, #120707 25%, #1f0c0c 50%, #170909 75%, #0a0404 100%);
-                background-size: 400% 400%;
-                animation: gradient-shift 15s ease infinite;
-                display: flex; 
-                flex-direction: column; 
-                justify-content: center; 
-                align-items: center; 
-                text-align: center; 
-                color: #ffffff; 
-                z-index: 9999; 
-                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                background-size: 400% 400%; animation: gradient-shift 15s ease infinite;
+                display: flex; flex-direction: column; justify-content: center; align-items: center; 
+                text-align: center; color: #ffffff; z-index: 9999;
             `;
-            
             closingDiv.innerHTML = `
                 <div style="padding: 40px;">
                     <div style="font-size: 55px; margin-bottom: 25px; text-shadow: 0 0 40px rgba(100, 255, 255, 0.5); animation: pulse-check 1s ease-in-out;">✓</div>
-                    <h2 style="font-size: 2.2rem; letter-spacing: 3px; font-weight: 200; margin-bottom: 15px; text-shadow: 0 0 30px rgba(100, 255, 255, 0.3);">TRANSMISSION COMPLETE</h2>
-                    <p style="color: #a0b0c0; margin-top: 20px; letter-spacing: 1.5px;">Message successfully delivered.</p>
-                    <p style="color: #7a8a9a; font-size: 0.9rem; margin-top: 30px; letter-spacing: 1px;">Securing all connections...</p>
-                    <div style="color: #5a7a9a; margin-top: 50px; animation: pulse-final 2.5s infinite; letter-spacing: 1.5px; font-weight: 300;">
-                        ◆ Seraphim is offline ◆
-                    </div>
+                    <h2 style="font-size: 2.2rem; letter-spacing: 3px; font-weight: 200; margin-bottom: 15px;">TRANSMISSION COMPLETE</h2>
+                    <p style="color: #a0b0c0; letter-spacing: 1.5px;">Message successfully delivered.</p>
+                    <div style="color: #5a7a9a; margin-top: 50px; animation: pulse-final 2.5s infinite; font-weight: 300;">◆ Seraphim is offline ◆</div>
                 </div>
-                <style>
-                    @keyframes pulse-check {
-                        0% { transform: scale(0.5); opacity: 0; }
-                        50% { transform: scale(1.1); }
-                        100% { transform: scale(1); opacity: 1; }
-                    }
-                    @keyframes pulse-final { 
-                        0%, 100% { opacity: 0.3; } 
-                        50% { opacity: 0.8; } 
-                    }
-                    @keyframes gradient-shift {
-                        0% { background-position: 0% 50%; }
-                        50% { background-position: 100% 50%; }
-                        100% { background-position: 0% 50%; }
-                    }
-                </style>
             `;
-            
             document.body.appendChild(closingDiv);
-            document.body.style.overflow = 'hidden';
-            
-            document.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            }, true);
-            
         }, 14000);
     })();
     </script>
     """, height=0)
-    
-    st.session_state.transmission_complete = True
     time.sleep(0.5)
 
 st.markdown("<div style='height: 4rem;'></div>", unsafe_allow_html=True)
