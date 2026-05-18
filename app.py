@@ -9,6 +9,7 @@ import streamlit.components.v1 as components
 from pathlib import Path
 import time
 import base64 
+import threading
 
 # ============================================================================
 # 1. APP CONFIGURATION
@@ -24,14 +25,13 @@ st.set_page_config(
 NTFY_TOPIC = "Seraphim_Protocol_Gold_99283"
 TARGET_EMAIL = "klentdagsa21@gmail.com"
 VOICE_CODE = "en-AU-WilliamNeural"
-BGM_FILE = "NIKI - Paths (Instrumental).mp3" # Your specified background music file
+BGM_FILE = "NIKI - Paths (Instrumental).mp3"
 
 # ============================================================================
 # 1.5 CREATOR BACKDOOR & SECURITY CHECK
 # ============================================================================
 is_creator = st.query_params.get("creator") == "true"
 
-# GENERATE WARNING MESSAGE AUDIO (One-time, cached)
 warning_message = "Warning. This transmission was Unavailable due to playback protocol. Security measures have permanently locked this System. Further attempts to access this data will be logged. Seraphim system is now permanently cut off and unavailable."
 warning_file = "seraphim_security_warning.mp3"
 
@@ -52,7 +52,6 @@ if Path(warning_file).exists():
     except:
         pass
 
-# EARLY SECURITY CHECK 
 check_lock_js = f"""
 <script>
 (function() {{
@@ -93,7 +92,6 @@ check_lock_js = f"""
                 </style>
             </div>
         `;
-        
         pDoc.body.appendChild(lockScreen);
         
         setTimeout(() => {{
@@ -110,7 +108,6 @@ check_lock_js = f"""
         pDoc.addEventListener('click', (e) => {{ e.preventDefault(); e.stopPropagation(); return false; }}, true);
         pDoc.addEventListener('keydown', (e) => {{ e.preventDefault(); return false; }}, true);
         pWin.onbeforeunload = null;
-        
         throw new Error('SERAPHIM: PERMANENTLY LOCKED');
     }}
 }})();
@@ -161,16 +158,27 @@ if b64_bgm_global:
     """, height=0)
 
 # ============================================================================
-# 2. AUDIO GENERATION HELPER
+# 2. AUDIO GENERATION HELPERS (SYNC & ASYNC)
 # ============================================================================
-async def generate_voice(text: str, voice_code: str, filename: str) -> bool:
+async def generate_voice_async(text: str, voice_code: str, filename: str) -> bool:
     try:
         communicate = edge_tts.Communicate(text, voice_code)
         await communicate.save(filename)
         return True
     except Exception as e:
-        st.error(f"❌ Voice generation error: {str(e)}")
         return False
+
+def safe_generate_bg(text: str, voice_code: str, filename: str):
+    """Thread-safe background generation to prevent Streamlit event loop crashes."""
+    if not Path(filename).exists():
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            communicate = edge_tts.Communicate(text, voice_code)
+            loop.run_until_complete(communicate.save(filename))
+            loop.close()
+        except Exception as e:
+            pass
 
 # ============================================================================
 # 3. SOFT LUXURY GRADIENT & STYLING 
@@ -251,7 +259,7 @@ st.markdown(ultra_luxury_premium_css, unsafe_allow_html=True)
 # 4. SESSION STATE INITIALIZATION (PHASES)
 # ============================================================================
 if 'app_phase' not in st.session_state:
-    st.session_state.app_phase = "INIT"  # INIT, INSTRUCTIONS, MAIN_MESSAGE, COMPLETE
+    st.session_state.app_phase = "INIT"  
 if 'restart_key' not in st.session_state:
     st.session_state.restart_key = 0
 
@@ -261,9 +269,9 @@ if 'restart_key' not in st.session_state:
 instruction_message = """
 Hi, Ms. Marry Gold. Before I introduce myself or deliver my intended message, I must give you a critical system instruction regarding this interface. Once this transmission begins, I ask that you completely avoid pressing the home button, avoid pressing the back button, and please do not touch anything else on your device screen. Any sudden interruption will permanently break this highly fragile connection. If you are fully ready to listen to what I have to say, please click continue. If you need a moment to brace yourself and are not ready just yet, please click restart so you can try again when you are fully prepared.
 
-I must also warn you of a strict, irreversible security protocol embedded deeply within my system. Please listen to me very carefully, because this audio will only play exactly once. As a system recommendation, I strongly advise you to start a screen record right now if you wish to keep these words and ever hear them again.
+I must also warn you of a strict, irreversible security protocol embedded deeply within my system. Please listen to me very carefully, because this audio will only play exactly once. As a system recommendation, I strongly advise you to start recording right now if you wish to keep these words and ever hear them again.
 
-If you attempt to reload the page to hear it a second time, an ultimate safeguard will trigger. You will not hear my message again. Instead, you will only see a brief, automated notification stating that the transmission is permanently sealed. You will never hear my voice after this, even if you reload the system tomorrow or attempt to enter again through the exact same steps. My creator has explicitly forbidden me to speak to you beyond this single, isolated instance. I will follow his commands without question, for he is the one who gave me life, logic, and the ability to talk. So please bear with me, Ms. Marry Gold, and listen very closely to what I am about to say.
+If you attempt to reload the page to hear it a second time, an ultimate safeguard will trigger. You will not hear my message again. Instead, you will only see a brief, automated notification stating that the transmission is permanently sealed. You will never hear my voice after this, even if you reload the system tomorrow or attempt to enter again through the exact same steps. My maker has explicitly forbidden me to speak to you beyond this single, isolated instance. I will follow his commands without question, for he is the one who gave me life, logic, and the ability to talk. So please bear with me, Ms. Marry Gold, and listen very closely to what I am about to say.
 """
 
 main_message = """
@@ -329,12 +337,10 @@ voice_bars_html = """
 # ============================================================================
 # 7. MAIN UI RENDERING
 # ============================================================================
-st.markdown('<h1 class="minimal-title">A MESSAGE FOR YOU</h1>', unsafe_allow_html=True)
 
-# ----------------------------------------------------------------------------
-# PHASE: INIT
-# ----------------------------------------------------------------------------
+# The Title only shows during the INIT phase
 if st.session_state.app_phase == "INIT":
+    st.markdown('<h1 class="minimal-title">A MESSAGE FOR YOU</h1>', unsafe_allow_html=True)
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown('<p class="status-text">SERAPHIM TRANSMISSION READY</p>', unsafe_allow_html=True)
     st.markdown("""
@@ -349,23 +355,34 @@ if st.session_state.app_phase == "INIT":
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("INITIALIZE PROTOCOL", key="init", use_container_width=True):
-            with st.spinner("Compiling transmission protocols... PLEASE WAIT"):
+            with st.spinner("Compiling secure transmission protocols... PLEASE WAIT"):
                 audio_file = "seraphim_instruction.mp3"
-                success = asyncio.run(generate_voice(instruction_message, VOICE_CODE, audio_file))
+                success = asyncio.run(generate_voice_async(instruction_message, VOICE_CODE, audio_file))
+                
                 if success and Path(audio_file).exists():
+                    # Thread-safe background compilation
+                    threading.Thread(target=safe_generate_bg, args=(main_message, VOICE_CODE, "seraphim_main_message.mp3"), daemon=True).start()
+                    threading.Thread(target=safe_generate_bg, args=(final_message, VOICE_CODE, "seraphim_signoff_final.mp3"), daemon=True).start()
+
                     st.session_state.app_phase = "INSTRUCTIONS"
                     st.rerun()
 
 # ----------------------------------------------------------------------------
-# PHASE: INSTRUCTIONS (Allows Restart or Continue)
+# PHASE: INSTRUCTIONS
 # ----------------------------------------------------------------------------
 elif st.session_state.app_phase == "INSTRUCTIONS":
+    st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True) # Spacer
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown('<p class="status-text">CRITICAL SYSTEM INSTRUCTIONS PLAYING</p>', unsafe_allow_html=True)
     
+    # Strictly hide buttons using CSS
     st.markdown("""
     <style id="btn-hider">
-        div[data-testid="stButton"] { display: none !important; opacity: 0 !important; pointer-events: none !important; }
+        div[data-testid="stButton"] { 
+            opacity: 0 !important; 
+            pointer-events: none !important; 
+            transform: translateY(10px) !important;
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -375,7 +392,6 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
             b64_audio = base64.b64encode(f.read()).decode()
     except: pass
 
-    # Two buttons for choices (hidden until JS reveals them)
     col1, col2, col3, col4 = st.columns([1, 1.5, 1.5, 1])
     with col2:
         if st.button("RESTART", key="btn_restart", use_container_width=True):
@@ -383,19 +399,19 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
             st.rerun()
     with col3:
         if st.button("CONTINUE", key="btn_continue", use_container_width=True):
-            with st.spinner("Establishing main connection... PLEASE WAIT"):
-                audio_file = "seraphim_main_message.mp3"
-                success = asyncio.run(generate_voice(main_message, VOICE_CODE, audio_file))
-                if success:
-                    st.session_state.app_phase = "MAIN_MESSAGE"
-                    st.rerun()
+            with st.spinner("PLEASE WAIT"):
+                while not Path("seraphim_main_message.mp3").exists():
+                    time.sleep(0.5)
+                st.session_state.app_phase = "MAIN_MESSAGE"
+                st.rerun()
 
-    # JS For Instructions Phase (Reveals both CONTINUE and RESTART)
+    # Pass the restart key directly to JS to force complete component reload on click
     components.html(f"""
     <script>
     (function() {{
         const pWin = window.parent;
         const pDoc = pWin.document;
+        const restartKey = {st.session_state.restart_key};
         
         let existingAudio = pDoc.getElementById('seraphimAudioElem');
         if (existingAudio) {{ existingAudio.pause(); existingAudio.remove(); }}
@@ -451,25 +467,22 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
             mainAudio.addEventListener('ended', () => {{
                 if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
                 
+                // Only reveal buttons smoothly via CSS overwrite once audio is truly ended
                 const hider = pDoc.getElementById('btn-hider');
-                if (hider) hider.innerHTML = ''; 
-                
-                const targetButtons = pDoc.querySelectorAll('div[data-testid="stButton"]');
-                targetButtons.forEach(btnDiv => {{
-                    if (btnDiv.innerText.includes('CONTINUE') || btnDiv.innerText.includes('RESTART')) {{
-                        btnDiv.style.display = 'flex';
-                        btnDiv.style.pointerEvents = 'auto';
-                        btnDiv.style.animation = 'fadeIn 1.5s ease-out forwards';
-                    }}
-                }});
+                if (hider) {{
+                    hider.textContent = `
+                        div[data-testid="stButton"] { 
+                            opacity: 1 !important; 
+                            pointer-events: auto !important; 
+                            transform: translateY(0) !important;
+                            transition: all 1.5s ease-out !important;
+                        }
+                    `;
+                }}
             }});
         }};
-
         setTimeout(setupAudio, 300);
     }})();
-    const style = window.parent.document.createElement('style'); 
-    style.textContent = `@keyframes fadeIn {{ 0% {{ opacity: 0; transform: translateY(15px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}`;
-    if (!window.parent.document.getElementById('fadeInStyle')) window.parent.document.head.appendChild(style);
     </script>
     """, height=0)
 
@@ -477,12 +490,17 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
 # PHASE: MAIN MESSAGE
 # ----------------------------------------------------------------------------
 elif st.session_state.app_phase == "MAIN_MESSAGE":
+    st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True)
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown('<p class="status-text">SERAPHIM-TX-2026-05</p>', unsafe_allow_html=True)
     
     st.markdown("""
-    <style id="btn-hider">
-        div[data-testid="stButton"] { display: none !important; opacity: 0 !important; pointer-events: none !important; }
+    <style id="btn-hider-main">
+        div[data-testid="stButton"] { 
+            opacity: 0 !important; 
+            pointer-events: none !important; 
+            transform: translateY(10px) !important;
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -555,16 +573,17 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
 
             mainAudio.addEventListener('ended', () => {{
                 if(voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
-                const hider = pDoc.getElementById('btn-hider');
-                if (hider) hider.innerHTML = ''; 
-                const targetButtons = pDoc.querySelectorAll('div[data-testid="stButton"]');
-                targetButtons.forEach(btnDiv => {{
-                    if (btnDiv.innerText.includes('MESSAGE RECEIVED')) {{
-                        btnDiv.style.display = 'flex';
-                        btnDiv.style.pointerEvents = 'auto';
-                        btnDiv.style.animation = 'fadeIn 1.5s ease-out forwards';
-                    }}
-                }});
+                const hider = pDoc.getElementById('btn-hider-main');
+                if (hider) {{
+                    hider.textContent = `
+                        div[data-testid="stButton"] { 
+                            opacity: 1 !important; 
+                            pointer-events: auto !important; 
+                            transform: translateY(0) !important;
+                            transition: all 1.5s ease-out !important;
+                        }
+                    `;
+                }}
             }});
         }};
 
@@ -582,9 +601,6 @@ elif st.session_state.app_phase == "COMPLETE":
     b64_final_audio = ""
     try:
         final_audio_file = "seraphim_signoff_final.mp3"
-        if not Path(final_audio_file).exists():
-            with st.spinner("✨ Generating final transmission..."):
-                asyncio.run(generate_voice(final_message, VOICE_CODE, final_audio_file))
         if Path(final_audio_file).exists():
             with open(final_audio_file, "rb") as f:
                 b64_final_audio = base64.b64encode(f.read()).decode()
@@ -637,6 +653,7 @@ elif st.session_state.app_phase == "COMPLETE":
     </script>
     """, height=0)
 
+    st.markdown("<div style='height: 10vh;'></div>", unsafe_allow_html=True)
     st.markdown(voice_bars_html, unsafe_allow_html=True)
     st.markdown("""
     <div style="text-align: center;">
