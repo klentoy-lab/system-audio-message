@@ -25,7 +25,7 @@ st.set_page_config(
 # Configuration Credentials
 NTFY_TOPIC = "Seraphim_Protocol_Gold_99283"
 TARGET_EMAIL = "klentdagsa21@gmail.com"
-VOICE_CODE = "en-GB-ThomasNeural"
+VOICE_CODE = "en-US-ChristopherNeural"
 BGM_FILE = "NIKI - Paths (Instrumental).mp3"
 
 # ============================================================================
