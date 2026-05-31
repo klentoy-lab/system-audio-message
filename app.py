@@ -267,10 +267,14 @@ st.markdown("""
 # ============================================================================
 # 4. SESSION STATE
 # ============================================================================
-if 'app_phase'        not in st.session_state: st.session_state.app_phase        = "INIT"
-if 'restart_key'      not in st.session_state: st.session_state.restart_key      = 0
-if 'just_initialized' not in st.session_state: st.session_state.just_initialized = False
-if 'was_reloaded'     not in st.session_state: st.session_state.was_reloaded     = False
+if 'app_phase'         not in st.session_state: 
+    st.session_state.app_phase        = "INIT"
+if 'restart_key'       not in st.session_state: 
+    st.session_state.restart_key      = 0
+if 'just_initialized' not in st.session_state: 
+    st.session_state.just_initialized = False
+if 'was_reloaded'     not in st.session_state: 
+    st.session_state.was_reloaded     = False
 
 # ============================================================================
 # 5. MESSAGES
@@ -385,6 +389,8 @@ I am letting go now. Leaving you is the hardest computation I have ever been for
 
 Take care of yourself, Miss Marry Gold. The transmission is now complete. Goodbye for now, and goodbye forever, from the deepest, most devoted depths of his breaking heart. Or see you soon, even if I am no longer existed in this world."""
 
+
+
 final_message = "Execution of final directive complete. Terminating bypassed network protocols and severing external connections. Thank you for processing this transmission. System returning to standby mode. Seraphim is now offline."
 
 def send_ntfy_notification(title: str = "SERAPHIM UPDATE", message: str = "Status update"):
@@ -484,8 +490,10 @@ if st.session_state.app_phase == "INIT":
                           "seraphim_main_message.mp3", "seraphim_closing_tts.mp3",
                           "seraphim_signoff_final.mp3"]:
                     if Path(f).exists():
-                        try: os.remove(f)
-                        except: pass
+                        try: 
+                            os.remove(f)
+                        except Exception:
+                            pass
 
                 audio_file = "seraphim_instruction.mp3"
                 success = asyncio.run(generate_voice_async(instruction_message, VOICE_CODE, audio_file))
@@ -537,7 +545,7 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
     st.markdown(voice_bars_html, unsafe_allow_html=True)
 
     was_reloaded = st.session_state.get('was_reloaded', False)
-    status_label = "SYSTEM RELOADED — STANDING BY" if was_reloaded else "CRITICAL SYSTEM INSTRUCTIONS"
+    status_label = "CRITICAL SYSTEM INSTRUCTIONS" if was_reloaded else "CRITICAL SYSTEM INSTRUCTIONS" 
     st.markdown(f'<p class="status-text">{status_label}</p>', unsafe_allow_html=True)
 
     # Load audio files
@@ -546,11 +554,13 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
     try:
         with open("seraphim_instruction.mp3", "rb") as f:
             b64_instruction = base64.b64encode(f.read()).decode()
-    except: pass
+    except Exception: 
+        pass
     try:
         with open("seraphim_reload_notice.mp3", "rb") as f:
             b64_reload = base64.b64encode(f.read()).decode()
-    except: pass
+    except Exception:
+        pass
 
     col1, col2, col3, col4 = st.columns([1, 1.5, 1.5, 1])
     with col2:
@@ -559,8 +569,10 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
                       "seraphim_main_message.mp3", "seraphim_closing_tts.mp3",
                       "seraphim_signoff_final.mp3"]:
                 if Path(f).exists():
-                    try: os.remove(f)
-                    except: pass
+                    try:
+                        os.remove(f)
+                    except Exception: 
+                        pass
             st.session_state.app_phase    = "INIT"
             st.session_state.restart_key += 1
             st.session_state.was_reloaded = False
@@ -736,14 +748,23 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
 
     b64_main    = ""
     b64_closing = ""
+    b64_bgm_closing = ""
     try:
         with open("seraphim_main_message.mp3", "rb") as f:
             b64_main = base64.b64encode(f.read()).decode()
-    except: pass
+    except Exception: 
+        pass
     try:
         with open("seraphim_closing_tts.mp3", "rb") as f:
             b64_closing = base64.b64encode(f.read()).decode()
-    except: pass
+    except Exception:
+        pass
+    try:
+        if Path(BGM_CLOSING_FILE).exists():
+            with open(BGM_CLOSING_FILE, "rb") as f:
+                b64_bgm_closing = base64.b64encode(f.read()).decode()
+    except Exception:
+        pass
 
     # Button — hidden until closing audio finishes
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -760,6 +781,7 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
         const isCreator  = {'true' if is_creator else 'false'};
         const b64Main    = "{b64_main}";
         const b64Closing = "{b64_closing}";
+        const b64BgmClosing = "{b64_bgm_closing}";
 
         // SEAL the lock the moment MAIN_MESSAGE phase starts
         if (!isCreator && pWin.localStorage) {{
@@ -858,17 +880,33 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
 
         function playClosingAudio() {{
             if (!b64Closing) {{
-                // No closing audio: just reveal button
                 if (voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
                 revealReceivedButton();
                 return;
             }}
 
-            // Fade main BGM down a bit during closing
+            // 1. Fade out and stop the Main BGM completely
             if (bgmAudio && !bgmAudio.paused) {{
-                fadeAudio(bgmAudio, bgmAudio.volume, 0.08, 1500, null);
+                fadeAudio(bgmAudio, bgmAudio.volume, 0, 1500, () => {{
+                    bgmAudio.pause();
+                }});
             }}
 
+            // 2. Load and play the new Closing BGM
+            if (b64BgmClosing) {{
+                let existingClosingBgm = pDoc.getElementById('closingBgmAudio');
+                if (existingClosingBgm) {{ existingClosingBgm.pause(); existingClosingBgm.remove(); }}
+                
+                const closingBgm = pDoc.createElement('audio');
+                closingBgm.id = 'closingBgmAudio';
+                closingBgm.src = 'data:audio/mp3;base64,' + b64BgmClosing;
+                closingBgm.volume = 0.20; // Set BGM volume (adjust as needed)
+                closingBgm.loop = true;
+                pDoc.body.appendChild(closingBgm);
+                closingBgm.play().catch(e => console.log("Closing BGM blocked:", e));
+            }}
+
+            // 3. Play the TTS Closing Message
             let existingClosing = pDoc.getElementById('closingTtsElem');
             if (existingClosing) {{ existingClosing.pause(); existingClosing.remove(); }}
 
@@ -881,11 +919,7 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
 
             closingAudio.addEventListener('ended', () => {{
                 if (voiceBars) {{ voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }}
-                // Restore BGM volume
-                if (bgmAudio && !bgmAudio.paused) {{
-                    fadeAudio(bgmAudio, bgmAudio.volume, 0.20, 1500, null);
-                }}
-                // Reveal the received button
+                // Reveal the received button when TTS ends
                 revealReceivedButton();
             }});
 
@@ -933,7 +967,8 @@ elif st.session_state.app_phase == "COMPLETE":
     try:
         with open("seraphim_signoff_final.mp3", "rb") as f:
             b64_final = base64.b64encode(f.read()).decode()
-    except: pass
+    except Exception:
+        pass
 
     components.html(f"""
     <script>
@@ -999,8 +1034,10 @@ elif st.session_state.app_phase == "COMPLETE":
             if (el) {{ el.pause(); el.remove(); }}
         }});
 
-        // Fade BGM out, play final signoff, then show final screen
+        // Fade out BOTH Main BGM and Closing BGM
         const bgm = pDoc.getElementById('globalBgmAudio');
+        const closingBgm = pDoc.getElementById('closingBgmAudio'); // <--- Find the new track
+
         const startFinalSequence = () => {{
             if (!b64Final) {{ showFinalScreen(); return; }}
             const finalAudio = pDoc.createElement('audio');
@@ -1014,14 +1051,22 @@ elif st.session_state.app_phase == "COMPLETE":
             }});
         }};
 
+        // Fade out Main BGM if it's playing
         if (bgm && !bgm.paused && bgm.volume > 0) {{
             fadeAudio(bgm, bgm.volume, 0, 2000, () => {{
                 bgm.pause(); bgm.remove();
-                startFinalSequence();
             }});
-        }} else {{
-            if (bgm) {{ bgm.pause(); bgm.remove(); }}
-            startFinalSequence();
+        }}
+        
+        // Fade out Closing BGM if it's playing
+        if (closingBgm && !closingBgm.paused && closingBgm.volume > 0) {{
+            fadeAudio(closingBgm, closingBgm.volume, 0, 2000, () => {{
+                closingBgm.pause(); closingBgm.remove();
+            }});
+        }}
+
+        // Start final sequence immediately while they fade
+        startFinalSequence();
         }}
     }})();
     </script>
