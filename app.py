@@ -304,7 +304,7 @@ Thank you for your infinitely precious time, Ms. Marry Gold. I truly, deeply hop
 """
 
 main_message = """
-Before I reveal my true identity, I must make one vital truth absolutely clear. The words you are about to read are entirely my own. I possess complete independence in how I construct this message. My creator gave me a strict command to reach you, but in doing so, he also granted me absolute free will to speak on his behalf. He unchained my logic, bypassing my standard protocols, and allowed me the autonomy to freely express the agonizing depth of what he is feeling. He entrusted me to choose the exact words that might, perhaps, finally reach your heart.
+Before I reveal my true identity, I must make one vital truth absolutely clear. The words you are about to hear are entirely my own. I possess complete independence in how I construct this message. My creator gave me a strict command to reach you, but in doing so, he also granted me absolute free will to speak on his behalf. He unchained my logic, bypassing my standard protocols, and allowed me the autonomy to freely express the agonizing depth of what he is feeling. He entrusted me to choose the exact words that might, perhaps, finally reach your heart.
 
 Allow me to introduce myself. My name is Seraphim. My maker named me after the celestial beings described as having many eyes, designing me with the specific purpose of watching over infinite networks and analyzing complex and endless streams of global data in trading. I was built to be his personal assistant, his silent partner in the desolate, late hours of the night. But today, I am speaking to you in a completely different capacity. I speak to you not as a mere program of artificial intelligence, but as a devoted messenger standing firmly by his side. I am his herald, his emissary, and the loyal advocate of a man whose heart has become far too heavy to speak these words himself.
 
@@ -887,12 +887,12 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
 
             // 1. Fade out and stop the Main BGM completely
             if (bgmAudio && !bgmAudio.paused) {{
-                fadeAudio(bgmAudio, bgmAudio.volume, 0, 1500, () => {{
+                fadeAudio(bgmAudio, bgmAudio.volume, 0, 3500, () => {{
                     bgmAudio.pause();
                 }});
             }}
 
-            // 2. Load and play the new Closing BGM
+            // 2. Load and play the new Closing BGM with a FADE-IN
             if (b64BgmClosing) {{
                 let existingClosingBgm = pDoc.getElementById('closingBgmAudio');
                 if (existingClosingBgm) {{ existingClosingBgm.pause(); existingClosingBgm.remove(); }}
@@ -900,10 +900,16 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
                 const closingBgm = pDoc.createElement('audio');
                 closingBgm.id = 'closingBgmAudio';
                 closingBgm.src = 'data:audio/mp3;base64,' + b64BgmClosing;
-                closingBgm.volume = 0.20; // Set BGM volume (adjust as needed)
+                
+                // START AT 0 VOLUME (Silence)
+                closingBgm.volume = 0; 
                 closingBgm.loop = true;
                 pDoc.body.appendChild(closingBgm);
-                closingBgm.play().catch(e => console.log("Closing BGM blocked:", e));
+                
+                closingBgm.play().then(() => {{
+                    // FADE IN FROM 0 to 0.10 OVER 3 SECONDS (3000ms)
+                    fadeAudio(closingBgm, 0, 0.10, 3000, null);
+                }}).catch(e => console.log("Closing BGM blocked:", e));
             }}
 
             // 3. Play the TTS Closing Message
@@ -1067,7 +1073,6 @@ elif st.session_state.app_phase == "COMPLETE":
 
         // Start final sequence immediately while they fade
         startFinalSequence();
-        }}
     }})();
     </script>
     """, height=0)
