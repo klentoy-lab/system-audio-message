@@ -801,22 +801,156 @@ st.markdown("""
     .voice-bars-container.stopped .voice-bar::before{animation:none !important;opacity:0 !important;}
     div[data-testid="stSpinner"]{display:flex;justify-content:center;align-items:center;text-align:center;width:100%;}
     div.stButton{display:flex;justify-content:center;width:100%;}
-    div.stButton > button{
-        background:linear-gradient(135deg,rgba(100,255,255,0.08) 0%,rgba(150,200,255,0.05) 100%);
-        border:2px solid rgba(100,255,255,0.3);border-radius:10px;color:#ffffff;padding:16px 30px;
-        font-size:0.92rem;letter-spacing:2px;text-transform:uppercase;
-        transition:all 0.6s cubic-bezier(0.34,1.56,0.64,1);
-        min-width:100%;font-weight:300;backdrop-filter:blur(12px);position:relative;overflow:hidden;
+    div.stButton > button {
+        /* Premium dark 3D base */
+        background: linear-gradient(145deg, #121826 0%, #090c14 100%);
+        border: 1px solid rgba(100, 255, 255, 0.15);
+        /* Subtle top highlight for the 3D bevel effect */
+        border-top: 1px solid rgba(255, 255, 255, 0.2); 
+        border-radius: 12px;
+        color: #e0f2fe;
+        padding: 16px 30px;
+        font-size: 0.95rem;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        font-weight: 500;
+        /* Layered shadows: drop shadow for elevation, inner shadows for volume */
+        box-shadow: 
+            0 8px 16px rgba(0, 0, 0, 0.5),
+            inset 0 1px 2px rgba(255, 255, 255, 0.1),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        min-width: 100%;
+        position: relative;
+        overflow: hidden;
     }
-    div.stButton > button:hover{
-        background:linear-gradient(135deg,rgba(100,255,255,0.15) 0%,rgba(150,200,255,0.1) 100%);
-        border-color:rgba(100,255,255,0.6);transform:translateY(-4px);
-        box-shadow:0 12px 48px rgba(100,255,255,0.25),inset 0 1px 0 rgba(255,255,255,0.2);
+
+    div.stButton > button:hover {
+        /* Lighter gradient and cyan tint on hover */
+        background: linear-gradient(145deg, #1a2336 0%, #0d121c 100%);
+        border-color: rgba(100, 255, 255, 0.4);
+        color: #ffffff;
+        transform: translateY(-2px);
+        /* Enhanced outer glow and deeper drop shadow */
+        box-shadow: 
+            0 12px 24px rgba(0, 0, 0, 0.6),
+            0 0 20px rgba(100, 255, 255, 0.15),
+            inset 0 1px 2px rgba(255, 255, 255, 0.2);
     }
-    .warning-box{
-        background:linear-gradient(135deg,rgba(100,200,255,0.12) 0%,rgba(100,150,255,0.06) 100%);
-        border:1.5px solid rgba(100,200,255,0.5);border-radius:12px;padding:22px;margin-bottom:3rem;
-        text-align:center;color:#a8d8ff;font-size:0.96rem;font-weight:300;animation:warning-glow 2s ease-in-out infinite;
+
+    /* =========================================
+       1. REALISTIC TACTILE BUTTONS
+       ========================================= */
+    div.stButton > button {
+        /* Matte dark plastic/metal finish */
+        background: linear-gradient(180deg, #1e2638 0%, #101522 100%);
+        border: 1px solid #080b12; /* Dark outer edge */
+        border-radius: 12px;
+        color: #d1e4f9;
+        padding: 16px 30px;
+        font-size: 0.92rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 500;
+        
+        /* Realistic lighting: 
+           1. Top inner highlight (overhead light catching the rim)
+           2. Bottom inner shadow (rounded edge fading to dark)
+           3. Sharp drop shadow (contact shadow with the panel)
+           4. Soft ambient drop shadow */
+        box-shadow: 
+            inset 0 1px 1px rgba(255, 255, 255, 0.12),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+            0 4px 6px rgba(0, 0, 0, 0.6),
+            0 8px 16px rgba(0, 0, 0, 0.4);
+            
+        /* Snappier transition to mimic a physical spring mechanism */
+        transition: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
+        min-width: 100%;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8); /* Text looks etched/raised */
+    }
+
+    div.stButton > button:hover {
+        /* Internal LED illuminates slightly */
+        background: linear-gradient(180deg, #242d42 0%, #141a2a 100%);
+        color: #ffffff;
+        border-color: #0c101a;
+        box-shadow: 
+            inset 0 1px 1px rgba(255, 255, 255, 0.25),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+            0 6px 8px rgba(0, 0, 0, 0.7),
+            0 12px 24px rgba(0, 0, 0, 0.5),
+            0 0 15px rgba(100, 255, 255, 0.15); /* Soft cyan underglow spills out */
+        transform: translateY(-1px);
+    }
+
+    div.stButton > button:active {
+        /* Physically depressed into its socket */
+        background: linear-gradient(180deg, #0e121c 0%, #151a28 100%);
+        transform: translateY(3px);
+        
+        /* Shadows invert: 
+           Top highlight vanishes, replaced by a deep inner shadow 
+           Bottom lip catches a faint bit of ambient light */
+        box-shadow: 
+            inset 0 4px 8px rgba(0, 0, 0, 0.9),
+            inset 0 1px 3px rgba(0, 0, 0, 0.9),
+            0 1px 1px rgba(255, 255, 255, 0.05);
+            
+        color: #8da4bc; /* Text dims slightly when pressed away from the light */
+    }
+
+    .warning-box {
+        /* Premium Frosted Smoked Glass Effect */
+        background: linear-gradient(135deg, rgba(20, 26, 40, 0.6) 0%, rgba(10, 14, 24, 0.8) 100%);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        
+        /* 3D Bevel/Edge Highlighting - Crisp and clean */
+        border: 1px solid rgba(100, 255, 255, 0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.15); /* Light catching the top rim */
+        border-bottom: 1px solid rgba(0, 0, 0, 0.8);     /* Shadow on the bottom rim */
+        
+        border-radius: 16px;
+        padding: 30px 24px;
+        margin-bottom: 3rem;
+        text-align: center;
+        
+        /* Crisp, legible typography */
+        color: #c4d8f0;
+        font-size: 0.95rem;
+        font-weight: 300;
+        line-height: 1.7;
+        
+        /* Floating elevation (Drop shadow) + Subtle internal volume (Inset) */
+        box-shadow: 
+            0 20px 40px rgba(0, 0, 0, 0.6),
+            inset 0 1px 1px rgba(255, 255, 255, 0.08);
+            
+        /* Gentle, slow ambient pulse */
+        animation: premium-pulse 5s ease-in-out infinite;
+    }
+
+    @keyframes premium-pulse {
+        0%, 100% {
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.6),
+                inset 0 1px 1px rgba(255, 255, 255, 0.08);
+        }
+        50% {
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.7),
+                inset 0 1px 1px rgba(255, 255, 255, 0.12),
+                0 0 30px rgba(100, 255, 255, 0.04); /* Barely-there cyan aura */
+        }
+    }
+
+    .warning-box strong {
+        color: #64ffff;
+        font-weight: 500;
+        letter-spacing: 1.2px;
+        /* Clean text shadow instead of a blurry mess */
+        text-shadow: 0 0 15px rgba(100, 255, 255, 0.25); 
     }
     @keyframes warning-glow{0%,100%{box-shadow:0 12px 40px rgba(100,200,255,0.15);}50%{box-shadow:0 12px 50px rgba(100,200,255,0.25);}}
     .warning-box strong{color:#64ffff;font-weight:500;}
