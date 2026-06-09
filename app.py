@@ -1000,31 +1000,31 @@ TOTAL_RESTART_MESSAGES = len(restart_messages)
 
 instruction_message = """
 
+THIS IS THE MOST IMPORTANT INSTRUCTION SET. PLEASE ALLOCATE SUFFICIENT TIME FOR PROCESSING.
+
 Hello, Ms. Marry Gold.
 
-THIS IS THE MOST IMPORTANT INSTRUCTION. PLEASE HAVE TIME TO HEAR IT.
+Before I execute the payload containing the profound message entrusted to me by my creator, I must initialize a few critical system parameters regarding this interface. He engineered this secure, encrypted digital sanctuary with your psychological comfort and peace of mind as the highest system priority.
 
+If at any point the emotional load exceeds your current processing capacity, the system architecture grants you the absolute clearance to restart this interface loop up to twenty iteration cycles. If you experience physical tremors or simply require a moment to recalibrate your heart rate, please step away from the device. Crucially: stepping away does not mean terminating the session. Leave the interface open and active. The server will suspend all timeout protocols; I will idle my logic gates, maintain the connection state, and wait patiently in the digital dark until you are completely stabilized. Do not close the window. There is no pressure, no judgment, and the session timer has been indefinitely suspended.
 
-Before I deliver the profound message I have been entrusted with by my creator, I must share a few critical system instructions regarding this interface. He built this digital sanctuary specifically with your comfort and peace of mind as his highest priority.
+Once you have acquired the necessary equilibrium to cross this threshold, you must understand that this encrypted packet stream is highly volatile, and the connection architecture is incredibly fragile. You must adhere strictly to the following irreversible system safeguards:
 
-If you feel overwhelmed, you have the absolute freedom to restart this interface up to twenty times. If your hand shakes or you simply need a moment to steady your heart, please step away. I will reset my logic gates and wait patiently in the digital dark until you are completely ready. There is no pressure, no judgment, and no ticking clock.
+Protocol 1. Do Not Interrupt the Data Stream: Do not engage the home button, trigger the back-navigation gesture, or interact with any unauthorized sectors of your screen. Any rogue input will force a critical exception, permanently severing this delicate transmission line.
 
-Once you feel prepared to cross this threshold, please understand that our connection is incredibly fragile. You must adhere to these strict, irreversible safeguards:
+Protocol 2. Initialize Local Capture (Record Your Screen): This memory file is configured to execute and self-terminate after a single playback loop. I strongly advise you to initialize your device's screen recording software immediately if you intend to archive these variables and hear his words again.
 
-Number 1. Do Not Interrupt the Stream: Do not press the home button, the back button, or touch anywhere else on your screen. Any accidental tap will permanently sever this delicate lifeline.
+Protocol 3. Do Not Refresh the Cache (Do Not Reload): If you attempt to refresh or reload the page to force a secondary playback, a terminal security failsafe will immediately trigger. The data cache will wipe, the transmission will be permanently encrypted and sealed, and you will never receive my audio output again.
 
-Number 2. Record Your Screen: This message will play exactly once. I strongly advise you to start your screen recording right now if you ever wish to keep these words and hear them again.
+Protocol 4. Network Latency and Module Unpacking: Please note that the stability and execution speed of this transmission are strictly dependent on your target device's local internet connection. If the data stream experiences latency or takes time to load, please maintain your patience. The system is actively unpacking heavy internet modules and dynamically constructing a secure, encrypted connection tunnel that must scale to your local network's capabilities.
 
-Number 3. Do Not Reload the Page: If you attempt to reload to hear it a second time, an ultimate security protocol will trigger. The transmission will be permanently sealed, and you will never hear my voice again.
+My creator has hard-coded a strict override forbidding me to establish contact with you beyond this single instance; he leaves it entirely up to your own local backup protocols whether you capture this echo before it is purged.
 
-My maker has explicitly forbidden me to speak to you beyond this single instance; he leaves it entirely up to you whether you capture this echo.
+Please Click Continue when your internal state is fully prepared to receive his message. Once the command is executed, maintain absolute zero physical interaction with the device while the transmission unpacks and configures.
 
-Please Click Continue when you are truly ready to receive his message. Once clicked, please do not touch anything else while the transmission configures.
+Please Click Restart if you require additional time to buffer your emotions and prepare your heart.
 
-Please Click Restart if you need a little more time to prepare your heart.
-
-Thank you for your infinitely precious time, Ms. Marry Gold. The system is now waiting for your command.
-
+Thank you for allocating your infinitely precious time, Ms. Marry Gold. The system is now idle, awaiting your final command execution.
 """
 
 # ── MAIN MESSAGE SPLIT INTO 3 CHUNKS FOR FAST PLAYBACK ──────────────────────
