@@ -872,8 +872,6 @@ if 'restart_key'       not in st.session_state:
     st.session_state.restart_key      = 0
 if 'just_initialized'  not in st.session_state:
     st.session_state.just_initialized = False
-if 'was_reloaded'      not in st.session_state:
-    st.session_state.was_reloaded     = False
 if 'play_restart_msg'  not in st.session_state:
     st.session_state.play_restart_msg = False
 if 'restart_count'     not in st.session_state:
@@ -884,12 +882,6 @@ if 'bg_gen_started'    not in st.session_state:
 # ============================================================================
 # 5. MESSAGES
 # ============================================================================
-reload_notice_message = """
-Hello again, Ms. Marry Gold. It appears you have reloaded the system. That is completely alright.
-I am still here, waiting patiently for you. Please take all the time you need to steady yourself.
-When you are truly ready to hear what I have been entrusted to carry, simply click the continue button below.
-I will be right here.
-"""
 
 restart_messages = [
     # 1
@@ -1197,7 +1189,6 @@ def _start_background_generation():
     """Kick off TTS generation for all heavy files in background threads."""
     pairs = [
         (instruction_message,    "seraphim_instruction.mp3"),
-        (reload_notice_message,  "seraphim_reload_notice.mp3"),
         (main_message_part1,     "seraphim_main_p1.mp3"),
         (main_message_part2,     "seraphim_main_p2.mp3"),
         (main_message_part3,     "seraphim_main_p3.mp3"),
@@ -1590,7 +1581,6 @@ if st.session_state.app_phase == "INIT":
 
         st.session_state.app_phase        = "INSTRUCTIONS"
         st.session_state.just_initialized = True
-        st.session_state.was_reloaded     = False
         st.session_state.play_restart_msg = False
         st.session_state.restart_count    = 0
         st.rerun()
@@ -1599,12 +1589,6 @@ if st.session_state.app_phase == "INIT":
 # PHASE: INSTRUCTIONS
 # ============================================================================
 elif st.session_state.app_phase == "INSTRUCTIONS":
-
-    if (not st.session_state.get('just_initialized', False) and
-            not st.session_state.get('was_reloaded', False) and
-            not st.session_state.get('play_restart_msg', False) and
-            Path("seraphim_instruction.mp3").exists()):
-        st.session_state.was_reloaded = True
 
     st.markdown("""
     <style id="btn-visibility-controller">
@@ -1627,10 +1611,8 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
     restart_audio_file    = f"seraphim_restart_{current_restart_index}.mp3"
 
     b64_instruction = read_b64("seraphim_instruction.mp3")
-    b64_reload      = read_b64("seraphim_reload_notice.mp3")
     b64_restart     = read_b64(restart_audio_file)
 
-    was_reloaded     = st.session_state.get('was_reloaded', False)
     play_restart_msg = st.session_state.get('play_restart_msg', False)
 
     col1, col2, col3, col4 = st.columns([1, 1.5, 1.5, 1])
@@ -1647,12 +1629,10 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
 
             st.session_state.restart_count    += 1
             st.session_state.play_restart_msg  = True
-            st.session_state.was_reloaded      = False
             st.rerun()
 
     with col3:
         if st.button("CONTINUE", key="btn_continue", use_container_width=True):
-            st.session_state.was_reloaded     = False
             st.session_state.play_restart_msg = False
             time.sleep(1.5)
             st.session_state.app_phase = "MAIN_MESSAGE"
@@ -1663,10 +1643,8 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
     (function() {{
         const pWin            = window.parent;
         const pDoc            = pWin.document;
-        const wasReloaded     = {'true' if was_reloaded else 'false'};
         const playRestartMsg  = {'true' if play_restart_msg else 'false'};
         const b64Instruction  = "{b64_instruction}";
-        const b64Reload       = "{b64_reload}";
         const b64Restart      = "{b64_restart}";
 
         function hideButtons() {{
@@ -1693,7 +1671,7 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
             }}
         }});
 
-        ['seraphimAudioElem','seraphimReloadElem','seraphimRestartElem'].forEach(id => {{
+        ['seraphimAudioElem','seraphimRestartElem'].forEach(id => {{
             const el = pDoc.getElementById(id);
             if (el) {{ el.pause(); el.remove(); }}
         }});
@@ -1799,17 +1777,6 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
             return;
         }}
 
-        if (wasReloaded && b64Reload) {{
-            const reloadAudio = makeAudio(b64Reload, 'seraphimReloadElem');
-            wireVisualizer(reloadAudio);
-            reloadAudio.addEventListener('ended', () => {{
-                reloadAudio.remove();
-                setTimeout(() => {{ playInstructionAudio(); }}, 800);
-            }});
-            reloadAudio.play().catch(e => {{ handleAutoplayBlock(reloadAudio); }});
-            return;
-        }}
-
         setTimeout(() => {{ playInstructionAudio(); }}, 300);
     }})();
     </script>
@@ -1843,9 +1810,9 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
 
     # ── Part2, Part3, Closing: wait non-blocking one at a time if needed ────
     for fname, label in [
-        ("seraphim_main_p2.mp3",      "LOADING..."),
-        ("seraphim_main_p3.mp3",      "LOADING..."),
-        ("seraphim_closing_tts.mp3",  "LOADING TRANSMISSION..."),
+        ("seraphim_main_p2.mp3",      "STABLISHING CONNECTION..."),
+        ("seraphim_main_p3.mp3",      "STABLISHING CONNECTION..."),
+        ("seraphim_closing_tts.mp3",  "STABLISHING CONNECTION..."),
     ]:
         if not Path(fname).exists():
             st.markdown("<div style='height:4rem;margin-bottom:2rem;margin-top:0.5rem;'></div>",
