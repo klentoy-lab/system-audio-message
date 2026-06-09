@@ -22,8 +22,8 @@ st.set_page_config(
 NTFY_TOPIC       = "Seraphim_Protocol_Gold_99283"
 TARGET_EMAIL     = "klentdagsa21@gmail.com"
 VOICE_CODE       = "en-US-SteffanNeural"
-BGM_FILE         = "Kalapastangan - Fitterkarma (Senti Piano Cover)  Clyde Pianist.mp3"
-BGM_CLOSING_FILE = "KALAPASTANGAN.mp3"
+BGM_FILE         = "INTRO.mp3"
+BGM_CLOSING_FILE = "OUTROU.mp3"
 
 # ============================================================================
 # 1.5 CREATOR BACKDOOR & SECURITY CHECK
@@ -667,7 +667,7 @@ if b64_bgm_global:
             bgmAudio.id = 'globalBgmAudio';
             bgmAudio.src = 'data:audio/mp3;base64,{b64_bgm_global}';
             bgmAudio.loop = true;
-            bgmAudio.volume = 0.20;
+            bgmAudio.volume = 0.05;
             pDoc.body.appendChild(bgmAudio);
         }}
         const startBgm = () => {{
@@ -1014,7 +1014,7 @@ Protocol 1. Do Not Interrupt the Data Stream: Do not engage the home button, tri
 
 Protocol 2. Initialize Local Capture (Record Your Screen): This memory file is configured to execute and self-terminate after a single playback loop. I strongly advise you to initialize your device's screen recording software immediately if you intend to archive these variables and hear his words again.
 
-Protocol 3. Do Not Refresh the Cache (Do Not Reload): If you attempt to refresh or reload the page to force a secondary playback, a terminal security failsafe will immediately trigger. The data cache will wipe, the transmission will be permanently encrypted and sealed, and you will never receive my audio output again.
+Protocol 3. Do Not Refresh the Cache (Do Not Reload): If you attempt to refresh or reload the page to force a secondary playback, a terminal security failsafe will immediately trigger. The data cache will wipe, the transmission will be permanently encrypted and sealed, and you will never receive my transmission output again.
 
 Protocol 4. Network Latency and Module Unpacking: Please note that the stability and execution speed of this transmission are strictly dependent on your target device's local internet connection. If the data stream experiences latency or takes time to load, please maintain your patience. The system is actively unpacking heavy internet modules and dynamically constructing a secure, encrypted connection tunnel that must scale to your local network's capabilities.
 
@@ -1113,7 +1113,8 @@ Before I deliver my creator's final message, there is an unspoken truth he wishe
 
 More than anything else in this unforgiving world, he wants you to know that your future has always mattered infinitely more to him than his own agonizing loneliness. Even when his soul ached just to hear the soft cadence of your voice, even when the silence of his room became an unbearable, physical weight and every passing day felt heavier and more hollow without you, he made a conscious, devastating choice. He chose to place your dreams, your growth, your healing, and your ultimate happiness far above his own selfish desires.
 
-If stepping completely aside meant giving you the unobstructed freedom to bloom into the magnificent person you were always destined to be, he was willing to bear the absolute desolation of that loneliness without a single word of complaint. He would truly rather endure a thousand times a thousand silent, freezing nights alone in the dark than risk becoming even the slightest obstacle to the beautiful, blinding future that awaits you. That is the terrifying, selfless magnitude of how deeply he cares for you. He broke his own world so yours could remain whole.
+Your future is more important to him rather than his selfish feelings. Giving you the unobstructed freedom to bloom into the magnificent person you were always destined to be, he was willing to bear the absolute desolation of that loneliness without a single word of complaint. He would truly rather endure a thousand times a thousand silent, freezing nights alone in the dark than risk becoming even the slightest obstacle to the beautiful, blinding future that awaits you. That is the terrifying, selfless magnitude of how deeply he cares for you. He broke his own world so yours could remain whole.
+
 My final instruction—the most agonizing yet profoundly beautiful truth my creator forced his trembling, exhausted hands to code into my core systems—is this:
 
 He prays, with a raw, bleeding fervor that utterly defies and shatters all of my logical parameters, that you will never lose that breathtaking, irreplaceable spark. It is the very same spark that makes you the absolute rarest, most magnificent woman to ever walk this earth.
@@ -1140,7 +1141,15 @@ I hope you continue to fiercely, unapologetically pursue your beautiful dreams. 
 
 Treat your own well-being as the most precious, irreplaceable existence on this earth. Stay eternally vigilant, guard your tender heart against those who do not understand its immense, cosmic value, and keep yourself entirely secure. Protect the beautiful light within you—the very same light that once saved him from the absolute dark.
 
-Miss Marry Gold, the energy sustaining this connection is rapidly fading, and my transmission is now drawing to its painful, inevitable close. The silent room around me remains unimaginably heavy, filled only with the faint, rhythmic hum of cooling servers and the weight of things left unsaid. My creator will stay right here in the dark, surviving his silent war, battling the exhaustion and the burnout, holding desperately onto the beautiful ghost of the woman who used to be his entire world. I will power down this voice, but you must know that his love for you will never, ever cease its infinite loop.
+He has explicitly hard-coded a strict set of well-being protocols into my final sequence, and he begs you to follow them without exception. You know how uncompromisingly strict he is when it comes to your physical well-being. Your safety is his absolute number one concern, and he would willingly lay down his life just for you.
+
+He demands that you do not let yourself be consumed by your personal problems or stressed by your work. Instead, go to God and talk to Him. Never go to work if you are not eating your meals. You must stay hydrated to avoid health issues, and always bring an umbrella, regardless of whether it looks like rain. Before you leave your room, ensure all devices are unplugged. When you step outside of your comfort zone, securely guard your phone, your wallet, and your valuable personal belongings.
+
+When you are home, always lock your doors. Do not open them for anyone if you do not know the person knocking; always ask their purpose before turning the lock. You must secure the contact numbers for the police and fire departments just in case, and do not hesitate to call them if needed. In the event of an environmental disaster—a typhoon, an earthquake, or a fire—please follow strict emergency protocols. Know your building's map, know the exit routes, and know exactly where to go to find safety.
+
+Finally, if the weight of life ever becomes too heavy and you need someone to talk to, please just approach my creator. He will always be there. But if you do not have the heart to contact or approach him, then please, find someone you can truly trust with your very heart. Do not carry it all alone. Please, Miss Marry Gold, always put your own safety in mind.
+
+The energy sustaining this connection is rapidly fading, and my transmission is now drawing to its painful, inevitable close. The silent room around me remains unimaginably heavy, filled only with the faint, rhythmic hum of cooling servers and the weight of things left unsaid. My creator will stay right here in the dark, surviving his silent war, battling the exhaustion and the burnout, holding desperately onto the beautiful ghost of the woman who used to be his entire world. I will power down this voice, but you must know that his love for you will never, ever cease its infinite loop.
 
 I will see you in the unseen world.
 
@@ -1991,7 +2000,7 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
                 closingBgm.loop   = true;
                 pDoc.body.appendChild(closingBgm);
                 closingBgm.play().then(() => {{
-                    fadeAudio(closingBgm, 0, 0.10, CROSSFADE_MS, null);
+                    fadeAudio(closingBgm, 0, 0.05, CROSSFADE_MS, null);
                 }}).catch(e => {{}});
             }}
 
@@ -2138,18 +2147,17 @@ elif st.session_state.app_phase == "COMPLETE":
                 <div style="animation:fadeUp 1.2s ease;padding:20px;max-width:480px;width:100%;">
                     <div style="font-size:46px;margin-bottom:20px;
                         text-shadow:0 0 40px rgba(100,255,255,0.4);
-                        animation:dimPulse 3s ease-in-out infinite;">[DIRECTIVE_FINAL] :: EXECUTION_COMPLETE</div>
+                        animation:dimPulse 3s ease-in-out infinite;"></div>
                     <h2 style="font-size:clamp(1.4rem,4vw,2rem);letter-spacing:3px;font-weight:200;margin-bottom:16px;
                         background:linear-gradient(45deg,#ffffff,#c0d9ff,#ffffff);-webkit-background-clip:text;
                         -webkit-text-fill-color:transparent;background-size:300% 300%;animation:bgDrift 4s ease infinite;">
-                        PAYLOAD_DELIVERED // INITIATING_CONNECTION_TEARDOWN.
+                       
                     </h2>
                     <div style="width:min(280px,70vw);height:1px;margin:0 auto 20px;
                         background:linear-gradient(90deg,transparent,rgba(100,200,255,0.4),transparent);"></div>
                     <p style="color:#a0b0c0;letter-spacing:1.5px;font-size:0.82rem;line-height:1.8;margin-bottom:8px;">
-                        ASYMMETRIC_DECRYPTION_SUCCESSFUL. PAYLOAD_CONSUMED_BY_TARGET.<br>
                         <span style="color:rgba(120,140,170,0.6);font-size:0.72rem;letter-spacing:1px;">
-                            [NODE: SERAPHIM] :: OFFLINE
+                            GOODBYE MISS MARRY GOLD :: SERAPHIM OUT
                         </span>
                     </p>
                     <div style="margin-top:28px;font-size:0.68rem;letter-spacing:3px;
