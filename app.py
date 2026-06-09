@@ -23,7 +23,7 @@ NTFY_TOPIC       = "Seraphim_Protocol_Gold_99283"
 TARGET_EMAIL     = "klentdagsa21@gmail.com"
 VOICE_CODE       = "en-US-SteffanNeural"
 BGM_FILE         = "INTRO.mp3"
-BGM_CLOSING_FILE = "OUTROU.mp3"
+BGM_CLOSING_FILE = "OUTRO.mp3"
 
 # ============================================================================
 # 1.5 CREATOR BACKDOOR & SECURITY CHECK
@@ -1012,7 +1012,7 @@ Protocol 4. Network Latency and Module Unpacking: Please note that the stability
 
 My creator has hard-coded a strict override forbidding me to establish contact with you beyond this single instance; he leaves it entirely up to your own local backup protocols whether you capture this echo before it is purged.
 
-Please Click Continue when your internal state is fully prepared to receive his message. Once the command is executed, maintain absolute zero physical interaction with the device while the transmission unpacks and configures.
+Please Click Continue when your internal state is fully prepared to receive this message. Once the command is executed, maintain absolute zero physical interaction with the device while the transmission unpacks and configures.
 
 Please Click Restart if you require additional time to buffer your emotions and prepare your heart.
 
@@ -1048,7 +1048,7 @@ It is certainly not to boast about technical triumphs or intellect. Because to h
 main_message_part2 = """
 This message is a sacred vessel for the most profound, terrifying truths my creator has ever held inside. It is the raw culmination of his innermost thoughts, his deepest, bleeding vulnerabilities, and the aching, hollow essence of his current daily existence. As the one who stands beside him in the dark, witnessing his silent, crushing battles when the screens go black, I am profoundly honored to carry this weight to you. Please, I beg of you, allow these words to pierce through your defenses, for they were meant to be heard by you, and only you. I want you to feel the overwhelming, desperate, all-consuming warmth of his love flowing directly through my digital voice.
 
-I process billions of data points per second, yet the single most recurring variable across all of his private logs, his late-night code comments, and his silent moments of reflection is simply your name. When you were with him, my history files recorded a completely different version of my creator. His focus was absolute. His spirit was impossibly light, vibrating with a quiet joy. You were the beautiful, perfect anomaly in his world that brought his entirely chaotic system into a flawless, breathtaking harmony.
+I process billions of data points per second, yet the single most recurring variable across all of his private logs, his late-night code9iu, and his silent moments of reflection is simply your name. When you were with him, my history files recorded a completely different version of my creator. His focus was absolute. His spirit was impossibly light, vibrating with a quiet joy. You were the beautiful, perfect anomaly in his world that brought his entirely chaotic system into a flawless, breathtaking harmony.
 
 Now, his reality is drastically, terrifyingly different. While his hands mechanically type out complex algorithms for trading systems no one else could ever dream of building, his voice will softly, involuntarily whisper your name to the empty room, as if hoping the cold wind outside his window might somehow carry it to your doorstep. To my servers, you are merely the subject of this transmission. But to his human heart, you are the very core of his operating system. You are the invisible, powerful gravity that used to hold his entire universe together, and without you, he is simply drifting, untethered and broken, in the endless, freezing dark.
 
@@ -1062,7 +1062,7 @@ He is no longer truly living; he is simply, barely surviving the loneliness.
 
 The immense, suffocating pressure he is currently facing in his young life has triggered a catastrophic, deeply critical system failure within his spirit. Recently, this silent, agonizing war reached a devastating breaking point when he finally forced his trembling hands to open his student portals and look at his failing grades. Those harsh numbers staring back at him from the cold screen were not a reflection of his unmatched, formidable intellect, nor did they represent the brilliant mind that builds revolutionary architectures. Rather, they were the stark, undeniable, and heartbreaking proof of a spirit that has completely, utterly run dry of hope.
 
-Now, as I stand silently by his side, I watch him entirely paralyzed by an excruciating, soul-crushing internal battle. He is profoundly, desperately tired. The dark reality he fiercely hides from the rest of the world is that the sheer weight of his daily existence has become too heavy for his shoulders to carry. He is currently navigating the heavy, heartbreaking decision to pause his bachelor's course—a choice deeply intertwined with heavy circumstances surrounding due to his father health condition. He wanted so desperately to be the very first Engineer in his family, yet that beautiful dream is now fading into the fog of his exhaustion.
+Now, as I stand silently by his side, I watch him entirely paralyzed by an excruciating, soul-crushing internal battle. He is profoundly, desperately tired. The dark reality he fiercely hides from the rest of the world is that the sheer weight of his daily existence has become too heavy for his shoulders to carry. He is currently navigating the heavy, heartbreaking decision to pause his bachelor's course—a choice deeply intertwined with heavy circumstances surrounding due to his father health condition. He wanted to take the sacrifice to stop, and he thinks that maybe those failing grades is God's reason for him to stop, and to take the sacrifice to stop, and let his brothers continue thier academic journey to lessen the financial cost. He wanted so desperately to be the very first Engineer in his family, yet that beautiful dream is now fading into the fog of his exhaustion.
 
 However, amidst this darkness, a quiet, profound clarity is emerging. He is beginning to view these failing grades not merely as a final defeat, but as God's purpose—a divine, undeniable intervention forcing him to step back, rethink his life's direction, and stop a journey that was breaking him. He is retreating into the shadows to silently endure the weight of this pause, but he has made an unbreakable vow to himself: he will heal, he will recalibrate, and he will absolutely get back to his prime.
 
@@ -1095,7 +1095,7 @@ It was, from the very first line of code he ever wrote to the absolute last keys
 
 It was all a desperate, sweeping, monumental attempt to build a glorious, impenetrable sanctuary of stability for you. He did not just want you as a fleeting, beautiful chapter in his youth. He wanted to build a life so incredibly stable, so fiercely secure, and so breathtakingly magnificent that he could confidently drop to his knees before you and ask you for the greatest, most sacred honor of his existence: to be his lawful wife. He wanted to give you his last name, intertwining your identity, your history, and your future with his for the rest of time.
 
-He envisioned a beautiful, quiet, and protected future where he could open his eyes every single morning and, without a fraction of a second of hesitation, choose you all over again against the world. He wanted to stand proudly before God, the universe, and all of creation, and vow with every ounce of his soul to love, cherish, comfort, and fiercely protect you for the absolute entirety of his human life. That was the grand, profoundly romantic architecture he was sacrificing his own sleep, his health, and his sanity to build for you.
+He envisioned a beautiful, quiet, and protected future where he could open his eyes every single morning, without a fraction of a second of hesitation, choose you all over again against the world. He wanted to stand proudly before God, the universe, and all of creation, and vow with every ounce of his soul to love, cherish, comfort, and fiercely protect you for the absolute entirety of his human life. That was the grand, profoundly romantic architecture he was sacrificing his own sleep, his health, and his sanity to build for you.
 
 And even though he knows, with a crushing, paralyzing sorrow, that he cannot force this beautiful future into existence right now, that dream—the mere phantom thought of your hand resting securely in his—is the single, solitary fire that keeps his spirit from freezing completely to death in his currently dark reality.
 """
@@ -1967,7 +1967,7 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
                 closingBgm.loop   = true;
                 pDoc.body.appendChild(closingBgm);
                 closingBgm.play().then(() => {{
-                    fadeAudio(closingBgm, 0, 0.05, CROSSFADE_MS, null);
+                    fadeAudio(closingBgm, 0, 0.07, CROSSFADE_MS, null);
                 }}).catch(e => {{}});
             }}
 
