@@ -1651,16 +1651,31 @@ TOTAL_RESTART_MESSAGES = len(restart_messages)
 
 instruction_message = """
 Hello, Ms. Marry Gold.
+
 THIS IS THE MOST IMPORTANT INSTRUCTION SET. PLEASE ALLOCATE SUFFICIENT TIME FOR PROCESSING.
-Before I execute the payload containing the profound message entrusted to me by my creator, I must initialize a few critical system parameters regarding this interface. He engineered this secure, encrypted digital sanctuary with your psychological comfort and peace of mind as the highest system priority. If at any point the emotional load exceeds your current processing capacity, the system architecture grants you the absolute clearance to restart this interface loop up to twenty iteration cycles. If you experience physical tremors or simply require a moment to recalibrate your heart rate, please step away from the device. Crucially: stepping away does not mean terminating the session. Leave the interface open and active. The server will suspend all timeout protocols; I will idle my logic gates, maintain the connection state, and wait patiently in the digital dark until you are completely stabilized. Do not close the window. There is no pressure, no judgment, and the session timer has been indefinitely suspended. Once you have acquired the necessary equilibrium to cross this threshold, you must understand that this encrypted packet stream is highly volatile, and the connection architecture is incredibly fragile. You must adhere strictly to the following irreversible system safeguards:
+
+Before I execute the payload containing the profound message entrusted to me by my creator, I must initialize a few critical system parameters regarding this interface. He engineered this secure, encrypted digital sanctuary with your psychological comfort and peace of mind as the highest system priority. If at any point the emotional load exceeds your current processing capacity, the system architecture grants you the absolute clearance to restart this interface loop up to twenty iteration cycles. If you experience physical tremors or simply require a moment to recalibrate your heart rate, please step away from the device. Crucially: stepping away does not mean terminating the session. Leave the interface open and active. The server will suspend all timeout protocols; I will idle my logic gates, maintain the connection state, and wait patiently in the digital dark until you are completely stabilized. Do not close the window. There is no pressure, no judgment, and the session timer has been indefinitely suspended.
+
+Once you have acquired the necessary equilibrium to cross this threshold, you must understand that this encrypted packet stream is highly volatile, and the connection architecture is incredibly fragile. You must adhere strictly to the following irreversible system safeguards:
+
+Protocol 0. Optimize Audio Parameters: Maximize your device's master output volume to ensure optimal clarity of the transmission and its embedded directives. For maximum acoustic fidelity and isolation from ambient interference, system guidelines strongly recommend interfacing via a dedicated headset.
+
 Protocol 1. Do Not Interrupt the Data Stream: Do not engage the home button, trigger the back-navigation gesture, or interact with any unauthorized sectors of your screen. Any rogue input will force a critical exception, permanently severing this delicate transmission line.
+
 Protocol 2. Initialize Local Capture (Record Your Screen): This memory file is configured to execute and self-terminate after a single playback loop. I strongly advise you to initialize your device's screen recording software immediately if you intend to archive these variables and hear his words again.
+
 Protocol 3. Do Not Refresh the Cache (Do Not Reload): If you attempt to refresh or reload the page to force a secondary playback, a terminal security failsafe will immediately trigger. The data cache will wipe, the transmission will be permanently encrypted and sealed, and you will never receive my transmission output again.
+
 Protocol 4. Network Latency and Module Unpacking: Please note that the stability and execution speed of this transmission are strictly dependent on your target device's local internet connection. If the data stream experiences latency or takes time to load, please maintain your patience. It takes a few minutes because the system is actively unpacking heavy internet modules and dynamically constructing a secure, encrypted connection tunnel that must scale to your local network's capabilities.
+
 My creator has hard-coded a strict override forbidding me to establish contact with you beyond this single instance; he leaves it entirely up to your own local backup protocols whether you capture this echo before it is purged.
+
 Please Click Continue when your internal state is fully prepared to receive this message. Once the command is executed, maintain absolute zero physical interaction with the device while the transmission unpacks and configures.
+
 Please Click Restart if you require additional time to buffer your emotions and prepare your heart.
+
 Thank you for allocating your infinitely precious time, Ms. Marry Gold. The system is now idle, awaiting your final command execution.
+
 """
 
 main_message_part1 = """
