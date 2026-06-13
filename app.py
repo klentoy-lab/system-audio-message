@@ -733,16 +733,13 @@ for i in range(1, 6):
     """
 
 # ── ALL SHIP CSS STYLES COMBINED ─────────────────────────────────────
+# ── ALL SHIP CSS STYLES COMBINED ─────────────────────────────────────
 METEOR_AND_ORBIT_STYLE = f"""
 <style>
 /* Stars & Meteors */
 .star-a {{ width: 1px; height: 1px; background: transparent; box-shadow: {star_group_a}; animation: twinkle-a 4.2s ease-in-out infinite; }}
 .star-b {{ width: 1px; height: 1px; background: transparent; box-shadow: {star_group_b}; animation: twinkle-b 2.8s ease-in-out 1.4s infinite; }}
 .star-c {{ width: 1px; height: 1px; background: transparent; box-shadow: {star_group_c}; animation: twinkle-c 1.9s ease-in-out 0.7s infinite; }}
-
-@keyframes twinkle-a {{ 0%, 100% {{ opacity: 1; }} 50% {{ opacity: 0.15; }} }}
-@keyframes twinkle-b {{ 0%, 100% {{ opacity: 0.7; }} 40% {{ opacity: 0.05; }} 70% {{ opacity: 0.9; }} }}
-@keyframes twinkle-c {{ 0%, 100% {{ opacity: 0.9; }} 30% {{ opacity: 0.2; }} 60% {{ opacity: 1.0; }} }}
 
 {meteor_css_str}
 @keyframes meteor {{
@@ -768,7 +765,14 @@ METEOR_AND_ORBIT_STYLE = f"""
     z-index: -1; content: ''; display: block; position: absolute; top: 50%; left: 50%;
     width: var(--size); height: var(--size); transform: translate(-50%, -50%);
     background: orange; border-radius: 9999px; box-shadow: 0 0 40px orange;
+    transition: background 3s ease, box-shadow 3s ease;
 }}
+/* DYNAMIC SUN PHASE */
+.sun.is-red::after {{
+    background: #ff2200;
+    box-shadow: 0 0 80px #ff2200, 0 0 120px #ff0000;
+}}
+
 .mercury {{ --size: 2.5vmin; --radius: calc(0.4 * var(--ae)); --speed: 0.24; background-color: #A5A5A5; border-radius: 9999px; }}
 .venus   {{ --size: 3.3vmin; --radius: calc(0.7 * var(--ae)); --speed: 0.61; background-color: #E3BB76; border-radius: 9999px; }}
 .earth   {{ --size: 3.3vmin; --radius: calc(1.0 * var(--ae)); --speed: 1.0;  background-color: #2271B3; border-radius: 9999px; }}
@@ -831,7 +835,6 @@ METEOR_AND_ORBIT_STYLE = f"""
 .r1-rocket:before {{ position: absolute; content: ""; background-color: #39beff; height: 20px; width: 55px; z-index: -1; border-radius: 50% 50% 0 0; right: -15px; bottom: 0; }}
 .r1-rocket:after {{ position: absolute; content: ""; background-color: #39beff; height: 4px; width: 15px; border-radius: 0 0 2px 2px; bottom: -4px; left: 4.3px; }}
 .r1-window {{ height: 10px; width: 10px; background-color: #151845; border: 2px solid #b8d2ec; border-radius: 50%; position: absolute; top: 17px; left: 5px; }}
-/* Dynamic Physics Flame injected by GSAP */
 .r1-flame {{ width: 12px; height: 25px; background: linear-gradient(180deg, #ff4500, #ffd700, transparent); border-radius: 50%; bottom: -20px; left: 6.5px; transform-origin: top center; }}
 
 /* ── SHIP 3 (ROAMER 2 - Heavy Cruiser Spaceship) ──────────────────────────── */
@@ -880,16 +883,9 @@ METEOR_AND_ORBIT_STYLE = f"""
     filter: brightness(3.0) !important;
     opacity: 1 !important;
 }}
-
-/* Energy Particle for Supersonic Charging */
 .s2-particle {{
-    position: absolute;
-    width: 4px; height: 4px;
-    background: #ffffff;
-    border-radius: 50%;
-    box-shadow: 0 0 15px 3px #00ffff;
-    pointer-events: none;
-    z-index: 10;
+    position: absolute; width: 4px; height: 4px; background: #ffffff;
+    border-radius: 50%; box-shadow: 0 0 15px 3px #00ffff; pointer-events: none; z-index: 10;
 }}
 
 /* ── SHIP 4 (ROAMER 3 - UFO) ──────────────────────────────────────────────── */
@@ -907,12 +903,8 @@ METEOR_AND_ORBIT_STYLE = f"""
 @keyframes s3eye {{ 40% {{ transform: scaleY(1); }} 50% {{ transform: scaleY(0); }} 60% {{ transform: scaleY(1); }} }}
 
 /* DYNAMIC DRAGGING CLASSES FOR UFO */
-#ship-roamer3.is-dragging .s3-body {{
-    box-shadow: inset 0 -5px 15px rgba(255, 0, 0, 0.9), 0 0 40px rgba(255, 0, 0, 0.8) !important;
-}}
-#ship-roamer3.is-returning .s3-body {{
-    box-shadow: inset 0 -5px 15px rgba(0, 255, 204, 0.9), 0 0 50px rgba(0, 255, 204, 0.8) !important;
-}}
+#ship-roamer3.is-dragging .s3-body {{ box-shadow: inset 0 -5px 15px rgba(255, 0, 0, 0.9), 0 0 40px rgba(255, 0, 0, 0.8) !important; }}
+#ship-roamer3.is-returning .s3-body {{ box-shadow: inset 0 -5px 15px rgba(0, 255, 204, 0.9), 0 0 50px rgba(0, 255, 204, 0.8) !important; }}
 </style>
 """
 
@@ -946,7 +938,7 @@ STARRY_NIGHT_HTML += f'''
 
 <div id="ship-dragger" class="ship-wrap">
     <div class="rocketCon">
-        <div id="anchor-dragger" style="position:absolute; left:10px; top:25px; width:1px; height:1px; background:transparent;"></div>
+        <div id="anchor-dragger" style="position:absolute; left:-5px; top:30px; width:1px; height:1px; background:transparent;"></div>
         <div class="flame"></div>
         <div class="rocketBase"></div>
         <div class="topWing"></div>
@@ -1058,8 +1050,11 @@ ROCKET_ANIMATION_JS = """
                 } else {
                     this.vx *= 0.9; this.vy *= 0.9;
                 }
-                this.x += this.vx; this.y += this.vy;
                 
+                // Pure physics flight - no walls
+                this.x += this.vx; 
+                this.y += this.vy;
+
                 if (Math.hypot(this.vx, this.vy) > 0.5) {
                     let targetRot = Math.atan2(this.vy, this.vx) * (180 / Math.PI) + this.offsetRot;
                     let diff = targetRot - this.rotation;
@@ -1075,112 +1070,93 @@ ROCKET_ANIMATION_JS = """
         pWin.r2      = new PhysicsRocket(w+400, h*0.8, 0.8, 0.01, 0);  
         pWin.r3      = new PhysicsRocket(-400, h*0.5,  1.5, 0.025, 90);
 
-        const NUM_SEGMENTS = 15;
-        const SEGMENT_LENGTH = 8;
+        const NUM_SEGMENTS = 12;
+        const SEGMENT_LENGTH = 6;
         let rope1 = []; let rope3 = [];
         for(let i=0; i<NUM_SEGMENTS; i++) { rope1.push({x:0,y:0,oldX:0,oldY:0}); rope3.push({x:0,y:0,oldX:0,oldY:0}); }
 
         let ship1State = { phase: "WANDERING", targetPlanet: null, tracker: null, count: 0, px: 0, py: 0, vx: 0, vy: 0, ropeFreq: 1.0, seed: 0 };
         let ship3State = { phase: "WANDERING", targetPlanet: null, tracker: null, count: 0, px: 0, py: 0, vx: 0, vy: 0, ropeFreq: 1.8, seed: 500 };
-        
-        // Ship 2 (Supersonic Cruiser) State
         let ship2State = { phase: "WANDERING", timer: 0, blastAngle: 0 }; 
 
-        // ── EXPOSE STATES SO GUNSHIP BRAIN CAN READ THEM ──
         pWin.seraphimShip1State = ship1State;
         pWin.seraphimShip3State = ship3State;
 
+        // ── AUTONOMOUS SUN STATE MACHINE ──
+        // State 1: IDLE (Wait 9 mins initially, then 10 mins)
+        // State 2: MOVING (Turn Red, glide slowly to new target over 10 mins)
+        let sunState = {
+            phase: 'IDLE',
+            timer: Date.now() + (9 * 60 * 1000), // Start with a 9-minute wait
+            startX: w * 0.85,
+            startY: h * 0.25
+        };
+
+        let sunPhysics = {
+            x: w * 0.85, y: h * 0.25,
+            targetX: w * 0.85, targetY: h * 0.25
+        };
+
+        // Unpin solar system from CSS so we can move it
+        gsap.set('#solar-system-animation', { 
+            right: 'auto', bottom: 'auto', left: 0, top: 0, 
+            xPercent: -50, yPercent: -50, scale: 0.5 
+        });
+
         function getFarTarget(currX, currY, w, h) {
-            let tx, ty;
-            let attempts = 0;
-            do {
-                tx = Math.random() * w * 1.4 - w * 0.2; 
-                ty = Math.random() * h * 1.4 - h * 0.2;
-                attempts++;
-            } while (Math.hypot(tx - currX, ty - currY) < Math.min(w, h) * 0.5 && attempts < 15);
+            let tx = (Math.random() - 0.2) * (w * 1.4);
+            let ty = (Math.random() - 0.2) * (h * 1.4);
+            if (Math.hypot(tx - currX, ty - currY) < 400) {
+                tx = (tx + w/2) % w; ty = (ty + h/2) % h;
+            }
             return {x: tx, y: ty};
         }
 
-        pWin.dragger.setTarget(getFarTarget(-200, h/2, w, h).x, getFarTarget(-200, h/2, w, h).y);
+        // Give ships initial targets so they don't get stuck
         pWin.r1.setTarget(w * 0.5, h * 0.5);
         pWin.r2.setTarget(getFarTarget(w+400, h*0.8, w, h).x, getFarTarget(w+400, h*0.8, w, h).y);
-        pWin.r3.setTarget(getFarTarget(-400, h*0.5, w, h).x, getFarTarget(-400, h*0.5, w, h).y);
+        pWin.dragger.setTarget(getFarTarget(-200, h/2, w, h).x, getFarTarget(-200, h/2, w, h).y);
+        pWin.r3.setTarget(getFarTarget(-400, h/2, w, h).x, getFarTarget(-400, h/2, w, h).y);
 
         function spawnChargingParticle(shipEl) {
-            const p = pDoc.createElement('div');
-            p.className = 's2-particle';
-            const angle = Math.random() * Math.PI * 2;
-            const dist = 80 + Math.random() * 70;
-            const startX = Math.cos(angle) * dist;
-            const startY = Math.sin(angle) * dist;
-            p.style.left = startX + 'px';
-            p.style.top = startY + 'px';
-            shipEl.appendChild(p);
-            gsap.to(p, {
-                x: -startX - 65, 
-                y: -startY + 10,
-                opacity: 0,
-                scale: 0.1,
-                duration: 0.3 + Math.random() * 0.4,
-                ease: "power2.in",
-                onComplete: () => p.remove()
-            });
+            const p = pDoc.createElement('div'); p.className = 's2-particle';
+            const angle = Math.random() * Math.PI * 2; const dist = 80 + Math.random() * 70;
+            const startX = Math.cos(angle) * dist; const startY = Math.sin(angle) * dist;
+            p.style.left = startX + 'px'; p.style.top = startY + 'px'; shipEl.appendChild(p);
+            gsap.to(p, { x: -startX - 65, y: -startY + 10, opacity: 0, scale: 0.1, duration: 0.3 + Math.random() * 0.4, ease: "power2.in", onComplete: () => p.remove() });
         }
 
+        // --- NORMAL PLANET HUNTING LOGIC ---
         function runShipStateMachine(ship, state, allowedIdxStart, allowedIdxEnd, planetsAll, trackersAll) {
             let dDist = Math.hypot(ship.targetX - ship.x, ship.targetY - ship.y);
 
-            if (state.phase === "DRAGGING") {
-                ship.maxSpeed = ship.baseSpeed * 0.4; 
-                ship.maxForce = ship.baseForce * 0.3;  
-            } else if (state.phase === "RETURNING") {
-                ship.maxSpeed = ship.baseSpeed * 3.5;  
-                ship.maxForce = ship.baseForce * 2.5;
-            } else if (state.phase === "HUNTING") {
-                ship.maxSpeed = ship.baseSpeed * 2.5; 
-                ship.maxForce = ship.baseForce * 2.0;
-            } else {
-                ship.maxSpeed = ship.baseSpeed * 1.0;
-                ship.maxForce = ship.baseForce * 1.0;
-            }
+            if (state.phase === "DRAGGING") { ship.maxSpeed = ship.baseSpeed * 0.4; ship.maxForce = ship.baseForce * 0.3; } 
+            else if (state.phase === "RETURNING") { ship.maxSpeed = ship.baseSpeed * 3.5; ship.maxForce = ship.baseForce * 2.5; } 
+            else if (state.phase === "HUNTING") { ship.maxSpeed = ship.baseSpeed * 2.5; ship.maxForce = ship.baseForce * 2.0; } 
+            else { ship.maxSpeed = ship.baseSpeed * 1.5; ship.maxForce = ship.baseForce * 1.5; } 
 
             if (state.phase === "WANDERING") {
-                if (dDist < 80) { 
+                if (dDist < 100) { 
                     if (Math.random() > 0.4 && planetsAll.length > 0) {
                         let allowedPlanets = planetsAll.slice(allowedIdxStart, allowedIdxEnd);
                         let allowedTrackers = trackersAll.slice(allowedIdxStart, allowedIdxEnd);
                         if (allowedPlanets.length > 0) {
                             let pick = Math.floor(Math.random() * allowedPlanets.length);
-                            let chosenP = allowedPlanets[pick];
-                            let chosenT = allowedTrackers[pick];
-                            
+                            let chosenP = allowedPlanets[pick]; let chosenT = allowedTrackers[pick];
                             if (chosenP !== ship1State.targetPlanet && chosenP !== ship3State.targetPlanet) {
-                                state.phase = "HUNTING";
-                                state.targetPlanet = chosenP;
-                                state.tracker = chosenT;
-                            } else {
-                                let nt = getFarTarget(ship.x, ship.y, w, h); ship.setTarget(nt.x, nt.y);
-                            }
+                                state.phase = "HUNTING"; state.targetPlanet = chosenP; state.tracker = chosenT;
+                            } else { let nt = getFarTarget(ship.x, ship.y, w, h); ship.setTarget(nt.x, nt.y); }
                         }
-                    } else {
-                        let nt = getFarTarget(ship.x, ship.y, w, h); ship.setTarget(nt.x, nt.y);
-                    }
+                    } else { let nt = getFarTarget(ship.x, ship.y, w, h); ship.setTarget(nt.x, nt.y); }
                 }
             }
             else if (state.phase === "HUNTING") {
                 if (state.targetPlanet && state.tracker && pDoc.body.contains(state.targetPlanet)) {
                     const tRect = state.tracker.getBoundingClientRect();
-                    const tx = tRect.left + tRect.width/2;
-                    const ty = tRect.top + tRect.height/2;
+                    const tx = tRect.left + tRect.width/2; const ty = tRect.top + tRect.height/2;
                     ship.setTarget(tx, ty);
-
                     if (Math.hypot(ship.x - tx, ship.y - ty) < 50) {
-                        state.phase = "DRAGGING"; 
-                        state.count = 0; 
-                        state.px = tx; 
-                        state.py = ty;
-                        state.vx = 0;
-                        state.vy = 0;
+                        state.phase = "DRAGGING"; state.count = 0; state.px = tx; state.py = ty; state.vx = 0; state.vy = 0;
                         let nt = getFarTarget(ship.x, ship.y, w, h); ship.setTarget(nt.x, nt.y);
                     }
                 } else { state.phase = "WANDERING"; }
@@ -1188,36 +1164,90 @@ ROCKET_ANIMATION_JS = """
             else if (state.phase === "DRAGGING") {
                 if (dDist < 100) {
                     state.count++;
-                    if (state.count > 2) { 
-                        state.phase = "RETURNING"; 
-                    } else { 
-                        let nt = getFarTarget(ship.x, ship.y, w, h); ship.setTarget(nt.x, nt.y); 
-                    }
+                    if (state.count > 2) { state.phase = "RETURNING"; } 
+                    else { let nt = getFarTarget(ship.x, ship.y, w, h); ship.setTarget(nt.x, nt.y); }
                 }
             }
             else if (state.phase === "RETURNING") {
                 if (state.targetPlanet && state.tracker) {
                     const tRect = state.tracker.getBoundingClientRect();
-                    const orbitX = tRect.left + tRect.width/2;
-                    const orbitY = tRect.top + tRect.height/2;
-
-                    const dx = orbitX - ship.x; const dy = orbitY - ship.y;
-                    const angleRad = Math.atan2(dy, dx);
-                    const ropeLen = SEGMENT_LENGTH * NUM_SEGMENTS * 0.6; 
+                    const orbitX = tRect.left + tRect.width/2; const orbitY = tRect.top + tRect.height/2;
+                    const angleRad = Math.atan2(orbitY - ship.y, orbitX - ship.x);
+                    const ropeLen = SEGMENT_LENGTH * (NUM_SEGMENTS * 0.4); 
                     ship.setTarget(orbitX + Math.cos(angleRad) * ropeLen, orbitY + Math.sin(angleRad) * ropeLen);
 
                     if (Math.hypot(state.px - orbitX, state.py - orbitY) < 60 || Math.hypot(ship.x - orbitX, ship.y - orbitY) < 40) {
                         state.targetPlanet.style.removeProperty('translate');
-                        state.targetPlanet = null; 
-                        state.tracker = null; 
-                        state.phase = "WANDERING";
+                        state.targetPlanet = null; state.tracker = null; state.phase = "WANDERING";
                         let nt = getFarTarget(ship.x, ship.y, w, h); ship.setTarget(nt.x, nt.y);
                     }
-                } else { state.phase = "WANDERING"; }
+                } else { 
+                    state.phase = "WANDERING"; 
+                    let nt = getFarTarget(ship.x, ship.y, w, h); ship.setTarget(nt.x, nt.y);
+                }
             }
         }
 
+        function simulateRope(shipEl, anchorId, ropeArr, stateObj, svgLine, sCenterX, sCenterY) {
+            if (stateObj.targetPlanet && (stateObj.phase === "DRAGGING" || stateObj.phase === "RETURNING")) {
+                const aRect = pDoc.getElementById(anchorId).getBoundingClientRect();
+                ropeArr[0].x = aRect.left + aRect.width/2; ropeArr[0].y = aRect.top + aRect.height/2;
+                
+                let isHeavy = (stateObj.phase === "DRAGGING");
+                let sag = isHeavy ? 0.1 : 0.8;
+                let waveAmp = isHeavy ? 0.3 : 2.0; let freqMult = isHeavy ? 3.0 : 1.0;
+                let timeObj = Date.now() * 0.005 + stateObj.seed;
+
+                for(let i=1; i<NUM_SEGMENTS; i++) {
+                    let p = ropeArr[i];
+                    let vx = (p.x - p.oldX) * 0.90; let vy = (p.y - p.oldY) * 0.90 + sag; 
+                    vx += Math.sin(timeObj * stateObj.ropeFreq * freqMult + i * 0.3) * waveAmp;
+                    p.oldX = p.x; p.oldY = p.y; p.x += vx; p.y += vy;
+                }
+                for (let iter=0; iter<5; iter++) { 
+                    for(let i=0; i<NUM_SEGMENTS-1; i++) {
+                        let p1 = ropeArr[i]; let p2 = ropeArr[i+1];
+                        let dx = p2.x - p1.x; let dy = p2.y - p1.y; let dist = Math.hypot(dx, dy);
+                        if (dist === 0) continue;
+                        let diff = SEGMENT_LENGTH - dist; let percent = diff / dist / 2;
+                        if (i !== 0) { p1.x -= dx * percent; p1.y -= dy * percent; }
+                        p2.x += dx * percent; p2.y += dy * percent;
+                    }
+                }
+
+                const tail = ropeArr[NUM_SEGMENTS-1];
+                let spring = isHeavy ? 0.04 : 0.15; let damp = isHeavy ? 0.95 : 0.85;   
+                stateObj.vx += (tail.x - stateObj.px) * spring; stateObj.vy += (tail.y - stateObj.py) * spring;
+                stateObj.vx *= damp; stateObj.vy *= damp;
+                stateObj.px += stateObj.vx; stateObj.py += stateObj.vy;
+                tail.x = stateObj.px; tail.y = stateObj.py;
+
+                const localX = (stateObj.px - sCenterX) / 0.5; const localY = (stateObj.py - sCenterY) / 0.5;
+                stateObj.targetPlanet.style.setProperty('translate', `${localX}px ${localY}px`, 'important');
+
+                let pathD = `M ${ropeArr[0].x} ${ropeArr[0].y}`;
+                for(let i=1; i<NUM_SEGMENTS; i++) { pathD += ` L ${ropeArr[i].x} ${ropeArr[i].y}`; }
+                svgLine.setAttribute('d', pathD); svgLine.setAttribute('opacity', '1');
+                
+                let ropeColor = (shipEl.id === 'ship-dragger') ? (isHeavy ? 'rgba(255, 100, 0, 0.9)' : 'rgba(0, 255, 204, 0.8)') : (isHeavy ? 'rgba(255, 0, 0, 0.9)' : 'rgba(255, 0, 255, 0.8)');
+                svgLine.setAttribute('stroke', ropeColor);
+                svgLine.setAttribute('stroke-width', isHeavy ? '2.0' : '1.0');
+                svgLine.style.filter = `drop-shadow(0px 0px ${isHeavy ? '8px' : '4px'} ${ropeColor})`;
+            } else {
+                svgLine.setAttribute('opacity', '0');
+                if (pDoc.getElementById(anchorId)) {
+                    const aRect = pDoc.getElementById(anchorId).getBoundingClientRect();
+                    for(let i=0; i<NUM_SEGMENTS; i++) {
+                        ropeArr[i].x = aRect.left + aRect.width/2; ropeArr[i].y = aRect.top + aRect.height/2;
+                        ropeArr[i].oldX = ropeArr[i].x; ropeArr[i].oldY = ropeArr[i].y;
+                    }
+                }
+            }
+        }
+
+        // ── MASTER TICKER LOOP ──
         gsap.ticker.add(() => {
+            const now = Date.now();
             const elDragger = pDoc.getElementById('ship-dragger');
             const elR1 = pDoc.getElementById('ship-roamer1');
             const elR2 = pDoc.getElementById('ship-roamer2');
@@ -1230,11 +1260,15 @@ ROCKET_ANIMATION_JS = """
 
             const planetsAll = Array.from(elSolar.querySelectorAll('.planet')).filter(p => !p.classList.contains('moon'));
             const trackersAll = Array.from(elSolar.querySelectorAll('.tracker'));
+            const sRect = elSolar.getBoundingClientRect();
+            const sCenterX = sRect.left + sRect.width/2;
+            const sCenterY = sRect.top + sRect.height/2;
 
-            pWin.dragger.update();
-            pWin.r1.update();
-            pWin.r2.update();
+            // Update Ships Freely
+            pWin.dragger.update(); 
             pWin.r3.update();
+            pWin.r1.update(); 
+            pWin.r2.update(); 
 
             if (elR1) {
                 let speedRatio1 = Math.min(1, Math.hypot(pWin.r1.vx, pWin.r1.vy) / Math.max(0.001, pWin.r1.maxSpeed));
@@ -1246,193 +1280,100 @@ ROCKET_ANIMATION_JS = """
             if(elR2) gsap.set(elR2, { x: pWin.r2.x, y: pWin.r2.y, rotation: pWin.r2.rotation, opacity: 1 });
             if(elR3) gsap.set(elR3, { x: pWin.r3.x, y: pWin.r3.y, rotation: pWin.r3.rotation, opacity: 1 });
 
-            elDragger.className = `ship-wrap is-${ship1State.phase.toLowerCase()}`;
-            elR3.className = `ship-wrap is-${ship3State.phase.toLowerCase()}`;
-
+            // Random roam logic for R1
             if (Math.hypot(pWin.r1.targetX - pWin.r1.x, pWin.r1.targetY - pWin.r1.y) < 80) { 
-                let t = {x: Math.random() * w * 0.8 + w * 0.1, y: Math.random() * h * 0.8 + h * 0.1}; 
+                let t = getFarTarget(pWin.r1.x, pWin.r1.y, w, h); 
                 pWin.r1.setTarget(t.x, t.y); 
             }
 
-            // ── SUPERSONIC CRUISER LOGIC (SHIP 2) ──
+            // ── SUPERSONIC CRUISER (SHIP 2) ──
             if (elR2) {
                 let dDist2 = Math.hypot(pWin.r2.targetX - pWin.r2.x, pWin.r2.targetY - pWin.r2.y);
-                
                 if (ship2State.phase === "WANDERING") {
-                    pWin.r2.maxSpeed = pWin.r2.baseSpeed;
-                    pWin.r2.maxForce = pWin.r2.baseForce;
-                    if (dDist2 < 80) { 
-                        let t = getFarTarget(pWin.r2.x, pWin.r2.y, w, h); pWin.r2.setTarget(t.x, t.y); 
-                    }
-                    
+                    pWin.r2.maxSpeed = pWin.r2.baseSpeed; pWin.r2.maxForce = pWin.r2.baseForce;
+                    if (dDist2 < 80) { let t = getFarTarget(pWin.r2.x, pWin.r2.y, w, h); pWin.r2.setTarget(t.x, t.y); }
                     let speedRatio2 = Math.min(1, Math.hypot(pWin.r2.vx, pWin.r2.vy) / pWin.r2.maxSpeed);
                     gsap.set(elR2.querySelector('.s2-flame'), { scaleX: 0.3 + speedRatio2 * 1.5, opacity: 0.2 + speedRatio2 * 0.8 });
-
-                    // Very rare chance to go supersonic
-                    if (Math.random() < 0.0015) {
-                        ship2State.phase = "CHARGING";
-                        ship2State.timer = 0;
-                        // Lock current heading!
-                        ship2State.blastAngle = Math.atan2(pWin.r2.vy, pWin.r2.vx);
-                    }
+                    if (Math.random() < 0.0015) { ship2State.phase = "CHARGING"; ship2State.timer = 0; ship2State.blastAngle = Math.atan2(pWin.r2.vy, pWin.r2.vx); }
                 } 
                 else if (ship2State.phase === "CHARGING") {
-                    pWin.r2.maxSpeed = 0.05; 
-                    pWin.r2.maxForce = 0.02; 
-                    
-                    // Force the ship to look in the locked blast angle direction
+                    pWin.r2.maxSpeed = 0.05; pWin.r2.maxForce = 0.02; 
                     pWin.r2.setTarget(pWin.r2.x + Math.cos(ship2State.blastAngle)*100, pWin.r2.y + Math.sin(ship2State.blastAngle)*100);
-                    
-                    ship2State.timer++;
-                    gsap.set(elR2.querySelector('.s2-flame'), { clearProps: "all" });
-
-                    if (ship2State.timer % 3 === 0) {
-                        spawnChargingParticle(elR2);
-                    }
-                    
-                    if (ship2State.timer > 600) { // 10s charge
-                        ship2State.phase = "SUPERSONIC";
-                        ship2State.timer = 0;
-                        // Target straight line offscreen
-                        pWin.r2.setTarget(pWin.r2.x + Math.cos(ship2State.blastAngle)*10000, pWin.r2.y + Math.sin(ship2State.blastAngle)*10000);
-                    }
+                    ship2State.timer++; gsap.set(elR2.querySelector('.s2-flame'), { clearProps: "all" });
+                    if (ship2State.timer % 3 === 0) spawnChargingParticle(elR2);
+                    if (ship2State.timer > 600) { ship2State.phase = "SUPERSONIC"; ship2State.timer = 0; pWin.r2.setTarget(pWin.r2.x + Math.cos(ship2State.blastAngle)*10000, pWin.r2.y + Math.sin(ship2State.blastAngle)*10000); }
                 }
                 else if (ship2State.phase === "SUPERSONIC") {
-                    pWin.r2.maxSpeed = 45.0; // Straight line blast
-                    pWin.r2.maxForce = 5.0;  // Lock onto straight line immediately
-                    
-                    ship2State.timer++;
-                    gsap.set(elR2.querySelector('.s2-flame'), { clearProps: "all" });
-
-                    // Maintain straight line target
+                    pWin.r2.maxSpeed = 45.0; pWin.r2.maxForce = 5.0;  
+                    ship2State.timer++; gsap.set(elR2.querySelector('.s2-flame'), { clearProps: "all" });
                     pWin.r2.setTarget(pWin.r2.x + Math.cos(ship2State.blastAngle)*10000, pWin.r2.y + Math.sin(ship2State.blastAngle)*10000);
-                    
-                    if (ship2State.timer > 200) { // Blast complete
-                        ship2State.phase = "REENTRY";
-                        ship2State.timer = 0;
-                    }
+                    if (ship2State.timer > 200) { ship2State.phase = "REENTRY"; ship2State.timer = 0; }
                 }
                 else if (ship2State.phase === "REENTRY") {
-                    // Warp to random screen edge
-                    let edge = Math.floor(Math.random() * 4);
-                    let nx, ny;
-                    if (edge === 0) { nx = Math.random() * w; ny = -200; } // top
-                    else if (edge === 1) { nx = Math.random() * w; ny = h + 200; } // bottom
-                    else if (edge === 2) { nx = -200; ny = Math.random() * h; } // left
-                    else { nx = w + 200; ny = Math.random() * h; } // right
-                    
-                    pWin.r2.x = nx;
-                    pWin.r2.y = ny;
-                    pWin.r2.vx = 0; 
-                    pWin.r2.vy = 0;
-                    
-                    ship2State.phase = "WANDERING";
-                    pWin.r2.setTarget(w/2 + (Math.random()-0.5)*200, h/2 + (Math.random()-0.5)*200); 
+                    let edge = Math.floor(Math.random() * 4); let nx, ny;
+                    if (edge === 0) { nx = Math.random() * w; ny = -200; } else if (edge === 1) { nx = Math.random() * w; ny = h + 200; } 
+                    else if (edge === 2) { nx = -200; ny = Math.random() * h; } else { nx = w + 200; ny = Math.random() * h; } 
+                    pWin.r2.x = nx; pWin.r2.y = ny; pWin.r2.vx = 0; pWin.r2.vy = 0;
+                    ship2State.phase = "WANDERING"; pWin.r2.setTarget(w/2 + (Math.random()-0.5)*200, h/2 + (Math.random()-0.5)*200); 
                 }
-                
                 elR2.className = `ship-wrap is-${ship2State.phase.toLowerCase()}`;
             }
 
+            // ── NORMAL DRAGGER & UFO PLANET HUNTING ──
             runShipStateMachine(pWin.dragger, ship1State, 0, planetsAll.length, planetsAll, trackersAll);
             runShipStateMachine(pWin.r3, ship3State, 0, 4, planetsAll, trackersAll);
+            simulateRope(elDragger, 'anchor-dragger', rope1, ship1State, elRope1, sCenterX, sCenterY);
+            simulateRope(elR3, 'anchor-ufo', rope3, ship3State, elRope3, sCenterX, sCenterY); 
+            elDragger.className = `ship-wrap is-${ship1State.phase.toLowerCase()}`;
+            elR3.className = `ship-wrap is-${ship3State.phase.toLowerCase()}`;
 
-            const sRect = elSolar.getBoundingClientRect();
-            const sCenterX = sRect.left + sRect.width/2;
-            const sCenterY = sRect.top + sRect.height/2;
 
-            function simulateRope(shipEl, anchorId, ropeArr, stateObj, svgLine) {
-                if (stateObj.targetPlanet && (stateObj.phase === "DRAGGING" || stateObj.phase === "RETURNING")) {
-                    const aRect = pDoc.getElementById(anchorId).getBoundingClientRect();
-                    const anchorX = aRect.left + aRect.width/2;
-                    const anchorY = aRect.top + aRect.height/2;
+            // ══════════════════════════════════════════════════════════════════
+            // ── INDEPENDENT AUTONOMOUS SUN ENGINE ──
+            // ══════════════════════════════════════════════════════════════════
+            let sunEl = elSolar.querySelector('.sun');
 
-                    ropeArr[0].x = anchorX;
-                    ropeArr[0].y = anchorY;
+            if (sunState.phase === 'IDLE') {
+                if (now > sunState.timer) {
+                    // Start Moving Phase
+                    sunState.phase = 'MOVING';
+                    sunState.timer = now + (10 * 60 * 1000); // 10 minutes duration to move
                     
-                    let isHeavy = (stateObj.phase === "DRAGGING");
+                    // Save starting coordinates for math calculation
+                    sunState.startX = sunPhysics.x;
+                    sunState.startY = sunPhysics.y;
                     
-                    let sag = isHeavy ? 0.1 : 0.8;
-                    let waveAmp = isHeavy ? 0.3 : 2.0;
-                    let freqMult = isHeavy ? 3.0 : 1.0;
-
-                    let timeObj = Date.now() * 0.005 + stateObj.seed;
-                    for(let i=1; i<NUM_SEGMENTS; i++) {
-                        let p = ropeArr[i];
-                        let vx = (p.x - p.oldX) * 0.90; 
-                        let vy = (p.y - p.oldY) * 0.90 + sag; 
-                        
-                        let wave = Math.sin(timeObj * stateObj.ropeFreq * freqMult + i * 0.3) * waveAmp;
-                        vx += wave;
-                        
-                        p.oldX = p.x; p.oldY = p.y;
-                        p.x += vx; p.y += vy;
-                    }
-
-                    for (let iter=0; iter<5; iter++) { 
-                        for(let i=0; i<NUM_SEGMENTS-1; i++) {
-                            let p1 = ropeArr[i]; let p2 = ropeArr[i+1];
-                            let dx = p2.x - p1.x; let dy = p2.y - p1.y;
-                            let dist = Math.hypot(dx, dy);
-                            if (dist === 0) continue;
-                            let diff = SEGMENT_LENGTH - dist;
-                            let percent = diff / dist / 2;
-                            let offsetX = dx * percent; let offsetY = dy * percent;
-                            if (i !== 0) { p1.x -= offsetX; p1.y -= offsetY; }
-                            p2.x += offsetX; p2.y += offsetY;
-                        }
-                    }
-
-                    const tail = ropeArr[NUM_SEGMENTS-1];
+                    // Pick a random target anywhere on the screen
+                    sunPhysics.targetX = Math.random() * (w - 300) + 150;
+                    sunPhysics.targetY = Math.random() * (h - 300) + 150;
                     
-                    let spring = isHeavy ? 0.04 : 0.15; 
-                    let damp = isHeavy ? 0.95 : 0.85;   
+                    if (sunEl) sunEl.classList.add('is-red');
+                }
+            } 
+            else if (sunState.phase === 'MOVING') {
+                // Calculate exactly how far we are into the 10-minute timer
+                let progress = 1 - ((sunState.timer - now) / (10 * 60 * 1000));
+                
+                if (progress >= 1 || now > sunState.timer) {
+                    // Arrived at destination
+                    sunState.phase = 'IDLE';
+                    sunState.timer = now + (10 * 60 * 1000); // Wait 10 minutes before moving again
                     
-                    stateObj.vx += (tail.x - stateObj.px) * spring;
-                    stateObj.vy += (tail.y - stateObj.py) * spring;
-                    stateObj.vx *= damp;
-                    stateObj.vy *= damp;
+                    // Lock position exactly
+                    sunPhysics.x = sunPhysics.targetX;
+                    sunPhysics.y = sunPhysics.targetY;
                     
-                    stateObj.px += stateObj.vx;
-                    stateObj.py += stateObj.vy;
-
-                    tail.x = stateObj.px;
-                    tail.y = stateObj.py;
-
-                    const localX = (stateObj.px - sCenterX) / 0.5; 
-                    const localY = (stateObj.py - sCenterY) / 0.5;
-                    stateObj.targetPlanet.style.setProperty('translate', `${localX}px ${localY}px`, 'important');
-
-                    let pathD = `M ${ropeArr[0].x} ${ropeArr[0].y}`;
-                    for(let i=1; i<NUM_SEGMENTS; i++) { pathD += ` L ${ropeArr[i].x} ${ropeArr[i].y}`; }
-                    svgLine.setAttribute('d', pathD);
-                    svgLine.setAttribute('opacity', '1');
-                    
-                    if (isHeavy) {
-                        svgLine.setAttribute('stroke', (shipEl.id === 'ship-dragger') ? 'rgba(255, 100, 0, 0.9)' : 'rgba(255, 0, 0, 0.9)');
-                        svgLine.setAttribute('stroke-width', '2.0');
-                        svgLine.style.filter = "drop-shadow(0px 0px 8px " + svgLine.getAttribute("stroke") + ")";
-                    } else {
-                        svgLine.setAttribute('stroke', (shipEl.id === 'ship-dragger') ? 'rgba(0, 255, 204, 0.8)' : 'rgba(255, 0, 255, 0.8)');
-                        svgLine.setAttribute('stroke-width', '1.0');
-                        svgLine.style.filter = "drop-shadow(0px 0px 4px " + svgLine.getAttribute("stroke") + ")";
-                    }
-
+                    if (sunEl) sunEl.classList.remove('is-red');
                 } else {
-                    svgLine.setAttribute('opacity', '0');
-                    if (pDoc.getElementById(anchorId)) {
-                        const aRect = pDoc.getElementById(anchorId).getBoundingClientRect();
-                        for(let i=0; i<NUM_SEGMENTS; i++) {
-                            ropeArr[i].x = aRect.left + aRect.width/2;
-                            ropeArr[i].y = aRect.top + aRect.height/2;
-                            ropeArr[i].oldX = ropeArr[i].x; 
-                            ropeArr[i].oldY = ropeArr[i].y;
-                        }
-                    }
+                    // Smooth, time-based movement guarantees it takes exactly 10 mins
+                    // regardless of the user's monitor frame rate!
+                    sunPhysics.x = sunState.startX + (sunPhysics.targetX - sunState.startX) * progress;
+                    sunPhysics.y = sunState.startY + (sunPhysics.targetY - sunState.startY) * progress;
                 }
             }
 
-            simulateRope(elDragger, 'anchor-dragger', rope1, ship1State, elRope1);
-            simulateRope(elR3, 'anchor-ufo', rope3, ship3State, elRope3); 
+            // Apply Sun physics to screen
+            gsap.set(elSolar, { x: sunPhysics.x, y: sunPhysics.y });
 
         });
     }
@@ -1468,9 +1409,9 @@ GUNSHIP_BRAIN_JS = """
         style.textContent = `
             .gs-bullet {
                 position: fixed; pointer-events: none; z-index: 50;
-                width: 15px; height: 2px; border-radius: 2px;
+                width: 15px; height: 3px; border-radius: 2px;
                 background: #ffffff; transform-origin: center;
-                box-shadow: 0 0 6px 2px rgba(255,255,255,0.8);
+                box-shadow: 0 0 8px 3px rgba(255,255,255,0.9);
             }
             .gs-muzzle {
                 position: fixed; pointer-events: none; z-index: 51;
@@ -1595,17 +1536,107 @@ GUNSHIP_BRAIN_JS = """
                            .to(bar, { backgroundColor: '', boxShadow: '', duration: 0.4 });
         }
 
-        // ── BULLET FIRING LOGIC ──
-        function fireBullet(sx, sy, tx, ty, color, onHit) {
+        // ── STRAIGHT HOMING MISSILE ENGINE (NO WOBBLE) ──
+        function fireBullet(sx, sy, getTargetPos, color, onHit) {
             color = color || '#39beff';
-            const dx = tx - sx; const dy = ty - sy;
-            const dist = Math.hypot(dx, dy); const angle = Math.atan2(dy, dx);
-            spawnMuzzleFlash(sx, sy); spawnRecoilTrail(sx, sy, angle + Math.PI);
+            
+            let initialTarget = getTargetPos();
+            if (!initialTarget) return; 
+
+            // Reduced fan-out for a much straighter launch trajectory
+            let baseAngle = Math.atan2(initialTarget.y - sy, initialTarget.x - sx);
+            let launchAngle = baseAngle + (Math.random() - 0.5) * 0.4; 
+            
+            spawnMuzzleFlash(sx, sy); 
+            
             const b = pDoc.createElement('div');
-            b.className = 'gs-bullet'; b.style.background = color; b.style.boxShadow = `0 0 10px 3px ${color}`;
+            b.className = 'gs-bullet'; 
+            b.style.background = color; 
+            b.style.boxShadow = `0 0 10px 3px ${color}`;
             pDoc.body.appendChild(b);
-            gsap.set(b, { x: sx, y: sy, rotation: angle * (180/Math.PI), xPercent: -50, yPercent: -50 });
-            gsap.to(b, { x: tx, y: ty, duration: dist / 1500, ease: "none", onComplete: () => { b.remove(); if (onHit) onHit(tx, ty); }});
+            
+            gsap.set(b, { x: sx, y: sy, rotation: launchAngle * (180/Math.PI), xPercent: -50, yPercent: -50 });
+
+            let cx = sx;
+            let cy = sy;
+            
+            // Fast launch speed
+            let vx = Math.cos(launchAngle) * 20; 
+            let vy = Math.sin(launchAngle) * 20;
+            
+            const maxSpeed = 30;  // High top speed to catch moving targets
+            let life = 0;
+
+            function tick() {
+                life++;
+                let tPos = getTargetPos();
+                
+                // Target lost - fly straight off screen
+                if (!tPos || !pDoc.body.contains(b)) {
+                    cx += vx; cy += vy;
+                    gsap.set(b, { x: cx, y: cy });
+                    if (cx < -100 || cx > w+100 || cy < -100 || cy > h+100) { if (b.parentNode) b.remove(); }
+                    else requestAnimationFrame(tick);
+                    return;
+                }
+                
+                let distX = tPos.x - cx;
+                let distY = tPos.y - cy;
+                let dist = Math.hypot(distX, distY);
+                
+                // EXACT HIT REGISTRATION
+                if (dist <= 28) { 
+                    b.remove();
+                    if (onHit) onHit(tPos.x, tPos.y);
+                    return;
+                }
+                
+                // STRAIGHT BUT HIGHLY ACCURATE TRACKING (No wobble)
+                let desiredVx = (distX / dist) * maxSpeed;
+                let desiredVy = (distY / dist) * maxSpeed;
+
+                // Calculate turning force needed
+                let steerX = desiredVx - vx;
+                let steerY = desiredVy - vy;
+                
+                // Strong steering force so it cleanly catches fast targets
+                let steerForce = dist < 200 ? 5.0 : 1.5; 
+                
+                let steerMag = Math.hypot(steerX, steerY);
+                if (steerMag > steerForce) {
+                    steerX = (steerX / steerMag) * steerForce;
+                    steerY = (steerY / steerMag) * steerForce;
+                }
+                
+                // Apply straight physics steering
+                vx += steerX;
+                vy += steerY;
+                cx += vx;
+                cy += vy;
+                
+                // Point missile exactly where it's flying
+                let currentAngle = Math.atan2(vy, vx);
+                gsap.set(b, { x: cx, y: cy, rotation: currentAngle * (180/Math.PI) });
+                
+                // GLOWING MISSILE EXHAUST TRAIL
+                if (life % 2 === 0) {
+                    const tr = pDoc.createElement('div');
+                    tr.className = 'gs-spark'; 
+                    tr.style.background = color;
+                    tr.style.boxShadow = `0 0 6px ${color}`;
+                    tr.style.left = cx + 'px';
+                    tr.style.top = cy + 'px';
+                    tr.style.zIndex = 49;
+                    tr.style.opacity = '0.9';
+                    tr.style.transform = 'translate(-50%, -50%)';
+                    pDoc.body.appendChild(tr);
+                    // Fade out smoke trail
+                    gsap.to(tr, { opacity: 0, scale: 0.1, duration: 0.4, onComplete: () => tr.remove() });
+                }
+
+                requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
         }
 
         function startGatheringAtoms(shipObj, customColors) {
@@ -1631,86 +1662,99 @@ GUNSHIP_BRAIN_JS = """
         }
 
         function pickRandomTarget() {
-            const roll = Math.random();
-            if (roll < 0.25) return { type: 'dragger' };
-            if (roll < 0.50) return { type: 'ufo' };
-            if (roll < 0.75) {
-                const planets = getAllPlanets();
-                if (planets.length > 0) return { type: 'planet', el: planets[Math.floor(Math.random() * planets.length)] };
+            // V V V  TARGETING UPDATED TO ONLY LOCK ONTO PLANETS  V V V
+            const planets = getAllPlanets();
+            if (planets.length > 0) {
+                return { type: 'planet', el: planets[Math.floor(Math.random() * planets.length)] };
             }
-            if (roll < 0.90) {
-                const bars = pDoc.querySelectorAll('.voice-bar');
-                if (bars && bars.length > 0) return { type: 'voicebar', el: bars[Math.floor(Math.random() * bars.length)] };
-            }
-            return { type: 'random', x: Math.random() * pWin.innerWidth, y: Math.random() * pWin.innerHeight };
+            
+            // Failsafe in case all planets are destroyed
+            return { type: 'random', x: pWin.innerWidth/2, y: pWin.innerHeight/2 };
         }
 
         function resolveTarget(target, gp) {
-            let tx, ty, onHitExtra;
+            let getTargetPos, onHitExtra;
             
-            // List of bright neon colors for random bullets
             const neonColors = ['#ff3300', '#39beff', '#cc00ff', '#00ffcc', '#ffff00', '#ff00ff', '#00ff00', '#ffffff'];
             let color = neonColors[Math.floor(Math.random() * neonColors.length)];
 
+            // We left the dragger/ufo logic in here just in case they are targeted by a duel, 
+            // but pickRandomTarget will NEVER select them anymore for normal attacks.
             if (target.type === 'dragger') {
-                tx = pWin.dragger.x; ty = pWin.dragger.y;
-                onHitExtra = () => {
-                    let a = Math.atan2(ty - gp.y, tx - gp.x);
+                getTargetPos = () => ({ x: pWin.dragger.x, y: pWin.dragger.y });
+                onHitExtra = (hitX, hitY) => {
+                    let a = Math.atan2(hitY - gp.y, hitX - gp.x);
                     pWin.dragger.vx += Math.cos(a) * 0.5; pWin.dragger.vy += Math.sin(a) * 0.5;
-                    spawnImpact(tx, ty, color, 6);
+                    spawnImpact(hitX, hitY, color, 6);
                 };
             } else if (target.type === 'ufo') {
-                tx = pWin.r3.x; ty = pWin.r3.y;
-                onHitExtra = () => {
-                    let a = Math.atan2(ty - gp.y, tx - gp.x);
+                getTargetPos = () => ({ x: pWin.r3.x, y: pWin.r3.y });
+                onHitExtra = (hitX, hitY) => {
+                    let a = Math.atan2(hitY - gp.y, hitX - gp.x);
                     pWin.r3.vx += Math.cos(a) * 0.2; pWin.r3.vy += Math.sin(a) * 0.2;
-                    spawnImpact(tx, ty, color, 6);
+                    spawnImpact(hitX, hitY, color, 6);
                 };
-            } else if (target.type === 'planet' && target.el && pDoc.body.contains(target.el)) {
-                const pp = getPlanetScreenPos(target.el); tx = pp.x; ty = pp.y;
-                onHitExtra = () => { spawnImpact(tx, ty, color, 6); spawnCrater(target.el); };
+            } else if (target.type === 'planet' && target.el) {
+                // Tracking exact planet orbit bounds every frame
+                getTargetPos = () => {
+                    if (!pDoc.body.contains(target.el)) return null;
+                    return getPlanetScreenPos(target.el);
+                };
+                onHitExtra = (hitX, hitY) => { spawnImpact(hitX, hitY, color, 6); spawnCrater(target.el); };
             } else if (target.type === 'voicebar' && target.el && pDoc.body.contains(target.el)) {
-                const rect = target.el.getBoundingClientRect(); tx = rect.left + rect.width / 2; ty = rect.top + rect.height / 2;
-                onHitExtra = () => { spawnImpact(tx, ty, color, 2); flashVoiceBar(color); };
+                const rect = target.el.getBoundingClientRect(); 
+                getTargetPos = () => ({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+                onHitExtra = (hitX, hitY) => { spawnImpact(hitX, hitY, color, 2); flashVoiceBar(color); };
             } else {
-                tx = target.x || (gp.x + 200); ty = target.y || (gp.y + 200); 
-                onHitExtra = () => spawnImpact(tx, ty, color, 6);
+                let staticX = target.x || (gp.x + 200); 
+                let staticY = target.y || (gp.y + 200);
+                getTargetPos = () => ({ x: staticX, y: staticY });
+                onHitExtra = (hitX, hitY) => spawnImpact(hitX, hitY, color, 6);
             }
-            return { tx, ty, color, onHitExtra };
+            return { getTargetPos, color, onHitExtra };
         }
 
         function executeBulletActionR1(target) {
-            if (!target) target = { type: 'random', x: pWin.innerWidth/2, y: pWin.innerHeight/2 };
+            // V V V ENSURES DEFAULT TARGET IS ALWAYS A PLANET V V V
+            if (!target || target.type !== 'planet') target = pickRandomTarget(); 
+            
             const gp = { x: pWin.r1.x, y: pWin.r1.y };
-            let { tx, ty, color, onHitExtra } = resolveTarget(target, gp);
+            let { getTargetPos, color, onHitExtra } = resolveTarget(target, gp);
 
-            let angle = Math.atan2(ty - gp.y, tx - gp.x);
+            let initialPos = getTargetPos();
+            if (!initialPos) return;
+
+            let angle = Math.atan2(initialPos.y - gp.y, initialPos.x - gp.x);
             if (pWin.r1) pWin.r1.rotation = angle * (180/Math.PI) + pWin.r1.offsetRot;
             pWin.r1.vx -= Math.cos(angle) * 1.8; pWin.r1.vy -= Math.sin(angle) * 1.8;
             
             const elR1 = pDoc.getElementById('ship-roamer1');
             if (elR1) elR1.classList.add('is-gunship-firing');
             
-            fireBullet(gp.x, gp.y, tx, ty, color, () => {
-                if(onHitExtra) onHitExtra();
+            fireBullet(gp.x, gp.y, getTargetPos, color, (hitX, hitY) => {
+                if(onHitExtra) onHitExtra(hitX, hitY);
                 if (elR1) elR1.classList.remove('is-gunship-firing');
             });
         }
 
         function executeBulletActionR2(target) {
-            if (!target) target = { type: 'random', x: pWin.innerWidth/2, y: pWin.innerHeight/2 };
+            // V V V ENSURES DEFAULT TARGET IS ALWAYS A PLANET V V V
+            if (!target || target.type !== 'planet') target = pickRandomTarget(); 
+            
             const gp = { x: pWin.r2.x, y: pWin.r2.y };
-            let { tx, ty, color, onHitExtra } = resolveTarget(target, gp);
+            let { getTargetPos, color, onHitExtra } = resolveTarget(target, gp);
 
-            let angle = Math.atan2(ty - gp.y, tx - gp.x);
+            let initialPos = getTargetPos();
+            if (!initialPos) return;
+
+            let angle = Math.atan2(initialPos.y - gp.y, initialPos.x - gp.x);
             pWin.r2.vx -= Math.cos(angle) * 0.8; 
             pWin.r2.vy -= Math.sin(angle) * 0.8;
             
-            fireBullet(gp.x, gp.y, tx, ty, color, () => {
-                if(onHitExtra) onHitExtra();
+            fireBullet(gp.x, gp.y, getTargetPos, color, (hitX, hitY) => {
+                if(onHitExtra) onHitExtra(hitX, hitY);
             });
         }
-
 
         // ── STATE MACHINES ──
         const GS1 = { phase: 'ROAM', timer: Date.now() + 5000, bulletsFired: 0, currentTarget: null };
@@ -1720,9 +1764,9 @@ GUNSHIP_BRAIN_JS = """
         const DUEL = { 
             active: false, 
             phase: 'NONE', 
-            timer: Date.now() + 15000 + Math.random() * 15000, // First duel happens between 15-30 seconds
+            timer: Date.now() + 20000 + Math.random() * 20000,
             bulletsFired: 0, 
-            maxBullets: 20 
+            maxBullets: 10 
         };
 
         function gunshipTick() {
@@ -1760,31 +1804,37 @@ GUNSHIP_BRAIN_JS = """
                             
                             // R1 Fires at R2
                             if (pWin.r1 && pWin.r2) {
-                                let tx2 = pWin.r2.x + (Math.random()-0.5)*30; 
-                                let ty2 = pWin.r2.y + (Math.random()-0.5)*30;
                                 let a1 = Math.atan2(pWin.r2.y - pWin.r1.y, pWin.r2.x - pWin.r1.x);
                                 let c1 = neonColors[Math.floor(Math.random() * neonColors.length)];
-                                fireBullet(pWin.r1.x, pWin.r1.y, tx2, ty2, c1, () => { spawnImpact(tx2, ty2, c1, 7); });
+                                
+                                let sx2 = (Math.random()-0.5)*30; 
+                                let sy2 = (Math.random()-0.5)*30;
+                                let getT2 = () => ({ x: pWin.r2.x + sx2, y: pWin.r2.y + sy2 }); 
+                                
+                                fireBullet(pWin.r1.x, pWin.r1.y, getT2, c1, (hx, hy) => { spawnImpact(hx, hy, c1, 7); });
                                 pWin.r1.vx -= Math.cos(a1) * 1.5; pWin.r1.vy -= Math.sin(a1) * 1.5; 
                             }
                             
                             // R2 Fires at R1
                             if (pWin.r1 && pWin.r2) {
-                                let tx1 = pWin.r1.x + (Math.random()-0.5)*30;
-                                let ty1 = pWin.r1.y + (Math.random()-0.5)*30;
                                 let a2 = Math.atan2(pWin.r1.y - pWin.r2.y, pWin.r1.x - pWin.r2.x);
                                 let c2 = neonColors[Math.floor(Math.random() * neonColors.length)];
-                                fireBullet(pWin.r2.x, pWin.r2.y, tx1, ty1, c2, () => { spawnImpact(tx1, ty1, c2, 7); });
+                                
+                                let sx1 = (Math.random()-0.5)*30;
+                                let sy1 = (Math.random()-0.5)*30;
+                                let getT1 = () => ({ x: pWin.r1.x + sx1, y: pWin.r1.y + sy1 }); 
+                                
+                                fireBullet(pWin.r2.x, pWin.r2.y, getT1, c2, (hx, hy) => { spawnImpact(hx, hy, c2, 7); });
                                 pWin.r2.vx -= Math.cos(a2) * 1.5; pWin.r2.vy -= Math.sin(a2) * 1.5; 
                             }
                             
                             DUEL.bulletsFired++;
-                            DUEL.timer = now + 400;
+                            DUEL.timer = now + 100;
                         } else {
                             DUEL.active = false;
-                            DUEL.timer = now + 20000 + Math.random() * 20000;
-                            GS1.phase = 'ROAM'; GS1.timer = now + 2000;
-                            GS2.phase = 'ROAM'; GS2.timer = now + 4000;
+                            DUEL.timer = now + 60000 + Math.random() * 60000;
+                            GS1.phase = 'ROAM'; GS1.timer = now + 4000;
+                            GS2.phase = 'ROAM'; GS2.timer = now + 6000;
                         }
                     }
                 }
@@ -1813,7 +1863,6 @@ GUNSHIP_BRAIN_JS = """
                 }
             }
 
-
             // --- NORMAL OPERATION: SHIP 1 (R1 - Attacker) ---
             if (GS1.phase === 'ROAM') {
                 if (pWin.r1) { pWin.r1.maxSpeed = pWin.r1.baseSpeed; pWin.r1.maxForce = pWin.r1.baseForce; }
@@ -1829,9 +1878,10 @@ GUNSHIP_BRAIN_JS = """
                 if (pWin.r1) {
                     pWin.r1.maxSpeed = 0.001; pWin.r1.vx *= 0.8; pWin.r1.vy *= 0.8;
                     let gp = { x: pWin.r1.x, y: pWin.r1.y };
-                    let { tx, ty } = resolveTarget(GS1.currentTarget, gp);
-                    if (tx !== gp.x || ty !== gp.y) {
-                        let diff = (Math.atan2(ty - gp.y, tx - gp.x) * (180/Math.PI) + pWin.r1.offsetRot) - pWin.r1.rotation;
+                    let { getTargetPos } = resolveTarget(GS1.currentTarget, gp);
+                    let tPos = getTargetPos();
+                    if (tPos && (tPos.x !== gp.x || tPos.y !== gp.y)) {
+                        let diff = (Math.atan2(tPos.y - gp.y, tPos.x - gp.x) * (180/Math.PI) + pWin.r1.offsetRot) - pWin.r1.rotation;
                         while (diff < -180) diff += 360; while (diff > 180) diff -= 360;
                         pWin.r1.rotation += diff * 0.1; 
                     }
@@ -1840,11 +1890,11 @@ GUNSHIP_BRAIN_JS = """
             } else if (GS1.phase === 'FIRING') {
                 if (pWin.r1) { pWin.r1.maxSpeed = 0.001; pWin.r1.vx *= 0.8; pWin.r1.vy *= 0.8; }
                 if (now > GS1.timer) {
-                    if (GS1.bulletsFired < 10) {
+                    if (GS1.bulletsFired < 5) {
                         executeBulletActionR1(GS1.currentTarget);
                         GS1.bulletsFired++; GS1.timer = now + 500; 
                     } else {
-                        GS1.phase = 'ROAM'; GS1.timer = now + 6000 + Math.random() * 4000; 
+                        GS1.phase = 'ROAM'; GS1.timer = now + 10000 + Math.random() *5000; 
                     }
                 }
             }
@@ -1859,13 +1909,13 @@ GUNSHIP_BRAIN_JS = """
                 }
             } else if (GS2.phase === 'FIRING') {
                 if (now > GS2.timer) {
-                    if (GS2.bulletsFired < 10) {
+                    if (GS2.bulletsFired < 5) {
                         executeBulletActionR2(GS2.currentTarget);
                         GS2.bulletsFired++;
                         GS2.timer = now + 500; 
                     } else {
                         GS2.phase = 'ROAM';
-                        GS2.timer = now + 7000 + Math.random() * 5000; 
+                        GS2.timer = now + 20000 + Math.random() * 5000; 
                     }
                 }
             }
