@@ -718,6 +718,7 @@ for i in range(1, 6):
         background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
         animation: meteor {d}s linear infinite;
         animation-delay: {random.randint(0, 10)}s;
+        opacity: 0; /* <--- ADD THIS LINE HERE */
     }}
     .meteor-{i}:before {{
         content: "";
@@ -825,7 +826,7 @@ METEOR_AND_ORBIT_STYLE = f"""
 }}
 
 /* ── SHIP 2 (ROAMER 1 - Blue & White Rocket) ──────────────────────────────── */
-#ship-roamer1 {{ transform: scale(0.15); }}
+#ship-roamer1 {{ transform: scale(0.15); z-index: 50; }}
 .r1-rocket {{ background-color: #fafcf7; height: 50px; width: 25px; border-radius: 50% 50% 0 0; position: absolute; transform: translate(-50%, -50%); }}
 .r1-rocket:before {{ position: absolute; content: ""; background-color: #39beff; height: 20px; width: 55px; z-index: -1; border-radius: 50% 50% 0 0; right: -15px; bottom: 0; }}
 .r1-rocket:after {{ position: absolute; content: ""; background-color: #39beff; height: 4px; width: 15px; border-radius: 0 0 2px 2px; bottom: -4px; left: 4.3px; }}
@@ -834,7 +835,7 @@ METEOR_AND_ORBIT_STYLE = f"""
 .r1-flame {{ width: 12px; height: 25px; background: linear-gradient(180deg, #ff4500, #ffd700, transparent); border-radius: 50%; bottom: -20px; left: 6.5px; transform-origin: top center; }}
 
 /* ── SHIP 3 (ROAMER 2 - Heavy Cruiser Spaceship) ──────────────────────────── */
-#ship-roamer2 {{ transform: scale(0.12); }}
+#ship-roamer2 {{ transform: scale(0.05); }}
 .s2-body {{ top: -35px; left: -35px; width: 70px; height: 70px; border-radius: 50%; background-color: #AEABBC; background-image: linear-gradient(#AEABBC, #9BA1B6); box-shadow: -8px 0 0 8px #878399; }}
 .s2-body:before {{ content: ""; width: 14px; height: 20px; border-radius: 50%; left: -7px; top: 25px; background-color: #4E4A65; }}
 .s2-body:after {{ content: ""; width: 8px; height: 8px; border-radius: 50%; background-color: #DF5A41; left: 15px; top: 10px; }}
@@ -1070,7 +1071,7 @@ ROCKET_ANIMATION_JS = """
         }
 
         pWin.dragger = new PhysicsRocket(-200, h/2,   1.8, 0.03, 45); 
-        pWin.r1      = new PhysicsRocket(w+200, h*0.2, 1.2, 0.02, 90); 
+        pWin.r1      = new PhysicsRocket(w*0.5, h*0.5, 1.2, 0.02, 90); 
         pWin.r2      = new PhysicsRocket(w+400, h*0.8, 0.8, 0.01, 0);  
         pWin.r3      = new PhysicsRocket(-400, h*0.5,  1.5, 0.025, 90);
 
@@ -1085,6 +1086,10 @@ ROCKET_ANIMATION_JS = """
         // Ship 2 (Supersonic Cruiser) State
         let ship2State = { phase: "WANDERING", timer: 0, blastAngle: 0 }; 
 
+        // ── EXPOSE STATES SO GUNSHIP BRAIN CAN READ THEM ──
+        pWin.seraphimShip1State = ship1State;
+        pWin.seraphimShip3State = ship3State;
+
         function getFarTarget(currX, currY, w, h) {
             let tx, ty;
             let attempts = 0;
@@ -1097,7 +1102,7 @@ ROCKET_ANIMATION_JS = """
         }
 
         pWin.dragger.setTarget(getFarTarget(-200, h/2, w, h).x, getFarTarget(-200, h/2, w, h).y);
-        pWin.r1.setTarget(getFarTarget(w+200, h*0.2, w, h).x, getFarTarget(w+200, h*0.2, w, h).y);
+        pWin.r1.setTarget(w * 0.5, h * 0.5);
         pWin.r2.setTarget(getFarTarget(w+400, h*0.8, w, h).x, getFarTarget(w+400, h*0.8, w, h).y);
         pWin.r3.setTarget(getFarTarget(-400, h*0.5, w, h).x, getFarTarget(-400, h*0.5, w, h).y);
 
@@ -1232,7 +1237,7 @@ ROCKET_ANIMATION_JS = """
             pWin.r3.update();
 
             if (elR1) {
-                let speedRatio1 = Math.min(1, Math.hypot(pWin.r1.vx, pWin.r1.vy) / pWin.r1.maxSpeed);
+                let speedRatio1 = Math.min(1, Math.hypot(pWin.r1.vx, pWin.r1.vy) / Math.max(0.001, pWin.r1.maxSpeed));
                 gsap.set(elR1.querySelector('.r1-flame'), { scaleY: 0.3 + speedRatio1 * 1.2, opacity: 0.2 + speedRatio1 * 0.8 });
             }
 
@@ -1244,7 +1249,10 @@ ROCKET_ANIMATION_JS = """
             elDragger.className = `ship-wrap is-${ship1State.phase.toLowerCase()}`;
             elR3.className = `ship-wrap is-${ship3State.phase.toLowerCase()}`;
 
-            if (Math.hypot(pWin.r1.targetX - pWin.r1.x, pWin.r1.targetY - pWin.r1.y) < 80) { let t = getFarTarget(pWin.r1.x, pWin.r1.y, w, h); pWin.r1.setTarget(t.x, t.y); }
+            if (Math.hypot(pWin.r1.targetX - pWin.r1.x, pWin.r1.targetY - pWin.r1.y) < 80) { 
+                let t = {x: Math.random() * w * 0.8 + w * 0.1, y: Math.random() * h * 0.8 + h * 0.1}; 
+                pWin.r1.setTarget(t.x, t.y); 
+            }
 
             // ── SUPERSONIC CRUISER LOGIC (SHIP 2) ──
             if (elR2) {
@@ -1433,6 +1441,445 @@ ROCKET_ANIMATION_JS = """
 """
 components.html(ROCKET_ANIMATION_JS, height=0)
 
+# ── GUNSHIP BRAIN: Injected cleanly after ROCKET_ANIMATION_JS ─────────────────────────────
+GUNSHIP_BRAIN_JS = """
+<script>
+(function() {
+    const pWin = window.parent || window;
+    const pDoc = pWin.document;
+
+    // ── Wait for GSAP + physics brain to be ready ──────────────────────────────
+    let bootInterval = setInterval(() => {
+        if (!pWin.gsap || !pWin.ROCKET_BRAIN_ACTIVE || !pWin.r1 || !pWin.r2 || !pWin.dragger) return;
+        clearInterval(bootInterval);
+        bootGunship(pWin.gsap);
+    }, 300);
+
+    function bootGunship(gsap) {
+        if (pWin.GUNSHIP_ACTIVE) return;
+        pWin.GUNSHIP_ACTIVE = true;
+
+        const w = pWin.innerWidth;
+        const h = pWin.innerHeight;
+
+        // ── Inject CSS for beams, muzzle flashes, craters, impacts ───────────
+        const style = pDoc.createElement('style');
+        style.id = 'gunship-styles';
+        style.textContent = `
+            .gs-bullet {
+                position: fixed; pointer-events: none; z-index: 50;
+                width: 15px; height: 2px; border-radius: 2px;
+                background: #ffffff; transform-origin: center;
+                box-shadow: 0 0 6px 2px rgba(255,255,255,0.8);
+            }
+            .gs-muzzle {
+                position: fixed; pointer-events: none; z-index: 51;
+                width: 18px; height: 18px; border-radius: 50%;
+                background: radial-gradient(circle, #ffffff 0%, #39beff 40%, rgba(57,190,255,0) 70%);
+                box-shadow: 0 0 12px 6px rgba(57,190,255,0.9);
+                transform: translate(-50%, -50%) scale(0); opacity: 0;
+            }
+            .gs-impact {
+                position: fixed; pointer-events: none; z-index: 52;
+                border-radius: 50%; transform: translate(-50%, -50%) scale(0); opacity: 0;
+            }
+            .gs-crater {
+                position: absolute; pointer-events: none; z-index: 20;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(0,0,0,0.85) 0%, rgba(30,20,10,0.7) 40%, rgba(20,15,5,0.4) 70%, transparent 100%);
+                border: 1px solid rgba(255,120,30,0.4);
+                box-shadow: inset 0 1px 3px rgba(0,0,0,0.9), 0 0 4px rgba(255,80,0,0.3);
+                transform: translate(-50%, -50%);
+            }
+            .gs-spark {
+                position: fixed; pointer-events: none; z-index: 53;
+                width: 3px; height: 3px; border-radius: 50%; background: #ffffff;
+                box-shadow: 0 0 4px 2px rgba(57,190,255,0.8);
+            }
+            #ship-roamer1.is-gunship-charging .r1-window {
+                background-color: #ff3300 !important;
+                box-shadow: 0 0 20px 8px rgba(255,50,0,0.9), 0 0 40px 12px rgba(255,100,0,0.6) !important;
+                animation: gunshipPulse 0.15s ease-in-out infinite alternate !important;
+            }
+            #ship-roamer2.is-gunship-charging .s2-body {
+                box-shadow: 0 0 30px 10px rgba(0, 255, 204, 0.9), inset 0 0 20px rgba(0, 255, 204, 0.8) !important;
+                animation: gunshipPulse 0.15s ease-in-out infinite alternate !important;
+            }
+            #ship-roamer1.is-gunship-firing .r1-window {
+                background-color: #ffffff !important; box-shadow: 0 0 30px 15px rgba(255,255,255,1.0) !important;
+            }
+            @keyframes gunshipPulse {
+                from { box-shadow: 0 0 12px 5px rgba(255,50,0,0.8); }
+                to   { box-shadow: 0 0 25px 10px rgba(255,150,0,1.0); }
+            }
+            .gs-recoil-trail {
+                position: fixed; pointer-events: none; z-index: 49;
+                width: 6px; height: 6px; border-radius: 50%;
+                background: radial-gradient(circle, rgba(57,190,255,0.8) 0%, rgba(57,190,255,0) 100%);
+                transform: translate(-50%, -50%);
+            }
+        `;
+        pDoc.head.appendChild(style);
+
+        function getPlanetScreenPos(planetEl) {
+            const rect = planetEl.getBoundingClientRect();
+            return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, r: rect.width / 2 };
+        }
+
+        function spawnMuzzleFlash(sx, sy) {
+            const mf = pDoc.createElement('div');
+            mf.className = 'gs-muzzle'; mf.style.left = sx + 'px'; mf.style.top = sy + 'px';
+            pDoc.body.appendChild(mf);
+            gsap.timeline().to(mf, { scale: 1.4, opacity: 1, duration: 0.06, ease: 'power2.out' })
+                           .to(mf, { scale: 2.2, opacity: 0, duration: 0.18, ease: 'power2.in', onComplete: () => mf.remove() });
+        }
+
+        function spawnSparks(ix, iy, count, color) {
+            color = color || '#39beff';
+            for (let i = 0; i < count; i++) {
+                const sp = pDoc.createElement('div');
+                sp.className = 'gs-spark'; sp.style.background = color; sp.style.boxShadow = `0 0 4px 2px ${color}`;
+                sp.style.left = ix + 'px'; sp.style.top = iy + 'px';
+                pDoc.body.appendChild(sp);
+                const angle = (Math.PI * 2 * i / count) + Math.random() * 0.5;
+                const dist = 15 + Math.random() * 35;
+                gsap.to(sp, { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist, opacity: 0, scale: 0.2, duration: 0.35 + Math.random() * 0.3, ease: 'power2.out', onComplete: () => sp.remove() });
+            }
+        }
+
+        function spawnImpact(ix, iy, color, size) {
+            color = color || '#39beff'; size = size || 40;
+            const imp = pDoc.createElement('div');
+            imp.className = 'gs-impact'; imp.style.left = ix + 'px'; imp.style.top = iy + 'px';
+            imp.style.width = size + 'px'; imp.style.height = size + 'px';
+            imp.style.background = `radial-gradient(circle, #ffffff 0%, ${color} 40%, rgba(0,0,0,0) 70%)`;
+            imp.style.boxShadow = `0 0 20px 10px ${color}`;
+            pDoc.body.appendChild(imp);
+            gsap.timeline().to(imp, { scale: 1.0, opacity: 1, duration: 0.07, ease: 'power3.out' })
+                           .to(imp, { scale: 2.5, opacity: 0, duration: 0.35, ease: 'power2.in', onComplete: () => imp.remove() });
+            spawnSparks(ix, iy, 8, color);
+        }
+
+        function spawnCrater(planetEl) {
+            const rect = planetEl.getBoundingClientRect(); const pSize = rect.width;
+            const cSize = 4 + Math.random() * 6;
+            const angle = Math.random() * Math.PI * 2; const radius = Math.random() * (pSize * 0.35);
+            const cx = 50 + (Math.cos(angle) * radius / pSize) * 100;
+            const cy = 50 + (Math.sin(angle) * radius / pSize) * 100;
+            const crater = pDoc.createElement('div');
+            crater.className = 'gs-crater'; crater.style.width = cSize + 'px'; crater.style.height = cSize + 'px';
+            crater.style.left = cx + '%'; crater.style.top = cy + '%'; crater.style.opacity = '0';
+            planetEl.appendChild(crater);
+            gsap.to(crater, { opacity: 1, duration: 0.3, ease: 'power2.out' });
+        }
+
+        function spawnRecoilTrail(sx, sy, awayAngle) {
+            for (let i = 0; i < 4; i++) {
+                const tr = pDoc.createElement('div');
+                tr.className = 'gs-recoil-trail'; tr.style.left = sx + 'px'; tr.style.top = sy + 'px';
+                pDoc.body.appendChild(tr);
+                const spread = (Math.random() - 0.5) * 0.6; const d = 10 + Math.random() * 20;
+                gsap.to(tr, { x: Math.cos(awayAngle + spread) * d, y: Math.sin(awayAngle + spread) * d, opacity: 0, scale: 2.5, duration: 0.4, delay: i * 0.04, ease: 'power1.out', onComplete: () => tr.remove() });
+            }
+        }
+
+        function flashVoiceBar(color) {
+            color = color || '#39beff';
+            const bars = pDoc.querySelectorAll('.voice-bar');
+            if (!bars || bars.length === 0) return;
+            const bar = bars[Math.floor(Math.random() * bars.length)];
+            const rect = bar.getBoundingClientRect();
+            if (rect.width === 0) return;
+            spawnImpact(rect.left + rect.width / 2, rect.top + rect.height / 2, color, 24);
+            gsap.timeline().to(bar, { backgroundColor: '#ffffff', boxShadow: `0 0 30px 10px ${color}`, duration: 0.06 })
+                           .to(bar, { backgroundColor: '', boxShadow: '', duration: 0.4 });
+        }
+
+        // ── BULLET FIRING LOGIC ──
+        function fireBullet(sx, sy, tx, ty, color, onHit) {
+            color = color || '#39beff';
+            const dx = tx - sx; const dy = ty - sy;
+            const dist = Math.hypot(dx, dy); const angle = Math.atan2(dy, dx);
+            spawnMuzzleFlash(sx, sy); spawnRecoilTrail(sx, sy, angle + Math.PI);
+            const b = pDoc.createElement('div');
+            b.className = 'gs-bullet'; b.style.background = color; b.style.boxShadow = `0 0 10px 3px ${color}`;
+            pDoc.body.appendChild(b);
+            gsap.set(b, { x: sx, y: sy, rotation: angle * (180/Math.PI), xPercent: -50, yPercent: -50 });
+            gsap.to(b, { x: tx, y: ty, duration: dist / 1500, ease: "none", onComplete: () => { b.remove(); if (onHit) onHit(tx, ty); }});
+        }
+
+        function startGatheringAtoms(shipObj, customColors) {
+            const colors = customColors || ['#00ffff', '#ffffff', '#39beff'];
+            for(let i=0; i<30; i++) {
+                const atom = pDoc.createElement('div');
+                atom.style.position = 'fixed'; atom.style.width = '3px'; atom.style.height = '3px';
+                atom.style.borderRadius = '50%'; atom.style.background = colors[Math.floor(Math.random()*colors.length)];
+                atom.style.boxShadow = `0 0 8px ${atom.style.background}`; atom.style.zIndex = '55'; atom.style.pointerEvents = 'none';
+                pDoc.body.appendChild(atom);
+                const a = Math.random() * Math.PI * 2; const d = 80 + Math.random() * 100;
+                const sx = shipObj.x + Math.cos(a)*d; const sy = shipObj.y + Math.sin(a)*d;
+                gsap.set(atom, { x: sx, y: sy, opacity: 0 });
+                gsap.to(atom, { opacity: 1, duration: 0.2, delay: Math.random()*0.5 });
+                gsap.to(atom, { x: () => shipObj.x, y: () => shipObj.y, duration: 1.5 + Math.random()*0.5, ease: "power2.in", onComplete: () => atom.remove() });
+            }
+        }
+
+        function getAllPlanets() {
+            const solar = pDoc.getElementById('solar-system-animation');
+            if (!solar) return [];
+            return Array.from(solar.querySelectorAll('.planet')).filter(p => !p.classList.contains('moon'));
+        }
+
+        function pickRandomTarget() {
+            const roll = Math.random();
+            if (roll < 0.25) return { type: 'dragger' };
+            if (roll < 0.50) return { type: 'ufo' };
+            if (roll < 0.75) {
+                const planets = getAllPlanets();
+                if (planets.length > 0) return { type: 'planet', el: planets[Math.floor(Math.random() * planets.length)] };
+            }
+            if (roll < 0.90) {
+                const bars = pDoc.querySelectorAll('.voice-bar');
+                if (bars && bars.length > 0) return { type: 'voicebar', el: bars[Math.floor(Math.random() * bars.length)] };
+            }
+            return { type: 'random', x: Math.random() * pWin.innerWidth, y: Math.random() * pWin.innerHeight };
+        }
+
+        function resolveTarget(target, gp) {
+            let tx, ty, onHitExtra;
+            
+            // List of bright neon colors for random bullets
+            const neonColors = ['#ff3300', '#39beff', '#cc00ff', '#00ffcc', '#ffff00', '#ff00ff', '#00ff00', '#ffffff'];
+            let color = neonColors[Math.floor(Math.random() * neonColors.length)];
+
+            if (target.type === 'dragger') {
+                tx = pWin.dragger.x; ty = pWin.dragger.y;
+                onHitExtra = () => {
+                    let a = Math.atan2(ty - gp.y, tx - gp.x);
+                    pWin.dragger.vx += Math.cos(a) * 0.5; pWin.dragger.vy += Math.sin(a) * 0.5;
+                    spawnImpact(tx, ty, color, 6);
+                };
+            } else if (target.type === 'ufo') {
+                tx = pWin.r3.x; ty = pWin.r3.y;
+                onHitExtra = () => {
+                    let a = Math.atan2(ty - gp.y, tx - gp.x);
+                    pWin.r3.vx += Math.cos(a) * 0.2; pWin.r3.vy += Math.sin(a) * 0.2;
+                    spawnImpact(tx, ty, color, 6);
+                };
+            } else if (target.type === 'planet' && target.el && pDoc.body.contains(target.el)) {
+                const pp = getPlanetScreenPos(target.el); tx = pp.x; ty = pp.y;
+                onHitExtra = () => { spawnImpact(tx, ty, color, 6); spawnCrater(target.el); };
+            } else if (target.type === 'voicebar' && target.el && pDoc.body.contains(target.el)) {
+                const rect = target.el.getBoundingClientRect(); tx = rect.left + rect.width / 2; ty = rect.top + rect.height / 2;
+                onHitExtra = () => { spawnImpact(tx, ty, color, 6); flashVoiceBar(color); };
+            } else {
+                tx = target.x || (gp.x + 200); ty = target.y || (gp.y + 200); 
+                onHitExtra = () => spawnImpact(tx, ty, color, 6);
+            }
+            return { tx, ty, color, onHitExtra };
+        }
+
+        function executeBulletActionR1(target) {
+            if (!target) target = { type: 'random', x: pWin.innerWidth/2, y: pWin.innerHeight/2 };
+            const gp = { x: pWin.r1.x, y: pWin.r1.y };
+            let { tx, ty, color, onHitExtra } = resolveTarget(target, gp);
+
+            let angle = Math.atan2(ty - gp.y, tx - gp.x);
+            if (pWin.r1) pWin.r1.rotation = angle * (180/Math.PI) + pWin.r1.offsetRot;
+            pWin.r1.vx -= Math.cos(angle) * 1.8; pWin.r1.vy -= Math.sin(angle) * 1.8;
+            
+            const elR1 = pDoc.getElementById('ship-roamer1');
+            if (elR1) elR1.classList.add('is-gunship-firing');
+            
+            fireBullet(gp.x, gp.y, tx, ty, color, () => {
+                if(onHitExtra) onHitExtra();
+                if (elR1) elR1.classList.remove('is-gunship-firing');
+            });
+        }
+
+        function executeBulletActionR2(target) {
+            if (!target) target = { type: 'random', x: pWin.innerWidth/2, y: pWin.innerHeight/2 };
+            const gp = { x: pWin.r2.x, y: pWin.r2.y };
+            let { tx, ty, color, onHitExtra } = resolveTarget(target, gp);
+
+            let angle = Math.atan2(ty - gp.y, tx - gp.x);
+            pWin.r2.vx -= Math.cos(angle) * 0.8; 
+            pWin.r2.vy -= Math.sin(angle) * 0.8;
+            
+            fireBullet(gp.x, gp.y, tx, ty, color, () => {
+                if(onHitExtra) onHitExtra();
+            });
+        }
+
+
+        // ── STATE MACHINES ──
+        const GS1 = { phase: 'ROAM', timer: Date.now() + 5000, bulletsFired: 0, currentTarget: null };
+        const GS2 = { phase: 'ROAM', timer: Date.now() + 9000, bulletsFired: 0, currentTarget: null };
+        
+        // ── DUEL STATE MACHINE ──
+        const DUEL = { 
+            active: false, 
+            phase: 'NONE', 
+            timer: Date.now() + 15000 + Math.random() * 15000, // First duel happens between 15-30 seconds
+            bulletsFired: 0, 
+            maxBullets: 20 
+        };
+
+        function gunshipTick() {
+            const now = Date.now();
+
+            // ── DUEL LOGIC OVERRIDE ──
+            if (DUEL.active) {
+                if (pWin.r1) { pWin.r1.maxSpeed = 0.001; pWin.r1.vx *= 0.8; pWin.r1.vy *= 0.8; }
+                if (pWin.r2) { pWin.r2.maxSpeed = 0.001; pWin.r2.vx *= 0.8; pWin.r2.vy *= 0.8; }
+
+                if (pWin.r1 && pWin.r2) {
+                    let a1 = Math.atan2(pWin.r2.y - pWin.r1.y, pWin.r2.x - pWin.r1.x);
+                    let targetRot1 = a1 * (180/Math.PI) + pWin.r1.offsetRot;
+                    let diff1 = targetRot1 - pWin.r1.rotation;
+                    while (diff1 < -180) diff1 += 360; while (diff1 > 180) diff1 -= 360;
+                    pWin.r1.rotation += diff1 * 0.15;
+
+                    let a2 = Math.atan2(pWin.r1.y - pWin.r2.y, pWin.r1.x - pWin.r2.x);
+                    let targetRot2 = a2 * (180/Math.PI) + pWin.r2.offsetRot;
+                    let diff2 = targetRot2 - pWin.r2.rotation;
+                    while (diff2 < -180) diff2 += 360; while (diff2 > 180) diff2 -= 360;
+                    pWin.r2.rotation += diff2 * 0.15;
+                }
+
+                if (DUEL.phase === 'CHARGING') {
+                    if (now > DUEL.timer) {
+                        DUEL.phase = 'FIRING';
+                        DUEL.timer = now;
+                        DUEL.bulletsFired = 0;
+                    }
+                } else if (DUEL.phase === 'FIRING') {
+                    if (now > DUEL.timer) {
+                        if (DUEL.bulletsFired < DUEL.maxBullets) {
+                            const neonColors = ['#ff3300', '#39beff', '#cc00ff', '#00ffcc', '#ffff00', '#ff00ff', '#00ff00', '#ffffff'];
+                            
+                            // R1 Fires at R2
+                            if (pWin.r1 && pWin.r2) {
+                                let tx2 = pWin.r2.x + (Math.random()-0.5)*30; 
+                                let ty2 = pWin.r2.y + (Math.random()-0.5)*30;
+                                let a1 = Math.atan2(pWin.r2.y - pWin.r1.y, pWin.r2.x - pWin.r1.x);
+                                let c1 = neonColors[Math.floor(Math.random() * neonColors.length)];
+                                fireBullet(pWin.r1.x, pWin.r1.y, tx2, ty2, c1, () => { spawnImpact(tx2, ty2, c1, 7); });
+                                pWin.r1.vx -= Math.cos(a1) * 1.5; pWin.r1.vy -= Math.sin(a1) * 1.5; 
+                            }
+                            
+                            // R2 Fires at R1
+                            if (pWin.r1 && pWin.r2) {
+                                let tx1 = pWin.r1.x + (Math.random()-0.5)*30;
+                                let ty1 = pWin.r1.y + (Math.random()-0.5)*30;
+                                let a2 = Math.atan2(pWin.r1.y - pWin.r2.y, pWin.r1.x - pWin.r2.x);
+                                let c2 = neonColors[Math.floor(Math.random() * neonColors.length)];
+                                fireBullet(pWin.r2.x, pWin.r2.y, tx1, ty1, c2, () => { spawnImpact(tx1, ty1, c2, 7); });
+                                pWin.r2.vx -= Math.cos(a2) * 1.5; pWin.r2.vy -= Math.sin(a2) * 1.5; 
+                            }
+                            
+                            DUEL.bulletsFired++;
+                            DUEL.timer = now + 400;
+                        } else {
+                            DUEL.active = false;
+                            DUEL.timer = now + 20000 + Math.random() * 20000;
+                            GS1.phase = 'ROAM'; GS1.timer = now + 2000;
+                            GS2.phase = 'ROAM'; GS2.timer = now + 4000;
+                        }
+                    }
+                }
+                return; 
+            } else {
+                if (now > DUEL.timer) {
+                    DUEL.active = true;
+                    DUEL.phase = 'CHARGING';
+                    DUEL.timer = now + 5000; 
+                    
+                    const elR1 = pDoc.getElementById('ship-roamer1');
+                    const elR2 = pDoc.getElementById('ship-roamer2');
+                    
+                    if (elR1) elR1.classList.add('is-gunship-charging');
+                    if (elR2) elR2.classList.add('is-gunship-charging');
+                    
+                    if (pWin.r1) startGatheringAtoms(pWin.r1, ['#ff4400', '#ffaa00', '#ffffff']);
+                    if (pWin.r2) startGatheringAtoms(pWin.r2, ['#00ffcc', '#0055ff', '#ffffff']);
+                    
+                    setTimeout(() => { 
+                        if (elR1) elR1.classList.remove('is-gunship-charging'); 
+                        if (elR2) elR2.classList.remove('is-gunship-charging'); 
+                    }, 5000); 
+                    
+                    return; 
+                }
+            }
+
+
+            // --- NORMAL OPERATION: SHIP 1 (R1 - Attacker) ---
+            if (GS1.phase === 'ROAM') {
+                if (pWin.r1) { pWin.r1.maxSpeed = pWin.r1.baseSpeed; pWin.r1.maxForce = pWin.r1.baseForce; }
+                if (now > GS1.timer) {
+                    GS1.phase = 'CHARGE'; GS1.timer = now + 5000;
+                    GS1.currentTarget = pickRandomTarget();
+                    const elR1 = pDoc.getElementById('ship-roamer1');
+                    if (elR1) elR1.classList.add('is-gunship-charging');
+                    startGatheringAtoms(pWin.r1);
+                    setTimeout(() => { if (elR1) elR1.classList.remove('is-gunship-charging'); }, 5000);
+                }
+            } else if (GS1.phase === 'CHARGE') {
+                if (pWin.r1) {
+                    pWin.r1.maxSpeed = 0.001; pWin.r1.vx *= 0.8; pWin.r1.vy *= 0.8;
+                    let gp = { x: pWin.r1.x, y: pWin.r1.y };
+                    let { tx, ty } = resolveTarget(GS1.currentTarget, gp);
+                    if (tx !== gp.x || ty !== gp.y) {
+                        let diff = (Math.atan2(ty - gp.y, tx - gp.x) * (180/Math.PI) + pWin.r1.offsetRot) - pWin.r1.rotation;
+                        while (diff < -180) diff += 360; while (diff > 180) diff -= 360;
+                        pWin.r1.rotation += diff * 0.1; 
+                    }
+                }
+                if (now > GS1.timer) { GS1.phase = 'FIRING'; GS1.bulletsFired = 0; GS1.timer = now; }
+            } else if (GS1.phase === 'FIRING') {
+                if (pWin.r1) { pWin.r1.maxSpeed = 0.001; pWin.r1.vx *= 0.8; pWin.r1.vy *= 0.8; }
+                if (now > GS1.timer) {
+                    if (GS1.bulletsFired < 10) {
+                        executeBulletActionR1(GS1.currentTarget);
+                        GS1.bulletsFired++; GS1.timer = now + 500; 
+                    } else {
+                        GS1.phase = 'ROAM'; GS1.timer = now + 6000 + Math.random() * 4000; 
+                    }
+                }
+            }
+
+            // --- NORMAL OPERATION: SHIP 2 (R2 - Supersonic Cruiser) ---
+            if (GS2.phase === 'ROAM') {
+                if (now > GS2.timer) {
+                    GS2.phase = 'FIRING';
+                    GS2.bulletsFired = 0;
+                    GS2.timer = now;
+                    GS2.currentTarget = pickRandomTarget();
+                }
+            } else if (GS2.phase === 'FIRING') {
+                if (now > GS2.timer) {
+                    if (GS2.bulletsFired < 10) {
+                        executeBulletActionR2(GS2.currentTarget);
+                        GS2.bulletsFired++;
+                        GS2.timer = now + 500; 
+                    } else {
+                        GS2.phase = 'ROAM';
+                        GS2.timer = now + 7000 + Math.random() * 5000; 
+                    }
+                }
+            }
+        }
+        
+        setInterval(gunshipTick, 50);
+
+    } 
+})();
+</script>
+"""
+components.html(GUNSHIP_BRAIN_JS, height=0)
+# ── END GUNSHIP BRAIN ──────────────────────────────────────────────────────────────────────
+
 async def generate_voice_async(text: str, voice_code: str, filename: str) -> bool:
     try:
         communicate = edge_tts.Communicate(text, voice_code)
@@ -1466,8 +1913,8 @@ st.markdown("""
         background-image: 
             linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
             linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-            radial-gradient(circle at 20% 30%, rgba(0, 255, 204, 0.15), transparent 50%),
-            radial-gradient(circle at 80% 70%, rgba(0, 150, 255, 0.1), transparent 50%),
+            radial-gradient(circle at 20% 30%, rgba(0, 255, 204, 0.07), transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(0, 150, 255, 0.05), transparent 50%),
             radial-gradient(ellipse at top, #080e21 0%, #010409 95%) !important;
         background-size: 40px 40px, 40px 40px, 200% 200%, 200% 200%, 100% 100% !important;
         animation: glowing-bg 12s ease-in-out infinite alternate !important;
@@ -1987,14 +2434,32 @@ if st.session_state.app_phase == "INIT":
     window.addEventListener('message', function(e) {
         var wrap = document.getElementById('envWrap');
         if (!wrap) return;
+        
+        // Prevent hover actions if we are in the slow open sequence
+        if (wrap.dataset.opening === 'true' && (e.data === 'env_hover_on' || e.data === 'env_hover_off')) return;
+
         if (e.data === 'env_hover_on')  wrap.classList.add('hovered');
         if (e.data === 'env_hover_off') wrap.classList.remove('hovered');
-        if (e.data === 'env_clicked') {
+        
+        if (e.data === 'env_clicked_open') {
+            wrap.dataset.opening = 'true';
+            
+            // Adjust transitions for a majestic 5-second cinematic opening
+            var topFold = document.querySelector('.top-fold');
+            var letter = document.querySelector('.letter');
+            var animMail = document.getElementById('animMail');
+            
+            // 0s to 1s: Envelope slides down
+            if (animMail) animMail.style.transition = 'transform 1s 0s';
+            // 0.5s to 2.5s: Flap slowly opens
+            if (topFold) topFold.style.transition = 'transform 2s 0.5s, z-index 0s 1.5s';
+            // 2.5s to 5.0s: Letter slowly slides up
+            if (letter) letter.style.transition = 'height 2.5s 2.5s';
+            
             wrap.classList.add('hovered');
-            document.getElementById('animMail').style.transition = '.4s';
         }
+        
         if (e.data === 'env_fade_out') {
-            wrap.classList.add('hovered');
             document.body.style.transition = 'opacity 0.8s ease';
             document.body.style.opacity = '0';
         }
@@ -2072,34 +2537,43 @@ if st.session_state.app_phase == "INIT":
                     };
 
                     btn.addEventListener('mouseenter', function() {
+                        if (btn.dataset.fading === 'true') return; // Ignore if opening
                         var f = getEnvFrame();
                         if (f) f.contentWindow.postMessage('env_hover_on', '*');
                     });
                     btn.addEventListener('mouseleave', function() {
+                        if (btn.dataset.fading === 'true') return; // Ignore if opening
                         var f = getEnvFrame();
                         if (f) f.contentWindow.postMessage('env_hover_off', '*');
                     });
                     
                     btn.addEventListener('click', function(e) {
-                        if (!btn.dataset.fading) {
+                        if (btn.dataset.fading !== 'true') {
                             e.preventDefault();
                             e.stopPropagation();
                             btn.dataset.fading = 'true';
                             
                             var f = getEnvFrame();
-                            if (f) f.contentWindow.postMessage('env_fade_out', '*');
                             
-                            div.style.transition = 'opacity 0.8s ease';
-                            div.style.opacity = '0';
+                            // Send command for the 5-second cinematic open
+                            if (f) f.contentWindow.postMessage('env_clicked_open', '*');
                             
-                            var title = pDoc.querySelector('.minimal-title');
-                            var status = pDoc.querySelector('.status-text');
-                            if (title) { title.style.transition = 'opacity 0.8s ease'; title.style.opacity = '0'; }
-                            if (status) { status.style.transition = 'opacity 0.8s ease'; status.style.opacity = '0'; }
-
+                            // Wait exactly 5000ms (5 seconds) for the animation to finish
                             setTimeout(function() {
-                                btn.click();
-                            }, 800);
+                                if (f) f.contentWindow.postMessage('env_fade_out', '*');
+                                
+                                div.style.transition = 'opacity 0.8s ease';
+                                div.style.opacity = '0';
+                                
+                                var title = pDoc.querySelector('.minimal-title');
+                                var status = pDoc.querySelector('.status-text');
+                                if (title) { title.style.transition = 'opacity 0.8s ease'; title.style.opacity = '0'; }
+                                if (status) { status.style.transition = 'opacity 0.8s ease'; status.style.opacity = '0'; }
+
+                                setTimeout(function() {
+                                    btn.click(); // Trigger python backend to proceed
+                                }, 800);
+                            }, 5000);
                         }
                     }, true);
                 }
