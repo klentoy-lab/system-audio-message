@@ -1671,7 +1671,7 @@ GUNSHIP_BRAIN_JS = """
                 onHitExtra = () => { spawnImpact(tx, ty, color, 6); spawnCrater(target.el); };
             } else if (target.type === 'voicebar' && target.el && pDoc.body.contains(target.el)) {
                 const rect = target.el.getBoundingClientRect(); tx = rect.left + rect.width / 2; ty = rect.top + rect.height / 2;
-                onHitExtra = () => { spawnImpact(tx, ty, color, 6); flashVoiceBar(color); };
+                onHitExtra = () => { spawnImpact(tx, ty, color, 2); flashVoiceBar(color); };
             } else {
                 tx = target.x || (gp.x + 200); ty = target.y || (gp.y + 200); 
                 onHitExtra = () => spawnImpact(tx, ty, color, 6);
