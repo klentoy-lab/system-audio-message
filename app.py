@@ -734,12 +734,20 @@ for i in range(1, 6):
 
 # ── ALL SHIP CSS STYLES COMBINED ─────────────────────────────────────
 # ── ALL SHIP CSS STYLES COMBINED ─────────────────────────────────────
+# ── ALL SHIP CSS STYLES COMBINED ─────────────────────────────────────
 METEOR_AND_ORBIT_STYLE = f"""
 <style>
+
+
 /* Stars & Meteors */
-.star-a {{ width: 1px; height: 1px; background: transparent; box-shadow: {star_group_a}; animation: twinkle-a 4.2s ease-in-out infinite; }}
-.star-b {{ width: 1px; height: 1px; background: transparent; box-shadow: {star_group_b}; animation: twinkle-b 2.8s ease-in-out 1.4s infinite; }}
-.star-c {{ width: 1px; height: 1px; background: transparent; box-shadow: {star_group_c}; animation: twinkle-c 1.9s ease-in-out 0.7s infinite; }}
+.star-a {{ width: 1px; height: 1px; background: transparent; box-shadow: {star_group_a}; animation: twinkle-a 8.5s ease-in-out infinite; }}
+.star-b {{ width: 1px; height: 1px; background: transparent; box-shadow: {star_group_b}; animation: twinkle-b 12.0s ease-in-out 2.0s infinite; }}
+.star-c {{ width: 1px; height: 1px; background: transparent; box-shadow: {star_group_c}; animation: twinkle-c 15.5s ease-in-out 1.0s infinite; }}
+
+
+@keyframes twinkle-a {{ 0%, 100% {{ opacity: 1; }} 50% {{ opacity: 0.15; }} }}
+@keyframes twinkle-b {{ 0%, 100% {{ opacity: 0.7; }} 40% {{ opacity: 0.05; }} 70% {{ opacity: 0.9; }} }}
+@keyframes twinkle-c {{ 0%, 100% {{ opacity: 0.9; }} 30% {{ opacity: 0.2; }} 60% {{ opacity: 1.0; }} }}
 
 {meteor_css_str}
 @keyframes meteor {{
@@ -755,8 +763,8 @@ METEOR_AND_ORBIT_STYLE = f"""
 :root {{ --ae: 30vmin; }}
 
 #solar-system-animation {{
-    position: fixed; right: 15vw; top: 15vh; z-index: 0; pointer-events: none; opacity: 0.6;
-    transform: scale(0.5); transform-origin: center center;
+    position: fixed; left: 0; top: 0; z-index: 0; pointer-events: none; opacity: 0;
+    transform-origin: center center;
 }}
 .sun {{
     --size: 15vmin; width: var(--size); height: var(--size); position: absolute; top: 0; left: 0;
@@ -767,10 +775,23 @@ METEOR_AND_ORBIT_STYLE = f"""
     background: orange; border-radius: 9999px; box-shadow: 0 0 40px orange;
     transition: background 3s ease, box-shadow 3s ease;
 }}
-/* DYNAMIC SUN PHASE */
+/* DYNAMIC SUN PHASE (GENTLE DEEP PULSE) */
 .sun.is-red::after {{
-    background: #ff2200;
-    box-shadow: 0 0 80px #ff2200, 0 0 120px #ff0000;
+    background: #ff2200 !important;
+    animation: solarFlare 3.0s ease-in-out infinite alternate !important; 
+    
+}}
+@keyframes solarFlare {{
+    0% {{
+        box-shadow: 0 0 60px #ff2200, 0 0 120px #ff0000;
+        transform: translate(-50%, -50%) scale(0.98);
+        filter: brightness(1.0);
+    }}
+    100% {{
+        box-shadow: 0 0 100px #ff5500, 0 0 180px #ff0000, 0 0 250px #990000;
+        transform: translate(-50%, -50%) scale(1.05);
+        filter: brightness(1.5);
+    }}
 }}
 
 .mercury {{ --size: 2.5vmin; --radius: calc(0.4 * var(--ae)); --speed: 0.24; background-color: #A5A5A5; border-radius: 9999px; }}
@@ -1087,7 +1108,7 @@ ROCKET_ANIMATION_JS = """
         // State 2: MOVING (Turn Red, glide slowly to new target over 10 mins)
         let sunState = {
             phase: 'IDLE',
-            timer: Date.now() + (9 * 60 * 1000), // Start with a 9-minute wait
+            timer: Date.now() + (3 * 60 * 1000), // Start with a 9-minute wait
             startX: w * 0.85,
             startY: h * 0.25
         };
@@ -1097,12 +1118,13 @@ ROCKET_ANIMATION_JS = """
             targetX: w * 0.85, targetY: h * 0.25
         };
 
-        // Unpin solar system from CSS so we can move it
+        // Unpin solar system from CSS and snap it to its perfect mathematical coordinate before making it visible
         gsap.set('#solar-system-animation', { 
+            opacity: 0.6, // <--- Makes it visible only AFTER it is in place
             right: 'auto', bottom: 'auto', left: 0, top: 0, 
-            xPercent: -50, yPercent: -50, scale: 0.5 
+            xPercent: -50, yPercent: -50, scale: 0.5,
+            x: sunPhysics.x, y: sunPhysics.y // <--- Forces exact initial location
         });
-
         function getFarTarget(currX, currY, w, h) {
             let tx = (Math.random() - 0.2) * (w * 1.4);
             let ty = (Math.random() - 0.2) * (h * 1.4);
@@ -1561,10 +1583,10 @@ GUNSHIP_BRAIN_JS = """
             let cy = sy;
             
             // Fast launch speed
-            let vx = Math.cos(launchAngle) * 20; 
-            let vy = Math.sin(launchAngle) * 20;
+            let vx = Math.cos(launchAngle) * 7; 
+            let vy = Math.sin(launchAngle) * 7;
             
-            const maxSpeed = 30;  // High top speed to catch moving targets
+            const maxSpeed = 6;  // High top speed to catch moving targets
             let life = 0;
 
             function tick() {
@@ -1766,7 +1788,7 @@ GUNSHIP_BRAIN_JS = """
             phase: 'NONE', 
             timer: Date.now() + 20000 + Math.random() * 20000,
             bulletsFired: 0, 
-            maxBullets: 10 
+            maxBullets: 7 
         };
 
         function gunshipTick() {
@@ -1890,11 +1912,11 @@ GUNSHIP_BRAIN_JS = """
             } else if (GS1.phase === 'FIRING') {
                 if (pWin.r1) { pWin.r1.maxSpeed = 0.001; pWin.r1.vx *= 0.8; pWin.r1.vy *= 0.8; }
                 if (now > GS1.timer) {
-                    if (GS1.bulletsFired < 5) {
+                    if (GS1.bulletsFired < 3) {
                         executeBulletActionR1(GS1.currentTarget);
                         GS1.bulletsFired++; GS1.timer = now + 500; 
                     } else {
-                        GS1.phase = 'ROAM'; GS1.timer = now + 10000 + Math.random() *5000; 
+                        GS1.phase = 'ROAM'; GS1.timer = now + 10000 + Math.random() *50000; 
                     }
                 }
             }
@@ -1909,13 +1931,13 @@ GUNSHIP_BRAIN_JS = """
                 }
             } else if (GS2.phase === 'FIRING') {
                 if (now > GS2.timer) {
-                    if (GS2.bulletsFired < 5) {
+                    if (GS2.bulletsFired < 3) {
                         executeBulletActionR2(GS2.currentTarget);
                         GS2.bulletsFired++;
                         GS2.timer = now + 500; 
                     } else {
                         GS2.phase = 'ROAM';
-                        GS2.timer = now + 20000 + Math.random() * 5000; 
+                        GS2.timer = now + 20000 + Math.random() * 50000; 
                     }
                 }
             }
