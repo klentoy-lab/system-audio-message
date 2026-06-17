@@ -1778,112 +1778,12 @@ GUNSHIP_BRAIN_JS = """
             });
         }
 
-        // ── STATE MACHINES ──
+       // ── STATE MACHINES ──
         const GS1 = { phase: 'ROAM', timer: Date.now() + 5000, bulletsFired: 0, currentTarget: null };
         const GS2 = { phase: 'ROAM', timer: Date.now() + 9000, bulletsFired: 0, currentTarget: null };
         
-        // ── DUEL STATE MACHINE ──
-        const DUEL = { 
-            active: false, 
-            phase: 'NONE', 
-            timer: Date.now() + 20000 + Math.random() * 20000,
-            bulletsFired: 0, 
-            maxBullets: 7 
-        };
-
         function gunshipTick() {
             const now = Date.now();
-
-            // ── DUEL LOGIC OVERRIDE ──
-            if (DUEL.active) {
-                if (pWin.r1) { pWin.r1.maxSpeed = 0.001; pWin.r1.vx *= 0.8; pWin.r1.vy *= 0.8; }
-                if (pWin.r2) { pWin.r2.maxSpeed = 0.001; pWin.r2.vx *= 0.8; pWin.r2.vy *= 0.8; }
-
-                if (pWin.r1 && pWin.r2) {
-                    let a1 = Math.atan2(pWin.r2.y - pWin.r1.y, pWin.r2.x - pWin.r1.x);
-                    let targetRot1 = a1 * (180/Math.PI) + pWin.r1.offsetRot;
-                    let diff1 = targetRot1 - pWin.r1.rotation;
-                    while (diff1 < -180) diff1 += 360; while (diff1 > 180) diff1 -= 360;
-                    pWin.r1.rotation += diff1 * 0.15;
-
-                    let a2 = Math.atan2(pWin.r1.y - pWin.r2.y, pWin.r1.x - pWin.r2.x);
-                    let targetRot2 = a2 * (180/Math.PI) + pWin.r2.offsetRot;
-                    let diff2 = targetRot2 - pWin.r2.rotation;
-                    while (diff2 < -180) diff2 += 360; while (diff2 > 180) diff2 -= 360;
-                    pWin.r2.rotation += diff2 * 0.15;
-                }
-
-                if (DUEL.phase === 'CHARGING') {
-                    if (now > DUEL.timer) {
-                        DUEL.phase = 'FIRING';
-                        DUEL.timer = now;
-                        DUEL.bulletsFired = 0;
-                    }
-                } else if (DUEL.phase === 'FIRING') {
-                    if (now > DUEL.timer) {
-                        if (DUEL.bulletsFired < DUEL.maxBullets) {
-                            const neonColors = ['#ff3300', '#39beff', '#cc00ff', '#00ffcc', '#ffff00', '#ff00ff', '#00ff00', '#ffffff'];
-                            
-                            // R1 Fires at R2
-                            if (pWin.r1 && pWin.r2) {
-                                let a1 = Math.atan2(pWin.r2.y - pWin.r1.y, pWin.r2.x - pWin.r1.x);
-                                let c1 = neonColors[Math.floor(Math.random() * neonColors.length)];
-                                
-                                let sx2 = (Math.random()-0.5)*30; 
-                                let sy2 = (Math.random()-0.5)*30;
-                                let getT2 = () => ({ x: pWin.r2.x + sx2, y: pWin.r2.y + sy2 }); 
-                                
-                                fireBullet(pWin.r1.x, pWin.r1.y, getT2, c1, (hx, hy) => { spawnImpact(hx, hy, c1, 7); });
-                                pWin.r1.vx -= Math.cos(a1) * 1.5; pWin.r1.vy -= Math.sin(a1) * 1.5; 
-                            }
-                            
-                            // R2 Fires at R1
-                            if (pWin.r1 && pWin.r2) {
-                                let a2 = Math.atan2(pWin.r1.y - pWin.r2.y, pWin.r1.x - pWin.r2.x);
-                                let c2 = neonColors[Math.floor(Math.random() * neonColors.length)];
-                                
-                                let sx1 = (Math.random()-0.5)*30;
-                                let sy1 = (Math.random()-0.5)*30;
-                                let getT1 = () => ({ x: pWin.r1.x + sx1, y: pWin.r1.y + sy1 }); 
-                                
-                                fireBullet(pWin.r2.x, pWin.r2.y, getT1, c2, (hx, hy) => { spawnImpact(hx, hy, c2, 7); });
-                                pWin.r2.vx -= Math.cos(a2) * 1.5; pWin.r2.vy -= Math.sin(a2) * 1.5; 
-                            }
-                            
-                            DUEL.bulletsFired++;
-                            DUEL.timer = now + 100;
-                        } else {
-                            DUEL.active = false;
-                            DUEL.timer = now + 60000 + Math.random() * 60000;
-                            GS1.phase = 'ROAM'; GS1.timer = now + 4000;
-                            GS2.phase = 'ROAM'; GS2.timer = now + 6000;
-                        }
-                    }
-                }
-                return; 
-            } else {
-                if (now > DUEL.timer) {
-                    DUEL.active = true;
-                    DUEL.phase = 'CHARGING';
-                    DUEL.timer = now + 5000; 
-                    
-                    const elR1 = pDoc.getElementById('ship-roamer1');
-                    const elR2 = pDoc.getElementById('ship-roamer2');
-                    
-                    if (elR1) elR1.classList.add('is-gunship-charging');
-                    if (elR2) elR2.classList.add('is-gunship-charging');
-                    
-                    if (pWin.r1) startGatheringAtoms(pWin.r1, ['#ff4400', '#ffaa00', '#ffffff']);
-                    if (pWin.r2) startGatheringAtoms(pWin.r2, ['#00ffcc', '#0055ff', '#ffffff']);
-                    
-                    setTimeout(() => { 
-                        if (elR1) elR1.classList.remove('is-gunship-charging'); 
-                        if (elR2) elR2.classList.remove('is-gunship-charging'); 
-                    }, 5000); 
-                    
-                    return; 
-                }
-            }
 
             // --- NORMAL OPERATION: SHIP 1 (R1 - Attacker) ---
             if (GS1.phase === 'ROAM') {
@@ -1916,7 +1816,7 @@ GUNSHIP_BRAIN_JS = """
                         executeBulletActionR1(GS1.currentTarget);
                         GS1.bulletsFired++; GS1.timer = now + 500; 
                     } else {
-                        GS1.phase = 'ROAM'; GS1.timer = now + 10000 + Math.random() *50000; 
+                        GS1.phase = 'ROAM'; GS1.timer = now + 10000 + Math.random() * 50000; 
                     }
                 }
             }
