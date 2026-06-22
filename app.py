@@ -22,7 +22,7 @@ NTFY_TOPIC       = "Seraphim_Protocol_Gold_99283"
 TARGET_EMAIL     = "klentdagsa21@gmail.com"
 VOICE_CODE       = "en-US-SteffanNeural"
 BGM_FILE         = "INTRO.mp3"
-BGM_CLOSING_FILE = "OUTRO.mp3"
+BGM_CLOSING_FILE = "INTRO.mp3"
 
 is_creator    = st.query_params.get("creator") == "true"
 current_phase = st.session_state.get('app_phase', 'INIT')
