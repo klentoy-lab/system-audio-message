@@ -1,4 +1,3 @@
-
 import streamlit as st
 import asyncio
 import edge_tts
@@ -863,11 +862,11 @@ METEOR_AND_ORBIT_STYLE = f"""
 /* ── HYPERSPACE PORTAL STYLES ── */
 .gs-portal {{
     position: fixed; z-index: 3; pointer-events: none;
-    width: 100px; height: 100px;
-    margin-left: 10px; margin-top: 10px; 
+    width: 30px; height: 30px;  /* <--- TINY PORTAL SIZE */
+    margin-left: -15px; margin-top: -15px;  /* <--- EXACTLY HALF */
     border-radius: 50%;
     background: radial-gradient(circle, #000000 20%, #001133 50%, #00ffff 100%);
-    box-shadow: 0 0 50px 20px rgba(0, 255, 255, 0.6), inset 0 0 30px 10px #000000;
+    box-shadow: 0 0 15px 5px rgba(0, 255, 255, 0.6), inset 0 0 10px 3px #000000; /* <--- Shrunk the glow to fit the small size */
     opacity: 0; transform: scale(0);
     filter: contrast(1.5);
 }}
@@ -1478,50 +1477,9 @@ ROCKET_ANIMATION_JS = """
 
 
             // ══════════════════════════════════════════════════════════════════
-            // ── INDEPENDENT AUTONOMOUS SUN ENGINE ──
+            // ── STATIC SUN ENGINE ──
             // ══════════════════════════════════════════════════════════════════
-            let sunEl = elSolar.querySelector('.sun');
-
-            if (sunState.phase === 'IDLE') {
-                if (now > sunState.timer) {
-                    // Start Moving Phase
-                    sunState.phase = 'MOVING';
-                    sunState.timer = now + (10 * 60 * 1000); // 10 minutes duration to move
-                    
-                    // Save starting coordinates for math calculation
-                    sunState.startX = sunPhysics.x;
-                    sunState.startY = sunPhysics.y;
-                    
-                    // Pick a random target anywhere on the screen
-                    sunPhysics.targetX = Math.random() * (w - 300) + 150;
-                    sunPhysics.targetY = Math.random() * (h - 300) + 150;
-                    
-                    if (sunEl) sunEl.classList.add('is-red');
-                }
-            } 
-            else if (sunState.phase === 'MOVING') {
-                // Calculate exactly how far we are into the 10-minute timer
-                let progress = 1 - ((sunState.timer - now) / (10 * 60 * 1000));
-                
-                if (progress >= 1 || now > sunState.timer) {
-                    // Arrived at destination
-                    sunState.phase = 'IDLE';
-                    sunState.timer = now + (10 * 60 * 1000); // Wait 10 minutes before moving again
-                    
-                    // Lock position exactly
-                    sunPhysics.x = sunPhysics.targetX;
-                    sunPhysics.y = sunPhysics.targetY;
-                    
-                    if (sunEl) sunEl.classList.remove('is-red');
-                } else {
-                    // Smooth, time-based movement guarantees it takes exactly 10 mins
-                    // regardless of the user's monitor frame rate!
-                    sunPhysics.x = sunState.startX + (sunPhysics.targetX - sunState.startX) * progress;
-                    sunPhysics.y = sunState.startY + (sunPhysics.targetY - sunState.startY) * progress;
-                }
-            }
-
-            // Apply Sun physics to screen
+            // The Sun will no longer move or turn red. It stays exactly where it started.
             gsap.set(elSolar, { x: sunPhysics.x, y: sunPhysics.y });
 
         });
