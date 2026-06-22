@@ -1,4 +1,3 @@
-from turtle import position
 
 import streamlit as st
 import asyncio
