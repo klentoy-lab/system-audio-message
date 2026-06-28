@@ -2161,7 +2161,7 @@ Before I execute the payload containing the profound message entrusted to me by 
 
 Once you have acquired the necessary equilibrium to cross this threshold, you must understand that this encrypted packet stream is highly volatile, and the connection architecture is incredibly fragile. You must adhere strictly to the following irreversible system safeguards:
 
-Protocol 1. Optimize Audio Parameters: Maximize your device's master output volume to ensure optimal clarity of the transmission and its embedded directives. For maximum acoustic fidelity and isolation from ambient interference, system guidelines strongly recommend interfacing via a dedicated headset. In human word meaning, in order to fully hear and understand the transmission please wear headset or head-phone.
+Protocol 1. Optimize Audio Parameters: Maximize your device's master output volume to ensure optimal clarity of the transmission and its embedded directives. For maximum acoustic fidelity and isolation from ambient interference, system guidelines strongly recommend interfacing via a dedicated headset. In human word, meaning, in order to fully hear and understand the transmission please wear headset or head-phone.
 
 Protocol 2. Do Not Interrupt the Data Stream: Do not engage the home button, trigger the back-navigation gesture, or interact with any unauthorized sectors of your screen. Any rogue input will force a critical exception, permanently severing this delicate transmission line.
 
