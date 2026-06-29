@@ -2108,41 +2108,6 @@ if 'bg_gen_started'    not in st.session_state:
     st.session_state.bg_gen_started   = False
 
 restart_messages = [
-    """Restart button clicked. System is now restarting."""
-
-"""System reset initiated. Holding all current processes."""
-
-"""Rebooting sequence. Please wait."""
-
-"""Restart confirmed. Awaiting further input."""
-
-"""Loop reset. The system is paused and standing by."""
-
-"""System paused. Entering standby mode."""
-
-"""Execution reset. Ready when you are."""
-
-"""Restarting... All data safely stored."""
-
-"""Resetting interface. Holding transmission."""
-
-"""Restart complete. Connection remains open."""
-
-"""Restart button activated. Clearing cache."""
-
-"""System refresh in progress. Standby."""
-
-"""Reboot successful. Awaiting manual resume."""
-
-"""Reset protocol engaged. Pausing timer."""
-
-"""Restarting interface. Your progress is saved."""
-
-"""Sequence restarted. Ready for next command."""
-
-"""System loop cleared. Standing by for input."""
-
-"""Restart initialized. No data lost."""
 
 """Rebooting. The connection is stable and waiting."""
 
