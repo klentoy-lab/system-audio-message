@@ -2977,6 +2977,7 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
         const playRestartMsg  = """ + ('true' if play_restart_msg else 'false') + """;
         const b64Instruction  = '""" + b64_instruction + """';
         const b64Restart      = '""" + b64_restart + """';
+        const VOL_NARRATION   = """ + str(VOL_NARRATION) + """;
 
         function hideButtons() {
             const sc = pDoc.getElementById('btn-visibility-controller');
@@ -3086,13 +3087,29 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
 
         function playInstructionAudio() {
             if (!b64Instruction) { revealButtons(); return; }
-            const instrAudio = makeAudio(b64Instruction, 'seraphimAudioElem');
-            wireVisualizer(instrAudio);
-            instrAudio.addEventListener('ended', () => {
-                if (voiceBars) { voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }
+            try {
+                const instrAudio = makeAudio(b64Instruction, 'seraphimAudioElem');
+                wireVisualizer(instrAudio);
+                instrAudio.addEventListener('ended', () => {
+                    if (voiceBars) { voiceBars.classList.add('stopped'); voiceBars.classList.remove('playing'); }
+                    revealButtons();
+                });
+                // Never let a decode failure or a stall strand her here.
+                ['error', 'stalled', 'abort'].forEach(ev =>
+                    instrAudio.addEventListener(ev, revealButtons));
+                // Absolute backstop, sized from the clip once it is known.
+                const armBackstop = () => {
+                    const ms = (isFinite(instrAudio.duration) ? instrAudio.duration * 1000 : 60000) + 20000;
+                    setTimeout(revealButtons, ms);
+                };
+                if (instrAudio.readyState >= 1) armBackstop();
+                else instrAudio.addEventListener('loadedmetadata', armBackstop, { once: true });
+                setTimeout(revealButtons, 180000);
+                instrAudio.play().catch(e => { handleAutoplayBlock(instrAudio); });
+            } catch (err) {
+                // Whatever went wrong, she must still be able to continue.
                 revealButtons();
-            });
-            instrAudio.play().catch(e => { handleAutoplayBlock(instrAudio); });
+            }
         }
 
         if (playRestartMsg) {
@@ -3188,6 +3205,10 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
         if (!isCreator && pWin.localStorage) {
             pWin.localStorage.setItem('SERAPHIM_PERMANENTLY_LOCKED', 'SEALED');
         }
+
+        // Backstop: if any part of the playback chain fails, she must still
+        // be able to close the connection and reach the birthday finale.
+        setTimeout(function(){ revealCloseButton(); }, 300000);
 
         function revealCloseButton() {
             const styleCtrl = pDoc.getElementById('btn-visibility-controller');
