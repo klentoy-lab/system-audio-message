@@ -38,7 +38,7 @@ BIRTHDAY_AUDIO  = "seraphim_birthday.mp3"
 # Every volume in the app is set here. 0.0 = silent, 1.0 = full.
 # Music sits deliberately low so it never competes with the spoken words.
 VOL_BGM_MAIN      = 0.09   # INTRO.mp3, under the intro / instructions / main message
-VOL_BGM_CLOSING   = 0.08   # OUTRO.mp3, under Seraphim's closing narration
+VOL_BGM_CLOSING   = 0.09   # OUTRO.mp3, under Seraphim's closing narration
 VOL_BGM_BIRTHDAY  = 0.10   # NIKI - Paths, under the birthday message
 VOL_NARRATION     = 1.00   # Seraphim's spoken parts (all TTS)
 VOL_GOODBYE_VOICE = 1.00   # your own recorded goodbye - the final act
@@ -2152,20 +2152,12 @@ st.markdown("""
         color:var(--sx-cyan-dim);
     }
 
-    /* Buttons: a light sweep on hover instead of a flat colour change. */
+    /* Buttons: rounded corners and a smoother press, no overlay effects. */
     div.stButton > button{
-        position:relative;overflow:hidden;
         border-radius:10px;
         transition:transform .18s cubic-bezier(0.4,0,0.2,1),
                    box-shadow .25s ease, border-color .25s ease, background .25s ease;
     }
-    div.stButton > button::after{
-        content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;
-        background:linear-gradient(100deg,transparent,rgba(0,255,204,0.16),transparent);
-        transform:skewX(-18deg);transition:left .65s cubic-bezier(0.4,0,0.2,1);
-        pointer-events:none;
-    }
-    div.stButton > button:hover::after{left:150%;}
     div.stButton > button:focus-visible{
         outline:2px solid rgba(0,255,204,0.65);outline-offset:3px;
     }
@@ -2176,14 +2168,16 @@ st.markdown("""
         font-size:clamp(0.88rem,2.4vw,0.98rem);
         line-height:1.75;
     }
-    .warning-box::before{
-        content:'';position:absolute;inset:0;border-radius:14px;padding:1px;
-        background:linear-gradient(115deg,
-            transparent 20%,rgba(0,255,204,0.55) 48%,transparent 76%);
-        background-size:280% 280%;
-        -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-        -webkit-mask-composite:xor;mask-composite:exclude;
-        animation:edgeTravel 7s linear infinite;pointer-events:none;
+    @supports (mask-composite: exclude) or (-webkit-mask-composite: xor){
+        .warning-box::before{
+            content:'';position:absolute;inset:0;border-radius:14px;padding:1px;
+            background:linear-gradient(115deg,
+                transparent 20%,rgba(0,255,204,0.55) 48%,transparent 76%);
+            background-size:280% 280%;
+            -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+            -webkit-mask-composite:xor;mask-composite:exclude;
+            animation:edgeTravel 7s linear infinite;pointer-events:none;
+        }
     }
     @keyframes edgeTravel{0%{background-position:0% 50%;}100%{background-position:280% 50%;}}
 
@@ -2210,7 +2204,6 @@ st.markdown("""
         .completion-text,.voice-bar,.animated-mail,.letter-image::before{
             animation:none !important;
         }
-        div.stButton > button::after{display:none !important;}
     }
 
     div[data-testid="stButton"].envelope-btn-wrap > button:hover,
