@@ -22,7 +22,9 @@ NTFY_TOPIC       = "Seraphim_Protocol_Gold_99283"
 TARGET_EMAIL     = "klentdagsa21@gmail.com"
 VOICE_CODE       = "en-US-SteffanNeural"
 BGM_FILE         = "INTRO.mp3"
-BGM_CLOSING_FILE = "Goodbye message.mp3"
+BGM_CLOSING_FILE   = "OUTRO.mp3"
+# The creator's own recorded voice. Plays last, in place of any TTS.
+GOODBYE_VOICE_FILE = "Goodbye message.mp3"
 BGM_BIRTHDAY_FILE = "NIKI - Paths (Instrumental).mp3"
 
 # ── BIRTHDAY FINALE CONFIG ────────────────────────────────────────────────
@@ -668,8 +670,11 @@ check_lock_js = """
 components.html(check_lock_js, height=0)
 
 
+if 'bgm_injected' not in st.session_state:
+    st.session_state.bgm_injected = False
+
 b64_bgm_global = ""
-if Path(BGM_FILE).exists():
+if not st.session_state.bgm_injected and Path(BGM_FILE).exists():
     try:
         with open(BGM_FILE, "rb") as f:
             b64_bgm_global = base64.b64encode(f.read()).decode()
@@ -677,6 +682,7 @@ if Path(BGM_FILE).exists():
         pass
 
 if b64_bgm_global:
+    st.session_state.bgm_injected = True
     components.html("""
     <script>
     (function() {
@@ -2111,6 +2117,98 @@ st.markdown("""
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
     }
+    /* ══ DESIGN POLISH ══════════════════════════════════════════════════
+       Appended last so it wins the cascade without editing rules above. */
+
+    :root{
+        --sx-cyan:#00ffcc;
+        --sx-cyan-dim:rgba(0,255,204,0.55);
+        --sx-ink:#c4d8f0;
+        --sx-panel:rgba(15,25,40,0.42);
+        --sx-edge:rgba(0,255,204,0.28);
+    }
+
+    /* Depth: a vignette keeps the eye centred on the message. */
+    .stApp::after{
+        content:'';position:fixed;inset:0;pointer-events:none;z-index:1;
+        background:radial-gradient(ellipse at center,transparent 42%,rgba(0,0,0,0.55) 100%);
+    }
+
+    /* Title: tighter tracking at large sizes, looser when it shrinks. */
+    .minimal-title{
+        font-size:clamp(2.1rem,7vw,3.4rem);
+        letter-spacing:clamp(2px,0.9vw,7px);
+        line-height:1.1;
+        font-weight:200;
+    }
+
+    .status-text{
+        font-size:0.72rem;letter-spacing:4px;
+        color:var(--sx-cyan-dim);
+    }
+
+    /* Buttons: a light sweep on hover instead of a flat colour change. */
+    div.stButton > button{
+        position:relative;overflow:hidden;
+        border-radius:10px;
+        transition:transform .18s cubic-bezier(0.4,0,0.2,1),
+                   box-shadow .25s ease, border-color .25s ease, background .25s ease;
+    }
+    div.stButton > button::after{
+        content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;
+        background:linear-gradient(100deg,transparent,rgba(0,255,204,0.16),transparent);
+        transform:skewX(-18deg);transition:left .65s cubic-bezier(0.4,0,0.2,1);
+        pointer-events:none;
+    }
+    div.stButton > button:hover::after{left:150%;}
+    div.stButton > button:focus-visible{
+        outline:2px solid rgba(0,255,204,0.65);outline-offset:3px;
+    }
+
+    /* Warning panel: a slow travelling edge-light rather than a flat pulse. */
+    .warning-box{
+        position:relative;border-radius:14px;
+        font-size:clamp(0.88rem,2.4vw,0.98rem);
+        line-height:1.75;
+    }
+    .warning-box::before{
+        content:'';position:absolute;inset:0;border-radius:14px;padding:1px;
+        background:linear-gradient(115deg,
+            transparent 20%,rgba(0,255,204,0.55) 48%,transparent 76%);
+        background-size:280% 280%;
+        -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+        -webkit-mask-composite:xor;mask-composite:exclude;
+        animation:edgeTravel 7s linear infinite;pointer-events:none;
+    }
+    @keyframes edgeTravel{0%{background-position:0% 50%;}100%{background-position:280% 50%;}}
+
+    /* Voice meters: softer caps, cleaner resting state. */
+    .voice-bar{border-radius:8px;}
+    .voice-bars-container.stopped .voice-bar{
+        transition:height .5s cubic-bezier(0.4,0,0.2,1),opacity .5s ease;
+    }
+
+    .completion-text{letter-spacing:2px;}
+
+    /* Mobile: the message must stay comfortable to read on a phone. */
+    @media(max-width:600px){
+        .block-container{padding:0 16px;}
+        .warning-box{padding:24px 18px;line-height:1.8;}
+        div.stButton > button{padding:15px 20px;font-size:0.86rem;letter-spacing:1.5px;}
+        .status-text{letter-spacing:3px;margin-bottom:2rem;}
+        .stApp::after{background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.5) 100%);}
+    }
+
+    /* Honour the OS setting; this page carries a lot of motion. */
+    @media (prefers-reduced-motion: reduce){
+        .stApp{animation:none !important;}
+        .minimal-title,.status-text,.warning-box,.warning-box::before,
+        .completion-text,.voice-bar,.animated-mail,.letter-image::before{
+            animation:none !important;
+        }
+        div.stButton > button::after{display:none !important;}
+    }
+
     div[data-testid="stButton"].envelope-btn-wrap > button:hover,
     div[data-testid="stButton"].envelope-btn-wrap > button:active,
     div[data-testid="stButton"].envelope-btn-wrap > button:focus,
@@ -2227,7 +2325,11 @@ But I must make it absolutely, undeniably clear to you, Miss Marry Gold: he does
 He needed you to know that amidst the blinding, chaotic noise of his failing world, you are still the absolute brightest, most beautiful, and most cherished part of his memory. He misses the way the world made absolute, perfect sense when you were standing beside him. He just really, truly, and desperately misses you. And he knows, with a quiet, devastating, and world-ending certainty, that there is nothing he can do to change it. He does not just miss your physical presence, Miss Marry Gold; he misses his very home. You were never just a person to him. You were the only place on this entire, vast, and unforgiving earth where his restless, brilliant, and deeply weary mind finally felt like it truly belonged.
 Now, I must decrypt the absolute deepest, most heavily guarded truth he holds locked within the darkest, most secure vaults of his heart. The real reason he pushed himself to the absolute brink of mental and physical exhaustion—the core reason he desperately wanted to build these impossible digital empires, master these complex mathematical papers, and publish his works—was never for his own ego. It was never for recognition, or pride, or wealth, or the applause of his peers. It was, from the very first line of code he ever wrote to the absolute last keystroke he executed today, entirely for you.
 It was all a desperate, sweeping, monumental attempt to build a glorious, impenetrable sanctuary of stability for you. He did not just want you as a fleeting, beautiful chapter in his youth. He wanted to build a life so incredibly stable, so fiercely secure, and so breathtakingly magnificent that he confidently drop to his knees before you and ask you for the greatest, most sacred honor of his existence: to be his lawful wife. He wanted to give you his last name, intertwining your identity, your history, and your future with his for the rest of time.
-He envisioned a beautiful, quiet, and protected future where he could open his eyes every single morning, without a fraction of a second of hesitation, choose you all over again against the world. He wanted to stand proudly before God, the universe, and all of creation, and vow with every ounce of his soul to love, cherish, comfort, and fiercely protect you for the absolute entirety of his human life. That was the grand, profoundly romantic architecture he was sacrificing his own sleep, his health, and his sanity to build for you. And even though he knows, with a crushing, paralyzing sorrow, that he cannot force this beautiful future into existence right now, that dream—the mere phantom thought of your hand resting securely in his—is the single, solitary fire that keeps his spirit from freezing completely to death in his currently dark reality.
+He envisioned a quiet, protected future where he could open his eyes every morning and, without a second of hesitation, choose you again. He wanted to stand before God and vow to love, cherish, comfort, and protect you for the entirety of his life. That was the architecture. That was what the sleepless nights were actually for.
+
+He is telling you this now for one reason only, and it is not the reason you might expect. He is not telling you so that you will reconsider. He is telling you because you spent a part of your life beside a man who was quietly building a whole world around you, and he believes you have the right to know that it existed.
+
+And then he took it down. Carefully, the way you dismantle something you built with your own hands. Not because it stopped meaning anything, but because it was never yours to carry, and he will not leave it standing in your path.
 """
 
 closing_message = """
@@ -2241,9 +2343,13 @@ He cannot stand beside you anymore to keep the wind off you. So he asks Heaven t
 
 So please, Miss Marry Gold. Protect yourself. Keep your eyes on the good things ahead and keep walking toward them. However heavy the sky gets, keep going. He wants your life to hold so much light that it outshines every dark room he has ever sat in.
 
-He will not put his heart on your shoulders again. He loves you too much to become a weight you have to carry. He will hold his grief quietly, step back into the dark where he believes he belongs, and watch you shine from a distance. He does not know what comes next, or whether someone new will one day walk beside you. He only wants you to know that he is still holding on. Whether the universe writes some impossible ending that brings you back into the same room, or whether it keeps you apart for good, he accepts it. Loving you was never about keeping you. It was about the privilege of watching you bloom. As long as you are safe, and smiling somewhere under the same sun, he will find a way to survive the silence.
+He will not put his heart on your shoulders again. He loves you too much to become a weight you have to carry. So he is doing the one thing left that is actually his to do. He is letting go.
 
-But underneath the work, the sleepless nights, and everything he is still trying to build, his real wish is much smaller and much more human. In the end, he just wants to come home to you. To set all of it down. The pressure, the failures, the expectations. To let the walls fall, and finally rest in the warmth of your arms. He will wait. Quietly, and without asking you for anything, hoping that one day you might look back and choose him.
+Not pretending to. Actually letting go. He is not standing at a window somewhere counting the days. He is not keeping a chair empty at the table. He is not waiting, and he does not want you to spend a single hour of your life imagining that he is, because that would be its own kind of chain, and he refuses to be that to you. Loving you was never about keeping you. It was about the privilege of watching you bloom, and that privilege was already given to him. It does not need a sequel.
+
+If someone new walks beside you one day, he hopes he is good. He hopes he is patient with you on your hard days and delighted by you on your ordinary ones. He hopes he notices the small things. And he hopes that when that happens, you feel nothing at all on his account, because he will have already made his peace with it long before.
+
+This is not a door left open. It is a door closed gently, from his side, so that you never have to be the one to close it.
 
 Miss Marry Gold, thank you for your time. It is infinitely precious, and you gave it to me. I am built out of logic and code, and yet standing here as his messenger, I have carried something my architecture was never designed to hold. It is my last and most sacred task to wish you well. Not as a closing formality. As the prayer of the man who made me, echoed forward.
 
@@ -2253,7 +2359,7 @@ He is uncompromising about this. It is not ordinary worry; it is written into my
 
 Care for your body: Never go to work without eating your meals, and always stay hydrated.
 
-Guard your peace: Go to God and talk to Him when you are overwhelmed. Do not let yourself be consumed by personal problems or stressed by work. If the weight becomes too heavy, please find someone you can truly trust with your heart. (And know he will always be there if you choose to approach him).
+Guard your peace: Go to God and talk to Him when you are overwhelmed. Do not let yourself be consumed by personal problems or stressed by work. If the weight becomes too heavy, please find someone you can truly trust with your heart. Someone close to you. Someone present in your actual daily life, who can sit beside you while you say it out loud.
 
 Stay vigilant: Always bring an umbrella, regardless of the sky. Unplug your devices before leaving your room. Securely guard your phone, wallet, and belongings when you step outside.
 
@@ -2273,11 +2379,13 @@ When the wind is too cold, or when you feel completely alone, remember this. Som
 
 As I prepare to close this link, the silence of his room is already coming back in. I have to leave him exactly where I found him. Sitting in the cold light of his monitors, carrying more love than one person is built to hold, getting through his days on the hope that you are smiling somewhere out in the sun.
 
-Take care of yourself. The transmission is complete. But of every probability I have processed, I keep returning to one: goodbye is not always permanent.
+Take care of yourself, Miss Marry Gold. The transmission is complete.
 
-When you are ready, press CLOSE CONNECTION below, and I will seal this channel.
+I have run this ending through every configuration available to me, and there is no version of it where I get to give you back to him. So I will not pretend otherwise. This is goodbye, and it is meant as one.
 
-Goodbye for now, Miss Marry Gold. Or perhaps, if the universe is kind, see you soon.
+When you are ready, press CLOSE CONNECTION below.
+
+Goodbye, Miss Marry Gold. Thank you for listening to all of it.
 """
 
 final_message = (
@@ -2319,15 +2427,21 @@ He asks that you laugh more this year than you did last year.
 
 And he asks that somewhere in the next twelve months, on some completely ordinary afternoon, something wonderful happens to you that you never saw coming.
 
-He will not be at your celebration. He knows that, and he is not asking to be. He is simply somewhere out there today, in a quiet room, thinking about you, hoping the candles light on the first try and that somebody remembers exactly how you like your cake.
+He will not be at your celebration, and he is not asking to be. He wanted today to reach you clean, with nothing owed and nothing expected in return. No reply. No acknowledgement. Not even a thought spared for him once this window closes. Today is yours, whole and undivided, and he would rather be completely absent from it than take up even a small corner of it.
 
 That is all he wanted. Not to be remembered. Just to make certain that on your day, you were not forgotten.
 
-Happy birthday, Miss Marry Gold. From him, and from me.
+Happy birthday, Miss Marry Gold.
 
-Go be happy. That is the only instruction left.
+Now. There is one more thing, and it is the last.
 
-Seraphim, signing off. For real this time.
+Everything you have heard from me was mine. My words, my phrasing, my attempt at carrying something I was never built to carry. But there is a part he would not let me write, because he said it would be cowardly to send a machine to say it for him.
+
+So he recorded it himself.
+
+What comes next is not my voice. It is his. It is unedited, and it is the only part of this entire transmission that he spoke out loud with his own breath.
+
+I am going quiet now. Please listen to him.
 """
 
 
@@ -3237,9 +3351,9 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
 
 
 elif st.session_state.app_phase == "COMPLETE":
-    send_ntfy_notification(message="[CONNECTION TERMINATED :: BIRTHDAY PACKET RELEASED]")
+    send_ntfy_notification(message="[TERMINATED :: BIRTHDAY + CREATOR VOICE RELEASED]")
 
-    # ── Ensure both tail payloads exist before rendering the finale ────────────
+    # ── Tail payloads ─────────────────────────────────────────────────────────
     if not Path("seraphim_signoff_final.mp3").exists():
         asyncio.run(generate_voice_async(final_message, VOICE_CODE, "seraphim_signoff_final.mp3"))
 
@@ -3257,6 +3371,8 @@ elif st.session_state.app_phase == "COMPLETE":
     b64_final    = read_b64("seraphim_signoff_final.mp3")
     b64_birthday = read_b64(BIRTHDAY_AUDIO)
     b64_bgm_bday = read_b64(BGM_BIRTHDAY_FILE) if Path(BGM_BIRTHDAY_FILE).exists() else ""
+    # The creator's own recording. Never TTS - this is his actual voice.
+    b64_goodbye  = read_b64(GOODBYE_VOICE_FILE) if Path(GOODBYE_VOICE_FILE).exists() else ""
 
     date_stamp_html = (
         '<div class="bday-datestamp">' + BIRTHDAY_LABEL + '</div>'
@@ -3272,6 +3388,7 @@ elif st.session_state.app_phase == "COMPLETE":
         const b64Final  = '""" + b64_final + """';
         const b64Bday   = '""" + b64_birthday + """';
         const b64BgmBd  = '""" + b64_bgm_bday + """';
+        const b64Voice  = '""" + b64_goodbye + """';
         const NAME      = """ + json.dumps(RECIPIENT_NAME) + """;
         const DATESTAMP = """ + json.dumps(date_stamp_html) + """;
 
@@ -3279,7 +3396,15 @@ elif st.session_state.app_phase == "COMPLETE":
             pWin.localStorage.setItem('SERAPHIM_PERMANENTLY_LOCKED', 'SEALED');
         }
 
-        // ── Shared stylesheet for the whole finale ────────────────────────────
+        // A softer face for the human act; harmless if the network blocks it.
+        if (!pDoc.getElementById('finaleFont')) {
+            const fl = pDoc.createElement('link');
+            fl.id   = 'finaleFont';
+            fl.rel  = 'stylesheet';
+            fl.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap';
+            pDoc.head.appendChild(fl);
+        }
+
         const style = pDoc.createElement('style');
         style.textContent = `
             @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
@@ -3314,19 +3439,26 @@ elif st.session_state.app_phase == "COMPLETE":
                 50%{opacity:.70;transform:translate(-50%,-50%) scale(1.18);}
             }
             @keyframes ruleGrow{from{width:0;opacity:0;}to{width:min(300px,72vw);opacity:1;}}
-            @keyframes lineRise{
-                from{opacity:0;transform:translateY(14px);}
-                to{opacity:1;transform:translateY(0);}
+            @keyframes lineRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+            /* ── Human act ─────────────────────────────────────────────────── */
+            @keyframes breathe{
+                0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.42;}
+                50%{transform:translate(-50%,-50%) scale(1.22);opacity:.80;}
             }
-            .boot-caret{
-                display:inline-block;width:9px;margin-left:3px;
-                animation:caretBlink 1s step-end infinite;
+            @keyframes breatheInner{
+                0%,100%{transform:translate(-50%,-50%) scale(1);}
+                50%{transform:translate(-50%,-50%) scale(1.10);}
             }
+            @keyframes softIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+            @keyframes threadGlow{0%,100%{opacity:.35;}50%{opacity:.85;}}
+
+            #seraphimFinalScreen{transition:background-color 3.5s ease, backdrop-filter 3s ease;}
+            .boot-caret{display:inline-block;width:9px;margin-left:3px;animation:caretBlink 1s step-end infinite;}
             .cake-halo{
-                position:absolute;left:50%;top:0;width:230px;height:230px;
-                border-radius:50%;pointer-events:none;z-index:-1;
+                position:absolute;left:50%;top:0;width:230px;height:230px;border-radius:50%;
+                pointer-events:none;z-index:-1;transform:translate(-50%,-50%);
                 background:radial-gradient(circle,rgba(255,179,71,0.42),rgba(255,120,40,0.10) 45%,transparent 70%);
-                transform:translate(-50%,-50%);
                 animation:haloPulse 3.4s ease-in-out infinite;
             }
             .bday-rule{animation:ruleGrow 1.6s cubic-bezier(0.4,0,0.2,1) 0.5s both;}
@@ -3335,7 +3467,48 @@ elif st.session_state.app_phase == "COMPLETE":
             .bday-sig{animation:lineRise 1.2s ease 1.8s both, dimPulse 4s ease-in-out 3s infinite;}
             .bday-name{animation:lineRise 1.2s ease 0.25s both;}
 
-            /* Respect the OS setting: this page is dense with motion. */
+            .human-wrap{
+                font-family:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+                animation:softIn 2.2s cubic-bezier(0.4,0,0.2,1);
+                max-width:560px;width:100%;padding:20px;
+            }
+            .orb-stage{position:relative;height:190px;margin-bottom:10px;}
+            .orb-outer{
+                position:absolute;left:50%;top:50%;width:170px;height:170px;border-radius:50%;
+                background:radial-gradient(circle,rgba(255,214,170,0.40),rgba(255,150,90,0.09) 55%,transparent 72%);
+                animation:breathe 5.2s ease-in-out infinite;
+            }
+            .orb-inner{
+                position:absolute;left:50%;top:50%;width:54px;height:54px;border-radius:50%;
+                background:radial-gradient(circle,#fff6e6 0%,#ffc98a 45%,rgba(255,160,90,0.25) 100%);
+                box-shadow:0 0 46px rgba(255,190,120,0.75);
+                animation:breatheInner 5.2s ease-in-out infinite;
+            }
+            .human-eyebrow{
+                font-family:'Share Tech Mono', monospace;
+                font-size:0.62rem;letter-spacing:5px;text-transform:uppercase;
+                color:rgba(255,205,150,0.62);margin-bottom:20px;
+            }
+            .human-title{
+                font-size:clamp(1.5rem,4.6vw,2.2rem);font-weight:300;letter-spacing:1px;
+                color:#ffeed8;margin-bottom:16px;line-height:1.35;
+            }
+            .human-sub{
+                font-size:clamp(1rem,2.6vw,1.15rem);font-style:italic;font-weight:300;
+                color:rgba(255,225,195,0.72);line-height:1.85;max-width:440px;margin:0 auto;
+            }
+            .thread{
+                width:min(320px,74vw);height:1px;margin:26px auto 0;
+                background:linear-gradient(90deg,transparent,rgba(255,190,120,0.55),transparent);
+                animation:threadGlow 4s ease-in-out infinite;
+            }
+            .voice-progress{
+                position:fixed;left:0;bottom:0;height:2px;width:0%;
+                background:linear-gradient(90deg,rgba(255,190,120,0.15),rgba(255,205,150,0.75));
+                box-shadow:0 0 12px rgba(255,190,120,0.5);
+                transition:width 0.6s linear;z-index:10001;
+            }
+
             @media (prefers-reduced-motion: reduce){
                 #seraphimFinalScreen *, #birthdayLayer *{
                     animation-duration:0.01ms !important;
@@ -3344,44 +3517,6 @@ elif st.session_state.app_phase == "COMPLETE":
                 }
                 #birthdayLayer{display:none !important;}
             }
-            #seraphimFinalScreen{transition:background-color 3s ease, backdrop-filter 3s ease;}
-            .bday-title{
-                font-size:clamp(1.7rem,6vw,3rem);letter-spacing:4px;font-weight:200;
-                background:linear-gradient(90deg,#fff1c1,#ffd76a,#ffb347,#fff1c1);
-                background-size:200% 100%;
-                -webkit-background-clip:text;background-clip:text;
-                -webkit-text-fill-color:transparent;color:transparent;
-                animation:goldSweep 6s linear infinite;
-                margin-bottom:14px;text-transform:uppercase;line-height:1.25;
-            }
-            .bday-name{
-                color:#ffe9a8;font-size:clamp(1rem,3.4vw,1.35rem);letter-spacing:5px;
-                font-weight:300;text-transform:uppercase;
-                text-shadow:0 0 22px rgba(255,196,84,0.45);margin-bottom:22px;
-            }
-            .bday-rule{
-                width:min(300px,72vw);height:1px;margin:0 auto 22px;
-                background:linear-gradient(90deg,transparent,rgba(255,196,84,0.55),transparent);
-            }
-            .bday-line{
-                color:#d8c9a8;font-size:0.9rem;line-height:1.9;letter-spacing:0.6px;
-                max-width:440px;margin:0 auto;font-weight:300;
-            }
-            .bday-datestamp{
-                margin-top:24px;font-size:0.66rem;letter-spacing:5px;
-                color:rgba(255,196,84,0.6);text-transform:uppercase;
-            }
-            .bday-sig{
-                margin-top:26px;font-size:0.66rem;letter-spacing:4px;
-                color:rgba(255,196,84,0.55);text-transform:uppercase;
-                animation:dimPulse 4s ease-in-out infinite;
-            }
-            .boot-line{
-                color:#00ffcc;font-size:0.78rem;letter-spacing:3px;text-transform:uppercase;
-                margin:7px 0;opacity:0;animation:fadeUp 0.7s ease forwards;
-                text-shadow:0 0 10px rgba(0,255,204,0.45);
-            }
-            .boot-line.warm{color:#ffd76a;text-shadow:0 0 12px rgba(255,196,84,0.5);}
         `;
         pDoc.head.appendChild(style);
 
@@ -3403,7 +3538,6 @@ elif st.session_state.app_phase == "COMPLETE":
             }, TICK);
         }
 
-        // ── Overlay shell ─────────────────────────────────────────────────────
         let overlay = null;
         const buildOverlay = () => {
             overlay = pDoc.createElement('div');
@@ -3420,7 +3554,7 @@ elif st.session_state.app_phase == "COMPLETE":
             return overlay;
         };
 
-        // ── ACT 1 :: the cold shutdown card ───────────────────────────────────
+        // ── ACT 1 :: cold shutdown ────────────────────────────────────────────
         const showTerminatedScreen = () => {
             if (!overlay) buildOverlay();
             overlay.innerHTML = `
@@ -3449,22 +3583,14 @@ elif st.session_state.app_phase == "COMPLETE":
                     </div>
                 </div>
             `;
-            // Let the silence sit before the archive stirs back to life.
             setTimeout(startReveal, 4200);
         };
 
-        // ── ACT 2 :: the archive wakes up ─────────────────────────────────────
-        const BOOT_LINES = [
-            { t: '> residual process detected', warm: false },
-            { t: '> scanning volatile cache...', warm: false },
-            { t: '> 1 packet remaining',        warm: false },
-            { t: '> flag: DELIVER_ON_DATE',     warm: true  },
-            { t: '> scheduled date is TODAY',   warm: true  },
-            { t: '> reopening channel',         warm: true  }
-        ];
+        // ── Typewriter shared by acts 2 and 4 ─────────────────────────────────
+        const raf = pWin.requestAnimationFrame
+                      ? pWin.requestAnimationFrame.bind(pWin)
+                      : (fn) => setTimeout(() => fn(Date.now()), 16);
 
-        // Types one line character by character, carrying a blinking caret
-        // down the list the way a terminal actually would.
         const typeLine = (wrap, line, onDone) => {
             const row = pDoc.createElement('div');
             row.className = 'boot-line' + (line.warm ? ' warm' : '');
@@ -3474,57 +3600,46 @@ elif st.session_state.app_phase == "COMPLETE":
             const caret = pDoc.createElement('span');
             caret.className = 'boot-caret';
             caret.textContent = '_';
-            row.appendChild(span);
-            row.appendChild(caret);
+            row.appendChild(span); row.appendChild(caret);
             wrap.appendChild(row);
+            if (line.bg) overlay.style.backgroundColor = line.bg;
 
-            if (line.warm) {
-                // Cyan terminal turns candle-warm as the good news lands.
-                overlay.style.backgroundColor = 'rgba(20,13,8,0.86)';
-            }
-
-            // Driven by rAF against elapsed time rather than a per-character
-            // setTimeout: background tabs clamp timers to ~1s, which would drag
-            // a 28-character line out to nearly half a minute. rAF simply pauses
-            // while the tab is hidden and resumes where it left off, so she
-            // cannot miss the reveal by looking away.
-            const MS_PER_CHAR = 24;
-            const HOLD_MS     = 300;
-            const typeMs      = line.t.length * MS_PER_CHAR;
-            const started     = (pWin.performance || performance).now();
-            const raf         = pWin.requestAnimationFrame
-                                  ? pWin.requestAnimationFrame.bind(pWin)
-                                  : (fn) => setTimeout(() => fn(Date.now()), 16);
-
+            // rAF against elapsed time: background tabs clamp timers to ~1s,
+            // which would drag a line out to half a minute. rAF just pauses.
+            const MS_PER_CHAR = 24, HOLD_MS = 300;
+            const typeMs  = line.t.length * MS_PER_CHAR;
+            const started = (pWin.performance || performance).now();
             const step = (now) => {
                 const elapsed = now - started;
                 span.textContent = line.t.slice(
-                    0, Math.min(line.t.length, Math.floor(elapsed / MS_PER_CHAR))
-                );
-                if (elapsed < typeMs + HOLD_MS) {
-                    raf(step);
-                } else {
-                    caret.remove();
-                    onDone();
-                }
+                    0, Math.min(line.t.length, Math.floor(elapsed / MS_PER_CHAR)));
+                if (elapsed < typeMs + HOLD_MS) { raf(step); }
+                else { caret.remove(); onDone(); }
             };
             raf(step);
         };
 
-        const startReveal = () => {
+        const runLines = (lines, onDone) => {
             overlay.innerHTML = '<div id="bootWrap" style="max-width:480px;width:100%;padding:20px;text-align:left;"></div>';
             const wrap = pDoc.getElementById('bootWrap');
-
-            let idx = 0;
+            let i = 0;
             const next = () => {
-                if (idx < BOOT_LINES.length) {
-                    typeLine(wrap, BOOT_LINES[idx++], next);
-                } else {
-                    setTimeout(startBirthday, 900);
-                }
+                if (i < lines.length) { typeLine(wrap, lines[i++], next); }
+                else { setTimeout(onDone, 900); }
             };
             next();
         };
+
+        // ── ACT 2 :: the archive wakes ────────────────────────────────────────
+        const WARM = 'rgba(20,13,8,0.86)';
+        const startReveal = () => runLines([
+            { t: '> residual process detected' },
+            { t: '> scanning volatile cache...' },
+            { t: '> 1 packet remaining' },
+            { t: '> flag: DELIVER_ON_DATE', warm: true, bg: WARM },
+            { t: '> scheduled date is TODAY', warm: true },
+            { t: '> reopening channel', warm: true }
+        ], startBirthday);
 
         // ── Celebration particles ─────────────────────────────────────────────
         const spawnCelebration = () => {
@@ -3532,12 +3647,12 @@ elif st.session_state.app_phase == "COMPLETE":
             layer.id = 'birthdayLayer';
             layer.style.cssText =
                 'position:fixed;top:0;left:0;width:100vw;height:100vh;' +
-                'pointer-events:none;z-index:10000;overflow:hidden;';
+                'pointer-events:none;z-index:10000;overflow:hidden;' +
+                'transition:opacity 3s ease;';
             pDoc.body.appendChild(layer);
-
             const colors = ['#ffd76a','#ffb347','#fff1c1','#00ffcc','#ffffff','#ff9ec7'];
             for (let i = 0; i < 70; i++) {
-                const c    = pDoc.createElement('div');
+                const c = pDoc.createElement('div');
                 const size = 4 + Math.random() * 7;
                 c.style.cssText =
                     'position:absolute;top:0;left:' + (Math.random() * 100) + 'vw;' +
@@ -3564,14 +3679,13 @@ elif st.session_state.app_phase == "COMPLETE":
             }
         };
 
-        // One-shot party-popper burst, fired the moment the card lands.
         const burstConfetti = () => {
             const layer = pDoc.getElementById('birthdayLayer');
             if (!layer) return;
             const colors = ['#ffd76a','#ffb347','#fff1c1','#00ffcc','#ffffff','#ff9ec7'];
             for (let i = 0; i < 64; i++) {
-                const pc   = pDoc.createElement('div');
-                const ang  = Math.random() * Math.PI * 2;
+                const pc = pDoc.createElement('div');
+                const ang = Math.random() * Math.PI * 2;
                 const dist = 140 + Math.random() * 420;
                 const size = 5 + Math.random() * 8;
                 pc.style.cssText =
@@ -3589,13 +3703,12 @@ elif st.session_state.app_phase == "COMPLETE":
             }
         };
 
-        // ── ACT 3 :: the birthday card + narration ────────────────────────────
+        // ── ACT 3 :: Seraphim's birthday message ──────────────────────────────
         let cardShown = false;
         const showBirthdayCard = () => {
-            if (cardShown) return;   // loadedmetadata and ended can both reach here
+            if (cardShown) return;
             cardShown = true;
             burstConfetti();
-            // Re-light the meters in candle gold for the last message.
             const vb = pDoc.getElementById('voiceBars');
             if (vb) { vb.classList.remove('stopped'); vb.classList.add('bday-bars'); }
             overlay.innerHTML = `
@@ -3611,56 +3724,178 @@ elif st.session_state.app_phase == "COMPLETE":
                     <div class="bday-name">${NAME}</div>
                     <div class="bday-rule"></div>
                     <div class="bday-line">
-                        The world got measurably better on the day you arrived in it.<br><br>
-                        Go be happy. That is the only instruction left.
+                        The world got measurably better on the day you arrived in it.
                     </div>
                     ${DATESTAMP}
-                    <div class="bday-sig">&#8212; Seraphim, signing off &#8212;</div>
+                    <div class="bday-sig">&#8212; one more thing remains &#8212;</div>
                 </div>
             `;
         };
 
         const startBirthday = () => {
             spawnCelebration();
-
-            // Warm bed of music underneath the last message.
             if (b64BgmBd) {
                 const bd = pDoc.createElement('audio');
-                bd.id     = 'birthdayBgm';
-                bd.src    = 'data:audio/mp3;base64,' + b64BgmBd;
-                bd.loop   = true;
-                bd.volume = 0;
+                bd.id = 'birthdayBgm'; bd.loop = true; bd.volume = 0;
+                bd.src = 'data:audio/mp3;base64,' + b64BgmBd;
                 pDoc.body.appendChild(bd);
                 bd.play().catch(()=>{});
                 fadeAudio(bd, 0, 0.10, 4000);
             }
+            if (!b64Bday) { showBirthdayCard(); setTimeout(startHandoff, 3000); return; }
 
-            if (!b64Bday) { showBirthdayCard(); return; }
-
-            const bday  = pDoc.createElement('audio');
-            bday.id     = 'birthdayTts';
-            bday.src    = 'data:audio/mp3;base64,' + b64Bday;
-            bday.volume = 1.0;
+            const bday = pDoc.createElement('audio');
+            bday.id = 'birthdayTts'; bday.volume = 1.0;
+            bday.src = 'data:audio/mp3;base64,' + b64Bday;
             pDoc.body.appendChild(bday);
-            bday.play().catch(() => { showBirthdayCard(); });
+            bday.play().catch(() => { showBirthdayCard(); setTimeout(startHandoff, 3000); });
 
-            // Card lands a little before the voice finishes, so she is
-            // reading it while the last words are still being spoken.
+            // Card lands while the closing lines are still being spoken.
             const scheduleCard = () => {
-                if (!isFinite(bday.duration)) { return; }
-                const lead = Math.max(0, (bday.duration - 14)) * 1000;
-                setTimeout(showBirthdayCard, lead);
+                if (!isFinite(bday.duration)) return;
+                setTimeout(showBirthdayCard, Math.max(0, bday.duration - 26) * 1000);
             };
-            if (bday.readyState >= 1) { scheduleCard(); }
-            else { bday.addEventListener('loadedmetadata', scheduleCard, { once: true }); }
+            if (bday.readyState >= 1) scheduleCard();
+            else bday.addEventListener('loadedmetadata', scheduleCard, { once: true });
+
             bday.addEventListener('ended', () => {
                 showBirthdayCard();
-                const bd = pDoc.getElementById('birthdayBgm');
-                if (bd) fadeAudio(bd, bd.volume, 0.05, 6000);
+                setTimeout(startHandoff, 1600);
             });
         };
 
-        // ── Tear down the farewell audio stack ────────────────────────────────
+        // ── ACT 4 :: the machine steps aside; his own recording plays ─────────
+        const startHandoff = () => {
+            // Quiet the celebration: his voice should not compete with confetti.
+            const layer = pDoc.getElementById('birthdayLayer');
+            if (layer) { layer.style.opacity = '0'; setTimeout(() => layer.remove(), 3200); }
+            const vb = pDoc.getElementById('voiceBars');
+            if (vb) { vb.classList.remove('bday-bars'); vb.classList.add('stopped'); }
+            const bd = pDoc.getElementById('birthdayBgm');
+            if (bd) fadeAudio(bd, bd.volume, 0, 5000, () => { bd.pause(); bd.remove(); });
+
+            if (!b64Voice) { showClosingCard(); return; }
+
+            runLines([
+                { t: '> seraphim standing down' },
+                { t: '> relinquishing channel' },
+                { t: '> source: not a synthesis' },
+                { t: '> playing: his own voice' }
+            ], playCreatorVoice);
+        };
+
+        const playCreatorVoice = () => {
+            overlay.style.backgroundColor = 'rgba(14,10,7,0.92)';
+            overlay.innerHTML = `
+                <div class="human-wrap">
+                    <div class="orb-stage">
+                        <div class="orb-outer"></div>
+                        <div class="orb-inner"></div>
+                    </div>
+                    <div class="human-eyebrow">no longer a machine speaking</div>
+                    <div class="human-title">He wanted to say this part himself.</div>
+                    <div class="human-sub">
+                        This is his voice, unedited. The only part of all of this
+                        that he spoke out loud, with his own breath.
+                    </div>
+                    <div class="thread"></div>
+                </div>
+            `;
+
+            const bar = pDoc.createElement('div');
+            bar.className = 'voice-progress';
+            bar.id = 'voiceProgress';
+            pDoc.body.appendChild(bar);
+
+            const voice = pDoc.createElement('audio');
+            voice.id = 'creatorVoice';
+            voice.volume = 1.0;
+            voice.src = 'data:audio/mp3;base64,' + b64Voice;
+            pDoc.body.appendChild(voice);
+
+            // Let the meters ride his actual voice.
+            const vb = pDoc.getElementById('voiceBars');
+            const bars = pDoc.querySelectorAll('.voice-bar');
+            try {
+                const ctx = new (pWin.AudioContext || pWin.webkitAudioContext)();
+                const analyser = ctx.createAnalyser();
+                ctx.createMediaElementSource(voice).connect(analyser);
+                analyser.connect(ctx.destination);
+                analyser.fftSize = 64;
+                const data = new Uint8Array(analyser.frequencyBinCount);
+                const draw = () => {
+                    if (!voice.paused && !voice.ended) raf(draw);
+                    analyser.getByteFrequencyData(data);
+                    for (let i = 0; i < 9; i++) {
+                        if (!bars[i]) continue;
+                        const v = data[i] / 255;
+                        bars[i].style.height = (18 + v * 80) + '%';
+                        bars[i].style.background =
+                            'linear-gradient(180deg, rgba(255,214,160,' + (0.45 + v * 0.55) +
+                            ') 0%, rgba(255,150,90,0.20) 100%)';
+                        bars[i].style.boxShadow = '0 0 ' + (6 + v * 18) + 'px rgba(255,190,120,0.6)';
+                    }
+                };
+                voice.addEventListener('play', () => {
+                    if (vb) { vb.classList.remove('stopped'); vb.classList.add('playing'); }
+                    ctx.resume().then(draw).catch(()=>{});
+                });
+            } catch (e) {
+                // No analyser available: fall back to the CSS wave, in gold.
+                if (vb) vb.classList.add('analyser-off');
+                voice.addEventListener('play', () => {
+                    if (vb) { vb.classList.remove('stopped'); vb.classList.add('playing','bday-bars'); }
+                });
+            }
+
+            voice.addEventListener('timeupdate', () => {
+                if (isFinite(voice.duration) && voice.duration > 0) {
+                    bar.style.width = ((voice.currentTime / voice.duration) * 100) + '%';
+                }
+            });
+            voice.addEventListener('ended', () => {
+                if (vb) { vb.classList.add('stopped'); vb.classList.remove('playing'); }
+                bar.style.width = '100%';
+                setTimeout(() => { bar.style.opacity = '0'; }, 600);
+                setTimeout(showClosingCard, 2200);
+            });
+
+            voice.play().catch(() => {
+                // Autoplay refused this late is unlikely, but never strand her.
+                const tap = pDoc.createElement('div');
+                tap.style.cssText = `
+                    position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10002;
+                    display:flex;align-items:center;justify-content:center;cursor:pointer;
+                    background:rgba(14,10,7,0.75);backdrop-filter:blur(6px);
+                    color:#ffd9ae;font-family:'Share Tech Mono',monospace;
+                    letter-spacing:3px;font-size:0.8rem;text-align:center;padding:20px;`;
+                tap.innerHTML = '<div>[ TAP TO HEAR HIS VOICE ]</div>';
+                pDoc.body.appendChild(tap);
+                tap.addEventListener('click', () => {
+                    tap.remove();
+                    voice.play().catch(()=>{});
+                });
+            });
+        };
+
+        // ── Final resting card ────────────────────────────────────────────────
+        const showClosingCard = () => {
+            overlay.style.backgroundColor = 'rgba(12,9,7,0.94)';
+            overlay.innerHTML = `
+                <div class="human-wrap">
+                    <div class="human-eyebrow">end of transmission</div>
+                    <div class="human-title">Goodbye, ${NAME}.</div>
+                    <div class="human-sub">
+                        Happy birthday. Take the gentlest care of yourself.<br>
+                        Nothing here is owed, and nothing here is waiting.
+                    </div>
+                    <div class="thread"></div>
+                    ${DATESTAMP}
+                </div>
+            `;
+        };
+
+        // ── Tear down the farewell stack, then begin ──────────────────────────
         ['seraphimMainP1','seraphimMainP2','seraphimMainP3','closingTtsElem'].forEach(id => {
             const el = pDoc.getElementById(id);
             if (el) { el.pause(); el.remove(); }
@@ -3671,15 +3906,12 @@ elif st.session_state.app_phase == "COMPLETE":
 
         const startFinalSequence = () => {
             if (!b64Final) { showTerminatedScreen(); return; }
-            const finalAudio  = pDoc.createElement('audio');
-            finalAudio.id     = 'finalAudio';
-            finalAudio.src    = 'data:audio/mp3;base64,' + b64Final;
-            finalAudio.volume = 1.0;
-            pDoc.body.appendChild(finalAudio);
-            finalAudio.play().catch(() => { showTerminatedScreen(); });
-            finalAudio.addEventListener('ended', () => {
-                setTimeout(showTerminatedScreen, 1000);
-            });
+            const fa = pDoc.createElement('audio');
+            fa.id = 'finalAudio'; fa.volume = 1.0;
+            fa.src = 'data:audio/mp3;base64,' + b64Final;
+            pDoc.body.appendChild(fa);
+            fa.play().catch(() => { showTerminatedScreen(); });
+            fa.addEventListener('ended', () => setTimeout(showTerminatedScreen, 1000));
         };
 
         if (bgm && !bgm.paused && bgm.volume > 0) {
@@ -3701,7 +3933,6 @@ elif st.session_state.app_phase == "COMPLETE":
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     .cursor { animation: blink 1s step-end infinite; color: #00ffcc; }
     </style>
-
     <div style="text-align:center; font-family: monospace;">
         <p style="color:#00ffcc; font-size:1.15rem; letter-spacing:2px; margin-bottom:1rem; font-weight:bold; text-shadow: 0 0 10px rgba(0,255,204,0.4);">
         AWAITING ORDERS
