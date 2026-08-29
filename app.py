@@ -723,15 +723,25 @@ if b64_bgm_global:
 # Dynamic Background Compiler for Meteors & Solar System Orbits
 # ── STARS: split into 3 groups with different twinkle speeds/delays ──────────────────
 
-star_group_a = ", ".join([f"{random.randint(0, 1920)}px {random.randint(0, 1000)}px #fff" for _ in range(100)])
-star_group_b = ", ".join([f"{random.randint(0, 1920)}px {random.randint(0, 1000)}px #fff" for _ in range(100)])
-star_group_c = ", ".join([f"{random.randint(0, 1920)}px {random.randint(0, 1000)}px #fff" for _ in range(100)])
+# The sky is generated from a per-session seed rather than fresh randomness.
+# Re-rolling it on every rerun changed this markdown block's HTML, which made
+# Streamlit tear down and rebuild the node - and the rebuilt
+# #solar-system-animation came back at its CSS default of opacity:0, so the
+# planets silently disappeared after the first interaction. A stable seed keeps
+# the same DOM node alive (and skips regenerating 300 stars every rerun).
+if 'starfield_seed' not in st.session_state:
+    st.session_state.starfield_seed = random.randrange(1 << 30)
+_sky = random.Random(st.session_state.starfield_seed)
+
+star_group_a = ", ".join([f"{_sky.randint(0, 1920)}px {_sky.randint(0, 1000)}px #fff" for _ in range(100)])
+star_group_b = ", ".join([f"{_sky.randint(0, 1920)}px {_sky.randint(0, 1000)}px #fff" for _ in range(100)])
+star_group_c = ", ".join([f"{_sky.randint(0, 1920)}px {_sky.randint(0, 1000)}px #fff" for _ in range(100)])
 
 meteor_css_str = ""
 for i in range(1, 6):
-    v = random.randint(9, 99) 
-    h = random.randint(50, 300) 
-    d = random.randint(100, 200) / 10.0 
+    v = _sky.randint(9, 99) 
+    h = _sky.randint(50, 300) 
+    d = _sky.randint(100, 200) / 10.0 
     
     meteor_css_str += f"""
     .meteor-{i} {{
@@ -743,7 +753,7 @@ for i in range(1, 6):
         transform: rotate(-45deg);
         background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
         animation: meteor {d}s linear infinite;
-        animation-delay: {random.randint(0, 10)}s;
+        animation-delay: {_sky.randint(0, 10)}s;
         opacity: 0; /* <--- ADD THIS LINE HERE */
     }}
     .meteor-{i}:before {{
@@ -1064,8 +1074,27 @@ ROCKET_ANIMATION_JS = """
         if (pWin.gsap) {
             clearInterval(initInt);
             startPhysicsBrain(pWin.gsap);
+            // Always re-run: startPhysicsBrain returns early once the brain is
+            // active, but a Streamlit rerun can hand us a fresh (invisible)
+            // node that still needs revealing.
+            revealSolarSystem(pWin.gsap);
         }
     }, 200);
+
+    // Restores the solar system to its visible, positioned state. Safe to call
+    // repeatedly - it simply re-asserts the same values.
+    function revealSolarSystem(gsap) {
+        const el = pDoc.getElementById('solar-system-animation');
+        if (!el) return;
+        const pos = pWin.SUN_POS ||
+                    { x: pWin.innerWidth * 0.85, y: pWin.innerHeight * 0.25 };
+        gsap.set(el, {
+            opacity: 0.6,
+            right: 'auto', bottom: 'auto', left: 0, top: 0,
+            xPercent: -50, yPercent: -50, scale: 0.5,
+            x: pos.x, y: pos.y
+        });
+    }
 
     function startPhysicsBrain(gsap) {
         if (pWin.ROCKET_BRAIN_ACTIVE) return;
@@ -1157,13 +1186,10 @@ ROCKET_ANIMATION_JS = """
             targetX: w * 0.85, targetY: h * 0.25
         };
 
-        // Unpin solar system from CSS and snap it to its perfect mathematical coordinate before making it visible
-        gsap.set('#solar-system-animation', { 
-            opacity: 0.6, // <--- Makes it visible only AFTER it is in place
-            right: 'auto', bottom: 'auto', left: 0, top: 0, 
-            xPercent: -50, yPercent: -50, scale: 0.5,
-            x: sunPhysics.x, y: sunPhysics.y // <--- Forces exact initial location
-        });
+        // Publish the live sun position so a later rerun can restore the
+        // solar system to exactly where the physics loop has it.
+        pWin.SUN_POS = sunPhysics;
+        revealSolarSystem(gsap);
         function getFarTarget(currX, currY, w, h) {
             let tx = (Math.random() - 0.2) * (w * 1.4);
             let ty = (Math.random() - 0.2) * (h * 1.4);
@@ -1507,6 +1533,12 @@ ROCKET_ANIMATION_JS = """
             // ══════════════════════════════════════════════════════════════════
             // The Sun will no longer move or turn red. It stays exactly where it started.
             gsap.set(elSolar, { x: sunPhysics.x, y: sunPhysics.y });
+
+            // A rerun can swap in a replacement node between frames; if that
+            // happens, this catches it on the very next tick.
+            if (elSolar.style.opacity === '' || elSolar.style.opacity === '0') {
+                revealSolarSystem(gsap);
+            }
 
         });
     }
