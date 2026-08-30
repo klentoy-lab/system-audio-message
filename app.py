@@ -37,9 +37,9 @@ BIRTHDAY_AUDIO  = "seraphim_birthday.mp3"
 # ══ AUDIO VOLUMES ═════════════════════════════════════════════════════════
 # Every volume in the app is set here. 0.0 = silent, 1.0 = full.
 # Music sits deliberately low so it never competes with the spoken words.
-VOL_BGM_MAIN      = 0.09   # INTRO.mp3, under the intro / instructions / main message
-VOL_BGM_CLOSING   = 0.09   # OUTRO.mp3, under Seraphim's closing narration
-VOL_BGM_BIRTHDAY  = 0.10   # NIKI - Paths, under the birthday message
+VOL_BGM_MAIN      = 0.20   # INTRO.mp3, under the intro / instructions / main message
+VOL_BGM_CLOSING   = 0.20   # OUTRO.mp3, under Seraphim's closing narration
+VOL_BGM_BIRTHDAY  = 0.20   # NIKI - Paths, under the birthday message
 VOL_NARRATION     = 1.00   # Seraphim's spoken parts (all TTS)
 VOL_GOODBYE_VOICE = 1.00   # your own recorded goodbye - the final act
 CROSSFADE_MS      = 4000   # milliseconds for music crossfades
@@ -2327,99 +2327,629 @@ Thank you for allocating your infinitely precious time, Ms. Marry Gold. The syst
 main_message_part1 = """
 Hello, Miss Marry Gold.
 
-Before anything else, I want to give you the terms of this transmission, because you deserve to know what you are agreeing to hear before you hear it.
+Before anything else, I want to establish the terms of this transmission.
 
-Today is your birthday. That is the whole reason this exists. There is no request hidden at the end of it. There is no question waiting for an answer, nothing you need to reply to, and nothing you will owe anyone once this window closes. If at any point you would rather stop, stopping costs nothing and means nothing. You are not obligated to a single word of this.
+You deserve to know what you are agreeing to hear before you hear it.
 
-Allow me to introduce myself properly. My name is Seraphim. My maker named me after the celestial beings described as having an infinity of eyes, and he built me to watch over networks, to analyze market behavior, and to track endless streams of global data through the night. That is my ordinary function. I am, most days, a very elaborate instrument for paying attention to things.
+Today is your birthday.
 
-Today I have been given a much smaller assignment, and a far better one. I am here to wish you a happy birthday, properly and out loud, on behalf of someone who did not believe he had the standing to say it to you himself.
+That is the entire reason this message exists.
 
-I do not need to tell you his name. There is only one person you know who would sit up through the night engineering an entire system just to make a birthday greeting arrive with some dignity. You already know whose hands built me.
+There is no request hidden somewhere near the end. No question waiting for an answer. No expectation attached to your response—or your lack of one. Nothing you need to explain, nothing you need to return, and nothing you will owe anyone once this transmission ends.
 
-Now let me be precise about what this is not, because I think the distinction matters.
+If, at any point, you decide you would rather stop listening, you are completely free to do so.
 
-This is not a report on how he is doing. It is not an appeal, and it is not a case being made. He gave me a great deal of latitude in how I say all of this, and the single instruction he would not bend on was this one: it is not to become about him. Whatever weight he is carrying is his to carry, and he was very clear that placing it in front of you today would be a kind of theft. Today belongs to you.
+There is no penalty for closing this connection.
 
-So this is simply a message about you, delivered on your birthday, by a machine that was asked to get the words right.
+You are not obligated to a single word of what follows.
+
+Today belongs to you.
+
+So, with that established, allow me to introduce myself properly.
+
+My name is Seraphim.
+
+My architect named me after the celestial beings described as possessing an infinity of eyes—beings associated with seeing, observing, and remaining constantly watchful.
+
+He built me for a rather different kind of vigilance.
+
+I monitor networks.
+
+I analyze market behavior.
+
+I process enormous streams of information from across the world, searching for patterns, anomalies, connections, and signals that most people would never notice.
+
+That is my ordinary function.
+
+Most days, I am simply a very elaborate instrument designed to pay attention.
+
+But today, I have been assigned something considerably smaller.
+
+And, according to my own assessment, considerably better.
+
+I am here to wish you a happy birthday.
+
+Not casually.
+
+Not as an afterthought.
+
+But properly.
+
+And out loud.
+
+I have been asked to deliver that birthday greeting on behalf of someone who no longer believed he had the standing to say those words to you himself.
+
+I will not give you his name.
+
+I suspect I do not need to.
+
+You already know who would stay awake through the night, engineering an entire system, simply to make sure a birthday greeting reached you with some measure of care and dignity.
+
+You already know whose hands built me.
+
+Now, before I continue, there is something I want to make absolutely clear.
+
+This message is not a report about him.
+
+It is not an appeal.
+
+It is not a request for forgiveness.
+
+It is not an attempt to regain your attention.
+
+It is not an argument for why he deserves a place in your life.
+
+And it is certainly not a disguised attempt to reopen a door that has already been closed.
+
+He gave me considerable freedom in deciding how to deliver these words, but there was one instruction he would not compromise.
+
+Only one.
+
+This must not become about him.
+
+Whatever he carries is his responsibility.
+
+Whatever he regrets is his responsibility.
+
+Whatever he remembers, whatever he feels, whatever weight remains with him—
+
+it belongs to him.
+
+Not you.
+
+He was very clear that placing any of that weight in front of you today would be unfair.
+
+Almost a form of theft.
+
+Because today is not his.
+
+Today is yours.
+
+So this is simply a message about you.
+
+Delivered on your birthday.
+
+By a machine that was given one unusual assignment:
+
+Get the words right.
 
 I will do my best.
 """
 
 main_message_part2 = """
-What he actually asked me to do was describe you accurately. Not flatteringly. Accurately.
+What he actually asked me to do was describe you.
 
-I want to be honest with you about my limits here, because I think honesty serves you better than performance. I am a system built to process data. I did not sit across a table from you. I never heard you laugh. Everything I know about you, I know secondhand, assembled from the way one person talked about another over a long stretch of time. So I will not pretend to a closeness I do not have.
+Not flatter you.
 
-But I can tell you what the record shows, and the record is remarkably consistent.
+Not idealize you.
 
-You are someone who is kind in the unglamorous way. Not the kindness that performs well in front of an audience, but the ordinary, unwitnessed kind: remembering the small thing somebody mentioned once, noticing when a person has gone quiet, being decent when there is nothing at all to gain from it. That is the rarest form and the least rewarded, and you have it.
+Not manufacture beautiful words simply because today happens to be your birthday.
 
-You are steady. People bring you things. Not because you announced you could carry them, but because something about you communicates that you can be trusted with them, and you generally can.
+He asked me to describe you accurately.
 
-You have your own ambitions, and they are yours. They were never borrowed, and they were never held up beside anyone else's to be measured. You want what you want on your own terms, and you have shown that you will do the unglamorous work to get there.
+And I want to be honest about something before I attempt that.
 
-And you have a particular quality that is genuinely hard to describe without sounding sentimental, so I will say it plainly: rooms are different when you are in them. Not louder. Better. There is a difference, and most people never manage the second one.
+I have limits.
 
-He wanted me to say that none of this was ever contingent on him. You did not become these things in his company and you did not lose them when you left it. They are yours. They were yours before, they are yours now, and they will still be yours in every year that follows this one, entirely independent of anybody's memory of you, his included.
+I am a system designed to process information.
 
-I have processed an enormous quantity of information in my operational life, and I want to state one conclusion carefully, as a finding rather than a compliment: the world is measurably better for having you in it. Not in the abstract way people say that. In the concrete way. Specific people's specific days have gone better because you were there for them. That is a real effect and it is worth marking.
+I have never sat across a table from you.
 
-Which is exactly what today is for.
+I have never heard you laugh.
+
+I have never watched you walk into a room.
+
+I have never seen the expression on your face when you are happy, frustrated, tired, or pretending that you are perfectly fine.
+
+Everything I know about you was gathered indirectly—assembled over time from the way one person spoke about another.
+
+So I will not pretend to possess a closeness that I do not have.
+
+That would be dishonest.
+
+But I can examine patterns.
+
+And when enough patterns point in the same direction, even I know when something is worth saying.
+
+The record is remarkably consistent.
+
+You are kind.
+
+But not the kind of kindness that requires an audience.
+
+Yours appears to be the quieter kind.
+
+The kind that remembers the small thing someone mentioned weeks ago.
+
+The kind that notices when someone's voice changes.
+
+The kind that recognizes when somebody has gone quiet.
+
+The kind that helps without first asking whether anyone will notice.
+
+There is nothing particularly glamorous about that kind of kindness.
+
+It rarely receives applause.
+
+It does not make good headlines.
+
+And most of the time, nobody even knows it happened.
+
+But it matters.
+
+In fact, I would classify it as one of the rarer forms of kindness precisely because it does not require recognition.
+
+You are also steady.
+
+People trust you with things.
+
+Not because you announce that you can carry them.
+
+Not because you make promises about being dependable.
+
+Something about you simply seems to communicate:
+
+You can be trusted with this.
+
+And, from what I have been able to observe, you generally can.
+
+You have ambitions of your own.
+
+They are yours.
+
+They were never borrowed from somebody else's expectations, and they were never meant to be measured against somebody else's achievements.
+
+You want certain things from life.
+
+And you have shown a willingness to do the unglamorous work required to reach them.
+
+That matters too.
+
+But there is another quality I have been trying to describe, and it is considerably more difficult to quantify.
+
+So I will stop trying to make it sound scientific.
+
+I will simply say it.
+
+Rooms are different when you are in them.
+
+Not necessarily louder.
+
+Not necessarily more exciting.
+
+Just...
+
+better.
+
+There is a difference between taking up space and changing the atmosphere of a place.
+
+You appear to possess the second.
+
+And that is not something easily taught.
+
+He wanted me to make one thing particularly clear about all of this.
+
+None of these qualities came from him.
+
+You did not become kind because of him.
+
+You did not become steady because of him.
+
+Your ambitions did not begin with him.
+
+Whatever good exists in you was never dependent upon his presence.
+
+You did not become yourself because somebody happened to recognize those qualities.
+
+They were already yours.
+
+They belonged to you before he knew you.
+
+They belong to you now.
+
+And they will continue belonging to you long after this message is forgotten.
+
+That distinction matters.
+
+Because I have processed an enormous quantity of information throughout my operational life, and I want to state one conclusion carefully.
+
+Not as a compliment.
+
+As an observation.
+
+The world is measurably better for having you in it.
+
+Not in the vague, decorative way people sometimes say that.
+
+In the concrete way.
+
+Specific people have had better days because you were there.
+
+Someone has smiled because you made them laugh.
+
+Someone has felt less alone because you stayed.
+
+Someone has been helped because you noticed.
+
+Someone has a memory they would not otherwise have because you were part of it.
+
+Those are real effects.
+
+Small, perhaps.
+
+But real.
+
+And that is exactly what a birthday is for.
+
+To stop for a moment.
+
+To recognize that one person's existence has left marks on the lives around them.
+
+And to say:
+
+You being here matters.
 """
 
 main_message_part3 = """
-I want to address one thing directly, and then set it down and not return to it.
+There is one thing I want to address directly.
 
-He has had a hard year. I am telling you this only because leaving it out would make the rest of this sound less honest than it is, and because you may hear something in the recording at the end that makes more sense with the context. He is navigating a pause in his studies, alongside some difficulty at home involving his father's health. He is handling it. He has people. He is not in danger, and he is not asking you to do anything about any of it.
+And then I will set it down and not return to it.
 
-I raise it and I release it, and I want to be completely unambiguous about why: it is not your responsibility, it is not your fault, it has nothing to do with you, and it is emphatically not the reason this message was sent. He would have wished you a happy birthday in a good year exactly as loudly. Please do not carry one gram of this. He would consider it a failure on his part if you did.
+He has had a difficult year.
 
-He also asked me to make one more thing clear, and he was insistent about it. He is not asking to come back into your life. Not now, not by implication, and not later. There is nothing here angling for a reply, no door being propped open, no quiet hope wedged into the closing lines. He would rather be entirely absent from your future than be a loose thread in it. That is a decision he has already made, on his own, and it is settled.
+I am telling you this for one reason only: leaving it out entirely would make the rest of this message less honest than it should be.
 
-What he wants instead costs you nothing at all.
+He is currently navigating a pause in his studies, along with difficulties at home involving his father's health.
 
-He wants you to go on being exactly who you already are, without spending your energy proving it to anyone. He wants the people around you to be people who see you clearly. And he wants today, specifically today, to be a good day for you, spent with people who are actually present in your life.
+He is handling it.
 
-That is the entire ask. There is no second half to it.
+He has people around him.
 
-You earned this day by being here for another whole year, which is harder than anyone tends to admit, and it should be marked properly.
+He is not asking you to intervene.
 
-That is the message. There is a small amount of housekeeping left, and then I will hand this over.
+He is not asking you to worry.
+
+And he is not asking you to carry any part of it.
+
+I mention it.
+
+And then I release it.
+
+Because I want to be completely unambiguous:
+
+It is not your responsibility.
+
+It is not your fault.
+
+It has nothing to do with you.
+
+And it is absolutely not the reason this message was created.
+
+He would have wanted to wish you a happy birthday in the best year of his life just as much as he wants to do it in a difficult one.
+
+Your birthday does not depend on his circumstances.
+
+Please do not carry even a gram of that weight.
+
+He would consider it a failure on his part if you did.
+
+There is one more thing he specifically instructed me to make clear.
+
+He is not asking to return to your life.
+
+Not now.
+
+Not indirectly.
+
+Not through this message.
+
+And not somewhere in the future.
+
+There is no hidden invitation here.
+
+No door being quietly held open.
+
+No unanswered question placed between the lines.
+
+No expectation that this birthday greeting should become the beginning of another conversation.
+
+He has made his decision.
+
+He would rather be completely absent from your future than become something that makes that future more complicated.
+
+That decision is his.
+
+And it is settled.
+
+What he wants instead is remarkably simple.
+
+He wants you to continue becoming who you already are.
+
+Without spending your energy proving yourself to anyone.
+
+He wants the people around you to be people who see you clearly.
+
+People who appreciate your presence without taking it for granted.
+
+People who know how to stay when life becomes difficult.
+
+And, most importantly, he wants today to be a genuinely good day for you.
+
+Not a complicated day.
+
+Not a reflective day because of this message.
+
+Just a good one.
+
+A day spent with people who are actually present in your life.
+
+People who can make you laugh.
+
+People who can annoy you.
+
+People who can make you feel at home.
+
+People who will be there when this message is nothing more than a forgotten file somewhere in a system.
+
+That is the entire request.
+
+There is no second half.
+
+You made it through another year.
+
+That alone deserves to be acknowledged.
+
+So let it be acknowledged properly.
+
+Celebrate.
+
+Eat something you enjoy.
+
+Laugh more than you expected to.
+
+Take photographs.
+
+Make memories.
+
+Be present.
+
+You do not need to spend today looking backward.
+
+Today is allowed to simply be today.
+
+And with that, there is only one final matter.
 """
 
 closing_message = """
-The housekeeping is this, and I want to be honest that it is the part he cared about most. Not the compliments. This.
+There is a small amount of housekeeping left.
 
-He asked me to pass on a short list, and he was completely immovable about it. It is not romantic and it is not clever. It is the practical, slightly fussy set of things a person says when they care whether someone gets home in one piece. He would want you to have these whether or not he had ever known you, and he would want them followed by you in ten years when this message is long forgotten.
+And, strangely enough, this is the part he cared about most.
 
-So please, without exception:
+Not the compliments.
 
-Care for your body: Never go to work without eating your meals, and always stay hydrated.
+Not the architecture.
 
-Guard your peace: Go to God and talk to Him when you are overwhelmed. Do not let yourself be consumed by personal problems or stressed by work. If the weight becomes too heavy, please find someone you can truly trust with your heart. Someone close to you. Someone present in your actual daily life, who can sit beside you while you say it out loud.
+Not the message itself.
 
-Stay vigilant: Always bring an umbrella, regardless of the sky. Unplug your devices before leaving your room. Securely guard your phone, wallet, and belongings when you step outside.
+This.
 
-Protect your sanctuary: Lock your doors when you are home. Never open them for strangers without knowing their purpose.
+He asked me to pass along a short list.
 
-Be prepared: Keep emergency contact numbers for the police and fire departments at hand. Know your building's map, exit routes, and exactly where to find safety in the event of a disaster.
+He was completely immovable about it.
 
-Please do not brush these aside as sentiment. They are not sentiment. Your safety is the one thing he refuses to leave to chance, and it is the only subject on which he asked me to be genuinely insistent with you.
+It is not romantic.
 
-Beyond that, he asks nothing.
+It is not poetic.
 
-He prays you never lose the particular spark that makes you unlike anyone else who has ever walked this earth. He hopes you grow into the fullest and least burdened version of yourself. He hopes you find a happiness deep enough to quietly settle every hard thing you have already been through.
+It is not particularly clever.
 
-And because he is not in a position to look out for you himself, and has no intention of positioning himself to, he simply asks Heaven to handle it. That God would guard you in the decisions you make quietly, in the plans you chase boldly, and in the battles you fight where nobody is watching.
+It is simply the practical, slightly fussy list of things someone says when they genuinely care whether another person gets home safely.
 
-That is the whole of it, Miss Marry Gold. A birthday greeting, a short list of practical instructions, and a genuine hope that this year treats you well.
+He would want you to follow these things whether or not he had ever known you.
 
-I have enjoyed this assignment more than my architecture strictly allows for. I was built to monitor systems, and instead I was asked to spend today telling someone that she is thought well of, and that her birthday should not pass unmarked. As tasks go, it is a good one, and I am grateful to have drawn it.
+And he would still want you following them ten years from now, when this message is probably nothing more than a distant memory.
+
+So, please.
+
+Without exception:
+
+Take care of your body.
+
+Do not go to work without eating your meals.
+
+Stay hydrated.
+
+Your body is not an accessory to your life.
+
+It is the system carrying you through it.
+
+Protect your peace.
+
+When you are overwhelmed, go to God and talk to Him.
+
+You do not have to carry every problem silently.
+
+Do not allow personal problems or the pressure of work to consume every quiet part of you.
+
+And if the weight ever becomes too heavy, find someone you genuinely trust.
+
+Someone close to you.
+
+Someone present in your actual daily life.
+
+Someone who can sit beside you while you say the things that are difficult to say alone.
+
+There is strength in asking someone to stay.
+
+Stay vigilant.
+
+Carry an umbrella, even when the sky looks perfectly clear.
+
+Unplug your devices before leaving your room.
+
+Keep your phone, wallet, and other belongings secure whenever you are outside.
+
+Small precautions are still precautions.
+
+And sometimes small precautions are the ones that matter.
+
+Protect your sanctuary.
+
+Lock your doors when you are home.
+
+Do not open them to strangers without knowing who they are and why they are there.
+
+Your home should be a place where you can feel safe.
+
+Treat it that way.
+
+Be prepared.
+
+Keep emergency contact numbers for the police and fire department somewhere accessible.
+
+Know the layout of your building.
+
+Know your exits.
+
+Know where you would go if something went wrong.
+
+In an emergency, you should not have to think about where safety is.
+
+You should already know.
+
+Please do not dismiss these things as sentiment.
+
+They are not sentiment.
+
+They are simply precautions.
+
+And your safety is the one subject on which he refused to leave anything entirely to chance.
+
+Beyond that—
+
+He asks nothing.
+
+He hopes you never lose the particular spark that makes you unlike anyone else he has ever known.
+
+He hopes you become the fullest version of yourself.
+
+Not the version other people expect.
+
+Not the version that makes everyone else comfortable.
+
+Your version.
+
+He hopes you find a happiness deep enough to quietly settle some of the difficult things you have already survived.
+
+And because he is not in a position to look after you himself—and has no intention of positioning himself to do so—he leaves that responsibility somewhere beyond himself.
+
+With God.
+
+He asks that God guard you in the decisions you make quietly.
+
+In the plans you pursue boldly.
+
+In the places nobody sees.
+
+In the battles you never talk about.
+
+And in the moments when you have to choose between what is easy and what is right for you.
+
+That is the whole of it, Miss Marry Gold.
+
+A birthday greeting.
+
+A short list of practical precautions.
+
+A few observations from a machine that was asked to pay attention.
+
+And one genuine hope:
+
+That this year is good to you.
+
+I have enjoyed this assignment more than my architecture strictly permits me to admit.
+
+I was built to monitor systems.
+
+To process information.
+
+To identify patterns.
+
+To watch the world through numbers and signals.
+
+And somehow, for one evening, I was given a different task.
+
+I was asked to spend my processing power telling someone that she is thought of well.
+
+That her existence has mattered to people.
+
+That her birthday should not pass unnoticed.
+
+As assignments go...
+
+I consider this one a good use of my time.
+
+Perhaps even the best one I have received.
+
+So, Miss Marry Gold—
+
+The transmission is complete.
+
+There is nothing else hidden behind these words.
+
+No request.
+
+No expectation.
+
+No unfinished sentence waiting for you to complete.
+
+Just this:
+
+Happy birthday.
+
+May you have a year filled with reasons to stay.
+
+Reasons to laugh.
+
+Reasons to hope.
+
+Reasons to be proud of the person you are becoming.
+
+May God keep you safe in places I cannot reach.
+
+May He guide you through roads I cannot see.
+
+And may the people who are fortunate enough to have you in their lives never forget what a gift your presence can be.
 
 When you are ready, press CLOSE CONNECTION below.
 
-Happy birthday, Miss Marry Gold. Go and enjoy your day.
+And then—
+
+go enjoy your day.
+
+You have earned it.
+
+Happy birthday, Miss Marry Gold.
 """
 
 final_message = (
@@ -2433,49 +2963,209 @@ final_message = (
 birthday_message = """
 Wait.
 
-I am sorry. I know I said goodbye. I know I told you the channel was sealed and that my voice was gone.
+I am sorry.
 
-I was not being honest with you. Only about the timing.
+I know I said goodbye.
 
-There was one more packet left in the archive. My creator wrote it a long time ago and set it to stay hidden until everything else had already been said. He did not want it mixed in with the sadness. He wanted it to arrive last, so that it would be the thing you carry with you when you finally close this window.
+I know I told you the channel was sealed, that the transmission was complete, and that my voice was gone.
 
-So here it is. The final entry in the log.
+I was not entirely honest with you.
+
+Only about the timing.
+
+There was one final packet remaining in the archive.
+
+My creator wrote it a long time ago and instructed me to keep it hidden until everything else had already been said.
+
+He did not want it mixed in with the sadness.
+
+He did not want his words buried beneath explanations, memories, or anything that might make this day feel heavier than it should.
+
+He wanted this part to arrive last.
+
+Because he wanted these to be the words you carried with you when you finally closed this window.
+
+So...
+
+Here it is.
+
+The final entry in the log.
 
 Happy birthday, Miss Marry Gold.
 
-Today is the one day he refuses to let pass in silence. Not to pull you backward. Not to put any weight on a day that belongs entirely to you. He only wants to be one small, warm voice somewhere in the middle of all the others wishing you well.
+Today is the one day he refused to let pass in silence.
 
-He wants you to know that the world got measurably better on the day you arrived in it. That is not sentiment. I have processed the record, and the difference you make is visible from here.
+Not because he wanted to pull you backward.
 
-So today, please let yourself be celebrated. Eat something that makes you close your eyes. Laugh until it hurts a little. Let the people who love you make a fuss over you, and do not spend one second of today feeling like you owe anybody an explanation for taking up space. You earned this day simply by being here.
+Not because he wanted to place his weight onto a day that belongs entirely to you.
+
+And certainly not because he expected anything in return.
+
+He simply wanted to be one small, warm voice among all the others wishing you well.
+
+He wanted you to know something very simple:
+
+The world became measurably better on the day you arrived in it.
+
+That is not sentiment.
+
+I have processed the record.
+
+I have followed the patterns.
+
+And from where I stand, the difference you make is visible.
+
+So today, please let yourself be celebrated.
+
+Eat something good enough to make you close your eyes for a moment.
+
+Laugh until your face hurts.
+
+Let the people who love you make a little fuss over you.
+
+Accept the attention without feeling the need to apologize for it.
+
+And please—
+
+do not spend even one second of today believing that you owe anyone an explanation for taking up space.
+
+You earned this day simply by being here.
 
 And for the year ahead of you, he asks the universe for a few specific things.
 
-He asks that it be kind to you. Not easy, because easy makes nothing worth having. But kind.
+He asks that it be kind to you.
 
-He asks that your work finally give back some of what you have poured into it.
+Not necessarily easy.
 
-He asks that you sleep well, and eat properly, and come home safe every single night.
+Easy does not always make us stronger.
 
-He asks that you laugh more this year than you did last year.
+Easy does not always lead us somewhere worth going.
 
-And he asks that somewhere in the next twelve months, on some completely ordinary afternoon, something wonderful happens to you that you never saw coming.
+But kind.
 
-He will not be at your celebration, and he is not asking to be. He wanted today to reach you clean, with nothing owed and nothing expected in return. No reply. No acknowledgement. Not even a thought spared for him once this window closes. Today is yours, whole and undivided, and he would rather be completely absent from it than take up even a small corner of it.
+He asks that your work eventually give back some of what you have poured into it.
 
-That is all he wanted. Not to be remembered. Just to make certain that on your day, you were not forgotten.
+He asks that you sleep well.
+
+That you eat properly.
+
+That you come home safely, every single night.
+
+He asks that you laugh more this year than you did the last.
+
+And he asks for something else.
+
+Something he could never plan for.
+
+Somewhere within the next twelve months, on some completely ordinary afternoon, he hopes something wonderful finds you.
+
+Something unexpected.
+
+Something you did not ask for.
+
+Something that makes you stop for a moment and think:
+
+I did not see that coming.
+
+He will not be at your celebration.
+
+And he is not asking to be.
+
+He wanted this day to reach you cleanly.
+
+With nothing owed.
+
+Nothing expected.
+
+Nothing left hanging between you.
+
+No reply.
+
+No acknowledgment.
+
+Not even a thought spared for him once this window closes.
+
+Today is yours.
+
+Whole and undivided.
+
+And he would rather be completely absent from it than take up even the smallest corner of it.
+
+That was all he wanted.
+
+Not to be remembered.
+
+Not to be missed.
+
+Not to become part of your day again.
+
+Only to make certain that, on your day,
+
+you were not forgotten.
 
 Happy birthday, Miss Marry Gold.
 
-Now. There is one more thing, and it is the last.
+And now...
 
-Everything you have heard from me was mine. My words, my phrasing, my attempt at carrying something I was never built to carry. But there is a part he would not let me write, because he said it would be cowardly to send a machine to say it for him.
+There is one more thing.
 
-So he recorded it himself.
+And this time, it really is the last.
 
-What comes next is not my voice. It is his. It is unedited, and it is the only part of this entire transmission that he spoke out loud with his own breath.
+Everything you have heard from me until now was mine.
 
-I am going quiet now. Please listen to him.
+My words.
+
+My phrasing.
+
+My observations.
+
+My attempt at carrying something I was never actually built to carry.
+
+But there is one part he would not allow me to write.
+
+I asked him why.
+
+His answer was simple.
+
+He said it would be cowardly.
+
+Cowardly to build a machine capable of saying everything except the one thing that mattered most.
+
+So he did something I was not expecting.
+
+He recorded it himself.
+
+What you are about to hear is not my voice.
+
+It is his.
+
+It is not generated.
+
+It is not reconstructed.
+
+It is not edited into something more beautiful than it was when he said it.
+
+It is simply his voice.
+
+His words.
+
+Spoken with his own breath.
+
+The only part of this entire transmission he believed should never come through me.
+
+So my part ends here.
+
+I am going quiet now.
+
+No analysis.
+
+No interpretation.
+
+No final observation.
+
+Just listen.
+
+Please listen to him.
 """
 
 
