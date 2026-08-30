@@ -3775,8 +3775,34 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
             });
         }
 
+
+        // Playback-aware watchdog. A fixed timer cannot know how long the
+        // narration runs, so this watches the audio itself: it resets while
+        // anything is playing, and only acts on a real stall (or on playback
+        // that never began at all).
+        function armPlaybackWatchdog(ids, onStall, idleMs, neverStartMs) {
+            const t0 = Date.now();
+            let armed = false, last = Date.now(), done = false;
+            const iv = setInterval(() => {
+                if (done) { clearInterval(iv); return; }
+                const els = ids.map(id => pDoc.getElementById(id)).filter(Boolean);
+                const playing = els.some(a => !a.paused && !a.ended);
+                if (playing) { armed = true; last = Date.now(); return; }
+                if (armed && Date.now() - last > idleMs) {
+                    done = true; clearInterval(iv); onStall();
+                } else if (!armed && Date.now() - t0 > neverStartMs) {
+                    done = true; clearInterval(iv); onStall();
+                }
+            }, 4000);
+        }
+
         function playInstructionAudio() {
             if (!b64Instruction) { revealButtons(); return; }
+            // Stall for 60s mid-clip, or nothing playing at all after 4 min.
+            armPlaybackWatchdog(
+                ['seraphimAudioElem', 'seraphimRestartElem'],
+                revealButtons, 60000, 240000
+            );
             try {
                 const instrAudio = makeAudio(b64Instruction, 'seraphimAudioElem');
                 wireVisualizer(instrAudio);
@@ -3794,7 +3820,6 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
                 };
                 if (instrAudio.readyState >= 1) armBackstop();
                 else instrAudio.addEventListener('loadedmetadata', armBackstop, { once: true });
-                setTimeout(revealButtons, 180000);
                 instrAudio.play().catch(e => { handleAutoplayBlock(instrAudio); });
             } catch (err) {
                 // Whatever went wrong, she must still be able to continue.
@@ -3896,9 +3921,34 @@ elif st.session_state.app_phase == "MAIN_MESSAGE":
             pWin.localStorage.setItem('SERAPHIM_PERMANENTLY_LOCKED', 'SEALED');
         }
 
-        // Backstop: if any part of the playback chain fails, she must still
-        // be able to close the connection and reach the birthday finale.
-        setTimeout(function(){ revealCloseButton(); }, 300000);
+
+        // Playback-aware watchdog. A fixed timer cannot know how long the
+        // narration runs, so this watches the audio itself: it resets while
+        // anything is playing, and only acts on a real stall (or on playback
+        // that never began at all).
+        function armPlaybackWatchdog(ids, onStall, idleMs, neverStartMs) {
+            const t0 = Date.now();
+            let armed = false, last = Date.now(), done = false;
+            const iv = setInterval(() => {
+                if (done) { clearInterval(iv); return; }
+                const els = ids.map(id => pDoc.getElementById(id)).filter(Boolean);
+                const playing = els.some(a => !a.paused && !a.ended);
+                if (playing) { armed = true; last = Date.now(); return; }
+                if (armed && Date.now() - last > idleMs) {
+                    done = true; clearInterval(iv); onStall();
+                } else if (!armed && Date.now() - t0 > neverStartMs) {
+                    done = true; clearInterval(iv); onStall();
+                }
+            }, 4000);
+        }
+
+        // Backstop: if the playback chain genuinely stalls she must still be
+        // able to close the connection and reach the birthday finale - but this
+        // must never fire while the narration is still running.
+        armPlaybackWatchdog(
+            ['seraphimMainP1', 'seraphimMainP2', 'seraphimMainP3', 'closingTtsElem'],
+            function () { revealCloseButton(); }, 90000, 300000
+        );
 
         function revealCloseButton() {
             const styleCtrl = pDoc.getElementById('btn-visibility-controller');
@@ -4191,6 +4241,66 @@ elif st.session_state.app_phase == "COMPLETE":
                 50%{opacity:.70;transform:translate(-50%,-50%) scale(1.18);}
             }
             @keyframes ruleGrow{from{width:0;opacity:0;}to{width:min(300px,72vw);opacity:1;}}
+
+            /* ── "Please wait, do not close" panel ──────────────────────── */
+            @keyframes waitOrbit{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+            @keyframes waitCore{
+                0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.80;}
+                50%{transform:translate(-50%,-50%) scale(1.38);opacity:1;}
+            }
+            @keyframes warnBlink{0%,100%{opacity:1;}50%{opacity:.42;}}
+            @keyframes ringBreathe{
+                0%,100%{transform:scale(1);opacity:.30;}
+                50%{transform:scale(1.09);opacity:.65;}
+            }
+            .wait-wrap{
+                margin-top:30px;display:flex;flex-direction:column;
+                align-items:center;gap:15px;
+                animation:fadeUp 1.1s ease both;
+            }
+            .wait-orbit{position:relative;width:80px;height:80px;}
+            .wait-ring{
+                position:absolute;inset:0;border-radius:50%;
+                border:1px solid var(--wa-dim);
+                animation:ringBreathe 3.2s ease-in-out infinite;
+            }
+            .wait-ring.inner{inset:16px;border-style:dashed;animation-duration:4.4s;}
+            .wait-arm{position:absolute;inset:0;animation:waitOrbit 2.7s linear infinite;}
+            .wait-arm.slow{animation-duration:4.3s;}
+            .wait-arm.fast{animation-duration:1.8s;animation-direction:reverse;}
+            .wait-dot{
+                position:absolute;top:-3px;left:50%;width:6px;height:6px;
+                margin-left:-3px;border-radius:50%;
+                background:var(--wa);box-shadow:0 0 10px var(--wa);
+            }
+            .wait-arm.fast .wait-dot{width:4px;height:4px;margin-left:-2px;top:14px;}
+            .wait-core{
+                position:absolute;left:50%;top:50%;width:13px;height:13px;
+                border-radius:50%;background:var(--wa);
+                box-shadow:0 0 20px var(--wa);
+                animation:waitCore 1.9s ease-in-out infinite;
+            }
+            .wait-warn{
+                font-family:'Share Tech Mono', monospace;
+                font-size:0.72rem;letter-spacing:3.5px;text-transform:uppercase;
+                color:var(--wa);text-shadow:0 0 12px var(--wa);
+                animation:warnBlink 1.6s ease-in-out infinite;
+                text-align:center;line-height:1.6;
+            }
+            .wait-track{
+                width:min(300px,72vw);height:2px;border-radius:2px;
+                background:var(--wa-dim);overflow:hidden;
+            }
+            .wait-fill{
+                height:100%;width:0%;border-radius:2px;
+                background:var(--wa);box-shadow:0 0 10px var(--wa);
+            }
+            .wait-sub{
+                font-family:'Share Tech Mono', monospace;
+                font-size:0.62rem;letter-spacing:2.5px;text-transform:uppercase;
+                color:rgba(255,255,255,0.40);transition:opacity .4s ease;
+                min-height:1em;text-align:center;
+            }
             @keyframes lineRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 
             /* ── Human act ─────────────────────────────────────────────────── */
@@ -4306,11 +4416,59 @@ elif st.session_state.app_phase == "COMPLETE":
             return overlay;
         };
 
+        // Fills a silent gap with visible activity plus an explicit request not
+        // to close the window. Worded as a system process so it never gives away
+        // what is still coming.
+        const showWaitingNotice = (host, opts) => {
+            if (!host) { if (opts.onDone) opts.onDone(); return; }
+            const el = pDoc.createElement('div');
+            el.className = 'wait-wrap';
+            el.style.setProperty('--wa', opts.accent);
+            el.style.setProperty('--wa-dim', opts.dim);
+            el.innerHTML =
+                '<div class="wait-orbit">' +
+                    '<div class="wait-ring"></div>' +
+                    '<div class="wait-ring inner"></div>' +
+                    '<div class="wait-arm slow"><span class="wait-dot"></span></div>' +
+                    '<div class="wait-arm"><span class="wait-dot"></span></div>' +
+                    '<div class="wait-arm fast"><span class="wait-dot"></span></div>' +
+                    '<div class="wait-core"></div>' +
+                '</div>' +
+                '<div class="wait-warn">' + opts.warn + '</div>' +
+                '<div class="wait-track"><div class="wait-fill"></div></div>' +
+                '<div class="wait-sub"></div>';
+            host.appendChild(el);
+
+            const fill = el.querySelector('.wait-fill');
+            const sub  = el.querySelector('.wait-sub');
+
+            // Determinate bar: she can see the wait has an end.
+            // The reflow is required - without it the browser has no starting
+            // value to interpolate from and the bar snaps straight to full.
+            fill.style.width = '0%';
+            void fill.offsetWidth;
+            fill.style.transition = 'width ' + opts.seconds + 's linear';
+            fill.style.width = '100%';
+
+            let i = 0;
+            sub.textContent = opts.lines[0];
+            const iv = setInterval(() => {
+                i = (i + 1) % opts.lines.length;
+                sub.style.opacity = '0';
+                setTimeout(() => { sub.textContent = opts.lines[i]; sub.style.opacity = '1'; }, 380);
+            }, 1900);
+
+            setTimeout(() => {
+                clearInterval(iv);
+                if (opts.onDone) opts.onDone();
+            }, opts.seconds * 1000);
+        };
+
         // ── ACT 1 :: cold shutdown ────────────────────────────────────────────
         const showTerminatedScreen = () => {
             if (!overlay) buildOverlay();
             overlay.innerHTML = `
-                <div style="animation:fadeUp 1.2s ease;padding:20px;max-width:480px;width:100%;">
+                <div id="termCard" style="animation:fadeUp 1.2s ease;padding:20px;max-width:480px;width:100%;">
                     <div style="font-size:40px;margin-bottom:18px;color:rgba(0,255,204,0.75);
                         text-shadow:0 0 40px rgba(0,255,204,0.4);
                         animation:dimPulse 3s ease-in-out infinite;">&#9673;</div>
@@ -4335,7 +4493,23 @@ elif st.session_state.app_phase == "COMPLETE":
                     </div>
                 </div>
             `;
-            setTimeout(startReveal, 4200);
+            // The screen has just said CONNECTION TERMINATED. Without something
+            // here, this silence is exactly where she closes the window.
+            setTimeout(() => {
+                showWaitingNotice(pDoc.getElementById('termCard'), {
+                    seconds: 7,
+                    accent: 'rgba(0,255,204,0.85)',
+                    dim: 'rgba(0,255,204,0.13)',
+                    warn: 'Please do not close this window',
+                    lines: [
+                        'background process still running',
+                        'do not navigate away',
+                        'finalising local cache',
+                        'stay on this screen'
+                    ],
+                    onDone: startReveal
+                });
+            }, 1500);
         };
 
         // ── Typewriter shared by acts 2 and 4 ─────────────────────────────────
@@ -4528,6 +4702,26 @@ elif st.session_state.app_phase == "COMPLETE":
 
             if (!b64Voice) { showClosingCard(); return; }
 
+            // His recording is large; this covers the decode and keeps her here.
+            const host = pDoc.createElement('div');
+            host.style.cssText = 'max-width:480px;width:100%;padding:20px;';
+            overlay.innerHTML = '';
+            overlay.appendChild(host);
+            showWaitingNotice(host, {
+                seconds: 5,
+                accent: 'rgba(255,196,84,0.9)',
+                dim: 'rgba(255,196,84,0.15)',
+                warn: 'One more thing is loading<br>Please do not close this window',
+                lines: [
+                    'preparing final transmission',
+                    'this is not the end yet',
+                    'please stay on this screen'
+                ],
+                onDone: () => runLinesHandoff()
+            });
+        };
+
+        const runLinesHandoff = () => {
             runLines([
                 { t: '> seraphim standing down' },
                 { t: '> relinquishing channel' },
