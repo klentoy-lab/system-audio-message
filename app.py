@@ -3815,8 +3815,13 @@ elif st.session_state.app_phase == "INSTRUCTIONS":
                     instrAudio.addEventListener(ev, revealButtons));
                 // Absolute backstop, sized from the clip once it is known.
                 const armBackstop = () => {
-                    const ms = (isFinite(instrAudio.duration) ? instrAudio.duration * 1000 : 60000) + 20000;
-                    setTimeout(revealButtons, ms);
+                    // Only arm a duration-based backstop when the duration is
+                    // actually known. Guessing a fallback here would reveal the
+                    // buttons mid-message on any clip longer than the guess;
+                    // the playback watchdog already covers the unknown case and
+                    // is duration-agnostic.
+                    if (!isFinite(instrAudio.duration) || instrAudio.duration <= 0) return;
+                    setTimeout(revealButtons, instrAudio.duration * 1000 + 20000);
                 };
                 if (instrAudio.readyState >= 1) armBackstop();
                 else instrAudio.addEventListener('loadedmetadata', armBackstop, { once: true });
@@ -4301,6 +4306,92 @@ elif st.session_state.app_phase == "COMPLETE":
                 color:rgba(255,255,255,0.30);transition:opacity .55s ease;
                 min-height:1em;text-align:center;
             }
+
+            @keyframes lineRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+            /* ── Human act ─────────────────────────────────────────────────── */
+            @keyframes breathe{
+                0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.42;}
+                50%{transform:translate(-50%,-50%) scale(1.22);opacity:.80;}
+            }
+            @keyframes breatheInner{
+                0%,100%{transform:translate(-50%,-50%) scale(1);}
+                50%{transform:translate(-50%,-50%) scale(1.10);}
+            }
+            @keyframes softIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+            @keyframes threadGlow{0%,100%{opacity:.35;}50%{opacity:.85;}}
+
+            #seraphimFinalScreen{transition:background-color 3.5s ease, backdrop-filter 3s ease;}
+            .boot-caret{display:inline-block;width:9px;margin-left:3px;animation:caretBlink 1s step-end infinite;}
+            .cake-halo{
+                position:absolute;left:50%;top:0;width:230px;height:230px;border-radius:50%;
+                pointer-events:none;z-index:-1;transform:translate(-50%,-50%);
+                background:radial-gradient(circle,rgba(255,179,71,0.42),rgba(255,120,40,0.10) 45%,transparent 70%);
+                animation:haloPulse 3.4s ease-in-out infinite;
+            }
+            .bday-rule{animation:ruleGrow 1.6s cubic-bezier(0.4,0,0.2,1) 0.5s both;}
+            .bday-line{animation:lineRise 1.2s ease 1.0s both;}
+            .bday-datestamp{animation:lineRise 1.2s ease 1.4s both;}
+            .bday-sig{animation:lineRise 1.2s ease 1.8s both, dimPulse 4s ease-in-out 3s infinite;}
+            .bday-name{animation:lineRise 1.2s ease 0.25s both;}
+
+            .human-wrap{
+                font-family:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+                animation:softIn 2.2s cubic-bezier(0.4,0,0.2,1);
+                max-width:560px;width:100%;padding:20px;
+            }
+            /* The cake stays with her through his recording - it is still her
+               birthday while she is listening. */
+            .human-cake{
+                font-size:34px;line-height:1;margin-bottom:6px;
+                filter:drop-shadow(0 0 22px rgba(255,179,71,0.5));
+                animation:flicker 2.6s ease-in-out infinite;
+            }
+            .orb-stage{position:relative;height:160px;margin-bottom:10px;}
+            .orb-outer{
+                position:absolute;left:50%;top:50%;width:170px;height:170px;border-radius:50%;
+                background:radial-gradient(circle,rgba(255,214,170,0.40),rgba(255,150,90,0.09) 55%,transparent 72%);
+                animation:breathe 5.2s ease-in-out infinite;
+            }
+            .orb-inner{
+                position:absolute;left:50%;top:50%;width:54px;height:54px;border-radius:50%;
+                background:radial-gradient(circle,#fff6e6 0%,#ffc98a 45%,rgba(255,160,90,0.25) 100%);
+                box-shadow:0 0 46px rgba(255,190,120,0.75);
+                animation:breatheInner 5.2s ease-in-out infinite;
+            }
+            .human-eyebrow{
+                font-family:'Share Tech Mono', monospace;
+                font-size:0.62rem;letter-spacing:5px;text-transform:uppercase;
+                color:rgba(255,205,150,0.62);margin-bottom:20px;
+            }
+            .human-title{
+                font-size:clamp(1.5rem,4.6vw,2.2rem);font-weight:300;letter-spacing:1px;
+                color:#ffeed8;margin-bottom:16px;line-height:1.35;
+            }
+            .human-sub{
+                font-size:clamp(1rem,2.6vw,1.15rem);font-style:italic;font-weight:300;
+                color:rgba(255,225,195,0.72);line-height:1.85;max-width:440px;margin:0 auto;
+            }
+            .thread{
+                width:min(320px,74vw);height:1px;margin:26px auto 0;
+                background:linear-gradient(90deg,transparent,rgba(255,190,120,0.55),transparent);
+                animation:threadGlow 4s ease-in-out infinite;
+            }
+            .voice-progress{
+                position:fixed;left:0;bottom:0;height:2px;width:0%;
+                background:linear-gradient(90deg,rgba(255,190,120,0.15),rgba(255,205,150,0.75));
+                box-shadow:0 0 12px rgba(255,190,120,0.5);
+                transition:width 0.6s linear;z-index:10001;
+            }
+
+            @media (prefers-reduced-motion: reduce){
+                #seraphimFinalScreen *, #birthdayLayer *{
+                    animation-duration:0.01ms !important;
+                    animation-iteration-count:1 !important;
+                    transition-duration:0.01ms !important;
+                }
+                #birthdayLayer{display:none !important;}
+            }
         `;
         pDoc.head.appendChild(style);
 
@@ -4669,6 +4760,7 @@ elif st.session_state.app_phase == "COMPLETE":
                         <div class="orb-outer"></div>
                         <div class="orb-inner"></div>
                     </div>
+                    <div class="human-cake">&#127874;</div>
                     <div class="human-eyebrow">no longer a machine speaking</div>
                     <div class="human-title">He wanted to say this part himself.</div>
                     <div class="human-sub">
@@ -4760,6 +4852,7 @@ elif st.session_state.app_phase == "COMPLETE":
             overlay.style.backgroundColor = 'rgba(12,9,7,0.94)';
             overlay.innerHTML = `
                 <div class="human-wrap">
+                    <div class="human-cake">&#127874;</div>
                     <div class="human-eyebrow">end of transmission</div>
                     <div class="human-title">Goodbye, ${NAME}.</div>
                     <div class="human-sub">
