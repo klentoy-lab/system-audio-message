@@ -4242,142 +4242,64 @@ elif st.session_state.app_phase == "COMPLETE":
             }
             @keyframes ruleGrow{from{width:0;opacity:0;}to{width:min(300px,72vw);opacity:1;}}
 
-            /* ── "Please wait, do not close" panel ──────────────────────── */
-            @keyframes waitOrbit{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-            @keyframes waitCore{
-                0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.80;}
-                50%{transform:translate(-50%,-50%) scale(1.38);opacity:1;}
+            /* ── "Please wait" indicator :: atomic model ─────────────────
+               Nucleus of two protons and a neutron, three tilted orbitals with
+               electrons travelling them. The ellipse comes from nesting: the
+               tilt sits on .orb-tilt, .orb-flat squashes the Y axis, and the
+               electron rotates inside that squashed space. */
+            @keyframes waitSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+            @keyframes nucleusBreathe{
+                0%,100%{opacity:.62;transform:scale(1);}
+                50%{opacity:1;transform:scale(1.16);}
             }
-            @keyframes warnBlink{0%,100%{opacity:1;}50%{opacity:.42;}}
-            @keyframes ringBreathe{
-                0%,100%{transform:scale(1);opacity:.30;}
-                50%{transform:scale(1.09);opacity:.65;}
-            }
+            @keyframes softBreathe{0%,100%{opacity:.62;}50%{opacity:1;}}
             .wait-wrap{
-                margin-top:30px;display:flex;flex-direction:column;
-                align-items:center;gap:15px;
-                animation:fadeUp 1.1s ease both;
+                margin-top:38px;display:flex;flex-direction:column;
+                align-items:center;gap:20px;
+                animation:fadeUp 1.4s cubic-bezier(0.4,0,0.2,1) both;
             }
-            .wait-orbit{position:relative;width:80px;height:80px;}
-            .wait-ring{
+            .wait-atom{position:relative;width:78px;height:78px;}
+            .orb-tilt{position:absolute;inset:0;}
+            .orb-flat{position:absolute;inset:0;transform:scaleY(0.34);}
+            .orb-ring{
                 position:absolute;inset:0;border-radius:50%;
-                border:1px solid var(--wa-dim);
-                animation:ringBreathe 3.2s ease-in-out infinite;
+                border:1px solid var(--wa);opacity:.26;
             }
-            .wait-ring.inner{inset:16px;border-style:dashed;animation-duration:4.4s;}
-            .wait-arm{position:absolute;inset:0;animation:waitOrbit 2.7s linear infinite;}
-            .wait-arm.slow{animation-duration:4.3s;}
-            .wait-arm.fast{animation-duration:1.8s;animation-direction:reverse;}
-            .wait-dot{
-                position:absolute;top:-3px;left:50%;width:6px;height:6px;
-                margin-left:-3px;border-radius:50%;
-                background:var(--wa);box-shadow:0 0 10px var(--wa);
+            .orb-spin{position:absolute;inset:0;animation:waitSpin linear infinite;}
+            .electron{
+                position:absolute;top:-2.5px;left:50%;margin-left:-2.5px;
+                width:5px;height:5px;border-radius:50%;
+                background:var(--wa);box-shadow:0 0 7px var(--wa);
+                transform:scaleY(2.94);
             }
-            .wait-arm.fast .wait-dot{width:4px;height:4px;margin-left:-2px;top:14px;}
-            .wait-core{
-                position:absolute;left:50%;top:50%;width:13px;height:13px;
-                border-radius:50%;background:var(--wa);
-                box-shadow:0 0 20px var(--wa);
-                animation:waitCore 1.9s ease-in-out infinite;
+            .nucleus{
+                position:absolute;left:50%;top:50%;width:15px;height:14px;
+                transform:translate(-50%,-50%);
             }
+            .nucleus i{
+                position:absolute;width:5px;height:5px;border-radius:50%;
+                background:var(--wa);
+                animation:nucleusBreathe 3.2s ease-in-out infinite;
+            }
+            .nucleus .p1{left:0;top:4px;}
+            .nucleus .p2{right:0;top:6px;animation-delay:-1.1s;}
+            .nucleus .nt{left:5px;top:0;opacity:.42;animation-delay:-2.2s;}
             .wait-warn{
                 font-family:'Share Tech Mono', monospace;
-                font-size:0.72rem;letter-spacing:3.5px;text-transform:uppercase;
-                color:var(--wa);text-shadow:0 0 12px var(--wa);
-                animation:warnBlink 1.6s ease-in-out infinite;
-                text-align:center;line-height:1.6;
+                font-size:0.66rem;letter-spacing:4.5px;text-transform:uppercase;
+                color:var(--wa);text-align:center;line-height:2;
+                animation:softBreathe 3.4s ease-in-out infinite;
             }
             .wait-track{
-                width:min(300px,72vw);height:2px;border-radius:2px;
-                background:var(--wa-dim);overflow:hidden;
+                width:min(210px,58vw);height:1px;
+                background:rgba(255,255,255,0.09);overflow:hidden;
             }
-            .wait-fill{
-                height:100%;width:0%;border-radius:2px;
-                background:var(--wa);box-shadow:0 0 10px var(--wa);
-            }
+            .wait-fill{height:100%;width:0%;background:var(--wa);opacity:.9;}
             .wait-sub{
                 font-family:'Share Tech Mono', monospace;
-                font-size:0.62rem;letter-spacing:2.5px;text-transform:uppercase;
-                color:rgba(255,255,255,0.40);transition:opacity .4s ease;
+                font-size:0.56rem;letter-spacing:3px;text-transform:uppercase;
+                color:rgba(255,255,255,0.30);transition:opacity .55s ease;
                 min-height:1em;text-align:center;
-            }
-            @keyframes lineRise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-
-            /* ── Human act ─────────────────────────────────────────────────── */
-            @keyframes breathe{
-                0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.42;}
-                50%{transform:translate(-50%,-50%) scale(1.22);opacity:.80;}
-            }
-            @keyframes breatheInner{
-                0%,100%{transform:translate(-50%,-50%) scale(1);}
-                50%{transform:translate(-50%,-50%) scale(1.10);}
-            }
-            @keyframes softIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-            @keyframes threadGlow{0%,100%{opacity:.35;}50%{opacity:.85;}}
-
-            #seraphimFinalScreen{transition:background-color 3.5s ease, backdrop-filter 3s ease;}
-            .boot-caret{display:inline-block;width:9px;margin-left:3px;animation:caretBlink 1s step-end infinite;}
-            .cake-halo{
-                position:absolute;left:50%;top:0;width:230px;height:230px;border-radius:50%;
-                pointer-events:none;z-index:-1;transform:translate(-50%,-50%);
-                background:radial-gradient(circle,rgba(255,179,71,0.42),rgba(255,120,40,0.10) 45%,transparent 70%);
-                animation:haloPulse 3.4s ease-in-out infinite;
-            }
-            .bday-rule{animation:ruleGrow 1.6s cubic-bezier(0.4,0,0.2,1) 0.5s both;}
-            .bday-line{animation:lineRise 1.2s ease 1.0s both;}
-            .bday-datestamp{animation:lineRise 1.2s ease 1.4s both;}
-            .bday-sig{animation:lineRise 1.2s ease 1.8s both, dimPulse 4s ease-in-out 3s infinite;}
-            .bday-name{animation:lineRise 1.2s ease 0.25s both;}
-
-            .human-wrap{
-                font-family:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-                animation:softIn 2.2s cubic-bezier(0.4,0,0.2,1);
-                max-width:560px;width:100%;padding:20px;
-            }
-            .orb-stage{position:relative;height:190px;margin-bottom:10px;}
-            .orb-outer{
-                position:absolute;left:50%;top:50%;width:170px;height:170px;border-radius:50%;
-                background:radial-gradient(circle,rgba(255,214,170,0.40),rgba(255,150,90,0.09) 55%,transparent 72%);
-                animation:breathe 5.2s ease-in-out infinite;
-            }
-            .orb-inner{
-                position:absolute;left:50%;top:50%;width:54px;height:54px;border-radius:50%;
-                background:radial-gradient(circle,#fff6e6 0%,#ffc98a 45%,rgba(255,160,90,0.25) 100%);
-                box-shadow:0 0 46px rgba(255,190,120,0.75);
-                animation:breatheInner 5.2s ease-in-out infinite;
-            }
-            .human-eyebrow{
-                font-family:'Share Tech Mono', monospace;
-                font-size:0.62rem;letter-spacing:5px;text-transform:uppercase;
-                color:rgba(255,205,150,0.62);margin-bottom:20px;
-            }
-            .human-title{
-                font-size:clamp(1.5rem,4.6vw,2.2rem);font-weight:300;letter-spacing:1px;
-                color:#ffeed8;margin-bottom:16px;line-height:1.35;
-            }
-            .human-sub{
-                font-size:clamp(1rem,2.6vw,1.15rem);font-style:italic;font-weight:300;
-                color:rgba(255,225,195,0.72);line-height:1.85;max-width:440px;margin:0 auto;
-            }
-            .thread{
-                width:min(320px,74vw);height:1px;margin:26px auto 0;
-                background:linear-gradient(90deg,transparent,rgba(255,190,120,0.55),transparent);
-                animation:threadGlow 4s ease-in-out infinite;
-            }
-            .voice-progress{
-                position:fixed;left:0;bottom:0;height:2px;width:0%;
-                background:linear-gradient(90deg,rgba(255,190,120,0.15),rgba(255,205,150,0.75));
-                box-shadow:0 0 12px rgba(255,190,120,0.5);
-                transition:width 0.6s linear;z-index:10001;
-            }
-
-            @media (prefers-reduced-motion: reduce){
-                #seraphimFinalScreen *, #birthdayLayer *{
-                    animation-duration:0.01ms !important;
-                    animation-iteration-count:1 !important;
-                    transition-duration:0.01ms !important;
-                }
-                #birthdayLayer{display:none !important;}
             }
         `;
         pDoc.head.appendChild(style);
@@ -4425,14 +4347,23 @@ elif st.session_state.app_phase == "COMPLETE":
             el.className = 'wait-wrap';
             el.style.setProperty('--wa', opts.accent);
             el.style.setProperty('--wa-dim', opts.dim);
+            const orbital = (tilt, dur, rev) =>
+                '<div class="orb-tilt" style="transform:rotate(' + tilt + 'deg)">' +
+                    '<div class="orb-flat">' +
+                        '<div class="orb-ring"></div>' +
+                        '<div class="orb-spin" style="animation-duration:' + dur +
+                            's;animation-direction:' + (rev ? 'reverse' : 'normal') + '">' +
+                            '<i class="electron"></i>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+
             el.innerHTML =
-                '<div class="wait-orbit">' +
-                    '<div class="wait-ring"></div>' +
-                    '<div class="wait-ring inner"></div>' +
-                    '<div class="wait-arm slow"><span class="wait-dot"></span></div>' +
-                    '<div class="wait-arm"><span class="wait-dot"></span></div>' +
-                    '<div class="wait-arm fast"><span class="wait-dot"></span></div>' +
-                    '<div class="wait-core"></div>' +
+                '<div class="wait-atom">' +
+                    orbital(0, 3.4, false) +
+                    orbital(60, 2.8, true) +
+                    orbital(120, 4.2, false) +
+                    '<div class="nucleus"><i class="p1"></i><i class="p2"></i><i class="nt"></i></div>' +
                 '</div>' +
                 '<div class="wait-warn">' + opts.warn + '</div>' +
                 '<div class="wait-track"><div class="wait-fill"></div></div>' +
@@ -4456,7 +4387,7 @@ elif st.session_state.app_phase == "COMPLETE":
                 i = (i + 1) % opts.lines.length;
                 sub.style.opacity = '0';
                 setTimeout(() => { sub.textContent = opts.lines[i]; sub.style.opacity = '1'; }, 380);
-            }, 1900);
+            }, 2400);
 
             setTimeout(() => {
                 clearInterval(iv);
@@ -4471,7 +4402,7 @@ elif st.session_state.app_phase == "COMPLETE":
                 <div id="termCard" style="animation:fadeUp 1.2s ease;padding:20px;max-width:480px;width:100%;">
                     <div style="font-size:40px;margin-bottom:18px;color:rgba(0,255,204,0.75);
                         text-shadow:0 0 40px rgba(0,255,204,0.4);
-                        animation:dimPulse 3s ease-in-out infinite;">&#9673;</div>
+                        animation:dimPulse 3s ease-in-out infinite;">&#9883;</div>
                     <h2 style="font-size:clamp(1.3rem,4vw,1.9rem);letter-spacing:5px;font-weight:200;
                         margin-bottom:16px;text-transform:uppercase;
                         background:linear-gradient(45deg,#ffffff,#00ffcc,#ffffff);
@@ -4502,10 +4433,10 @@ elif st.session_state.app_phase == "COMPLETE":
                     dim: 'rgba(0,255,204,0.13)',
                     warn: 'Please do not close this window',
                     lines: [
-                        'background process still running',
-                        'do not navigate away',
-                        'finalising local cache',
-                        'stay on this screen'
+                        'reaction still in progress',
+                        'do not disturb the sample',
+                        'stabilising the compound',
+                        'please remain at the bench'
                     ],
                     onDone: startReveal
                 });
@@ -4559,9 +4490,9 @@ elif st.session_state.app_phase == "COMPLETE":
         // ── ACT 2 :: the archive wakes ────────────────────────────────────────
         const WARM = 'rgba(20,13,8,0.86)';
         const startReveal = () => runLines([
-            { t: '> residual process detected' },
-            { t: '> scanning volatile cache...' },
-            { t: '> 1 packet remaining' },
+            { t: '> residual trace detected' },
+            { t: '> analysing remaining sample...' },
+            { t: '> 1 compound unaccounted for' },
             { t: '> flag: DELIVER_ON_DATE', warm: true, bg: WARM },
             { t: '> scheduled date is TODAY', warm: true },
             { t: '> reopening channel', warm: true }
@@ -4653,7 +4584,7 @@ elif st.session_state.app_phase == "COMPLETE":
                         The world got measurably better on the day you arrived in it.
                     </div>
                     ${DATESTAMP}
-                    <div class="bday-sig">&#8212; one more thing remains &#8212;</div>
+                    <div class="bday-sig">&#8212; one more element remains &#8212;</div>
                 </div>
             `;
         };
@@ -4713,9 +4644,9 @@ elif st.session_state.app_phase == "COMPLETE":
                 dim: 'rgba(255,196,84,0.15)',
                 warn: 'One more thing is loading<br>Please do not close this window',
                 lines: [
-                    'preparing final transmission',
-                    'this is not the end yet',
-                    'please stay on this screen'
+                    'final compound synthesising',
+                    'the reaction is not complete',
+                    'please stay with the sample'
                 ],
                 onDone: () => runLinesHandoff()
             });
